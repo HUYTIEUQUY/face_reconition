@@ -21,31 +21,11 @@ def connect():
 
 
 db=connect().database()
-# data={'MaKhoa':'1','TenKhoa':'Công nghệ thông tin và truyền thông'}
-
-# try:
-#     db.child('Khoa').push(data)
-#     print("thành công")
-# except:
-#     print("thất bại")
+data=db.child("Lop").get()
+a=[]
+for i in data.each():
+    if(i.val()["TenLop"]==str("Công nghệ thông tin k20")):
+        a.append(i.val())
 
 
-# data=db.child("Khoa").get()
-# for i in data.each():
-#     if(i.val()["MaKhoa"]=='1'):
-#         ten=i.val()["TenKhoa"]
-# print(ten)
-
-def banglop(makhoa):
-    a=[]
-    stt=1
-    e=[]
-    data=db.child("Lop").get()
-    for i in data.each():
-        if(i.val()["MaKhoa"]==makhoa):
-            e=[stt,i.val()["MaLop"],i.val()["TenLop"]]
-            a.append(e)
-        stt=stt+1
-    print(a) 
-
-banglop(1)
+print(a)

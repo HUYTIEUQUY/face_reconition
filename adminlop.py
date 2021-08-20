@@ -36,14 +36,14 @@ def main():
             
         elif kt_dau_khoangcach(ten)== False:
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
-        elif lop.kt_tenlop(tenlop):
+        elif lop.kt_tenlop(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
         else:
             lop.themlop(ma,ten,makhoa)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
+
     def xoa():
-        
         ten=tenlop.get()
         
         if ten=="":
@@ -55,7 +55,7 @@ def main():
             #     khoiphuc()
             # else:
             #     messagebox.showerror("thông báo", "Xoá lớp thất bại")
-            if lop.xoalop(malop.get()):
+            if lop.xoalop(malop.get())==True:
                 messagebox.showinfo("thông báo","Đã xoá")
                 khoiphuc()
             else:
@@ -74,11 +74,12 @@ def main():
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
         elif kt_dau_khoangcach(tenmoi)== False:
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
-        elif lop.kt_tenlop(tenmoi):
+        elif lop.kt_tenlop(tenmoi)!= []:
             messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
         else:
             lop.sualop(malop1,tenmoi)
             messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
+            khoiphuc()
             
     def getrow(event):
         rowid=tv.identify_row(event.y)
@@ -90,10 +91,11 @@ def main():
         tenlop.set("")
         row=lop.banglop(makhoa)
         update(row)
+
     def timkiem():
-        return
-    #     row=csdl_admin.timkiem_lop(makhoa,ndtimkiem.get())
-    #     update(row)
+        row=lop.timlop(makhoa,ndtimkiem.get())
+        update(row)
+
     def menuthongke():
         win.destroy()
         admin_thongke.main()

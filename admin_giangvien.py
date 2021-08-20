@@ -10,12 +10,93 @@ import adminlop
 import admin_tkb
 import admin_thongke
 import admin_monhoc
-import backend.dl_giangvien
-from backend.dl_giangvien import tengv_email
+import backend.dl_giangvien as gv
+from backend.dl_giangvien import tengv_email,makhoa_email
 
 
 
 def main():
+    def update(row):
+        tv.delete(*tv.get_children())
+        for i in row:
+            tv.insert('','end',values=i)
+    def getrow(event):
+        rowid=tv.identify_row(event.y)
+        item=tv.item(tv.focus())
+
+        data_ma.set(item['values'][1])
+        data_magv.set(item['values'][1])
+        data_ten.set(item['values'][2])
+        data_email.set(item['values'][3])
+        data_sdt.set(item['values'][4])
+        data_ghichu.set(item['values'][5])
+
+    def khoiphuc():
+        ndtimkiem.set("")
+        data_email.set("")
+        data_ma.set("")
+        data_magv.set("")
+        data_ten.set("")
+        data_sdt.set("")
+        data_ghichu.set("")
+        row=gv.banggv(makhoa)
+        update(row)
+    def kt_dau_khoangcach(s):
+        return bool(s and s.strip())
+    def them():
+        ma=data_ma.get()
+        ten=data_ten.get()
+        sdt=data_sdt.get()
+        ghichu=data_ghichu.get()
+        emailgv=ma+"@teacher.mku.edu.vn"
+        if ma =="" or ten == "" or sdt=="":
+            messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
+        elif len(ma) < 6 or ma.isnumeric()== False:
+            messagebox.showwarning("thông báo","Mã giảng viên phải ít nhất 6 kí tự và là số")
+        elif len(sdt) <10 or sdt.isnumeric()== False:
+            messagebox.showwarning("thông báo","Số điện thoại không đúng")
+        elif kt_dau_khoangcach(data_ten.get())==False :
+            messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
+        elif gv.kt_ma(ma) == []:
+            gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa)
+            messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
+        else:
+            messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách danh sách")
+            khoiphuc()
+    
+    def sua():
+        if data_ma.get() != data_magv.get():
+            messagebox.showwarning("thông báo","khổng thể sửa mã")
+            data_ma.set(data_magv.get())
+        elif data_magv.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu sửa. Bạn hãy click 2 lần vào dòng muốn sửa !")
+        elif data_ten.get()=="" or data_sdt.get()=="":
+            messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
+        elif kt_dau_khoangcach(data_ten.get())==False :
+            messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
+        elif data_sdt.get().isnumeric()== False:
+            messagebox.showwarning("thông báo","Số điện thoại không đúng")
+        elif gv.suagv(data_magv.get(),data_ten.get(),data_sdt.get(),data_ghichu.get()):
+            messagebox.showinfo("thông báo","Đã sửa thành công")
+            khoiphuc()
+        else:
+            messagebox.showerror("thông báo","Sửa không thành công")
+        
+    def xoa():
+        if data_ma.get()=="" or data_ten.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
+        elif messagebox.askyesno("thông báo","Bạn thực sự muốn xoá"):
+            # if csdl_admin.kt_gv_tontai(data_ma.get()):
+            gv.xoagv(data_ma.get())
+            khoiphuc()
+            # else:
+            #     return
+    
+    def timkiem():
+        return 
+        # row=csdl_admin.timkiem_gv(makhoa,ndtimkiem.get())
+        # update(row)
+
     def menuthongke():
         win.destroy()
         admin_thongke.main()
@@ -63,11 +144,17 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     email=d[0]
-    # makhoa=csdl.makhoa_tu_email(email)
-    tenlop=StringVar()
-    malop=StringVar()
+    makhoa=makhoa_email(d[0])
+
     ndtimkiem=StringVar()
     tengv=tengv_email(d[0])
+    data_ma=StringVar()
+    data_ten=StringVar()
+    data_email=StringVar()
+    ndtimkiem=StringVar()
+    data_magv=StringVar()
+    data_sdt=StringVar()
+    data_ghichu=StringVar()
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -87,6 +174,47 @@ def main():
     menuthongke.place(x=30,y=461)
 
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+
+    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ma,bd=0,highlightthickness=0).place(x=575,y=75)
+    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=110)
+    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_sdt,bd=0,highlightthickness=0).place(x=575,y=145)
+    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ghichu,bd=0,highlightthickness=0).place(x=575,y=178)
+    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
+
+    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
+    btnthem.place(x=487,y=240)
+    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0, command=sua)
+    btnsua.place(x=637,y=240)
+    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
+    btnxoa.place(x=770,y=240)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem.place(x=881,y=292)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
+    btnkhoiphuc.place(x=920,y=292)
+
+
+    f=Frame(bg)
+    f.place(x=320,y=30)
+
+
+    tv = ttk.Treeview(bg, columns=(1,2,3,4,5,6), show="headings")
+    tv.column(1, width=30,anchor=CENTER)
+    tv.column(2, width=50,anchor=CENTER)
+    tv.column(3, width=140)
+    tv.column(4, width=160)
+    tv.column(5, width=80,anchor=CENTER)
+    tv.column(6, width=100)
+
+    tv.heading(1,text="STT")
+    tv.heading(2,text="Mã GV")
+    tv.heading(3,text="Tên giảng viên")
+    tv.heading(4,text="Email")
+    tv.heading(5,text="Số điện thoại")
+    tv.heading(6,text="Ghi chú")
+    tv.place(x=370,y=340)
+    tv.bind('<Double 1>', getrow)
+    khoiphuc()
+    win.mainloop()
 
     win.mainloop()
 
