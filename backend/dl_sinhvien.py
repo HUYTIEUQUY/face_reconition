@@ -44,6 +44,18 @@ def bangsv(malop):
     except: a=[]
     return a
 
+
+def ds_ma_sv(malop):
+    a=[]
+    data=db.child("SinhVien").get()
+    try:
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop)):
+                e=i.val()["MaSV"]
+                a.append(e)
+    except: a=[]
+    return a
+
 def anh(masv):
     a=""
     data=db.child("SinhVien").get()
@@ -83,3 +95,11 @@ def suasv(masv,tensv):
 #                 return True
 #             except:
 #                 return False
+
+def tensv_ma(ma):
+    data=db.child("SinhVien").get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaSV"]==str(ma)):
+            a=(i.val()["TenSV"])
+    return a

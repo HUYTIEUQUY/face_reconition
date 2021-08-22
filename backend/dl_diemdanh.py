@@ -1,6 +1,7 @@
 import conect_firebase
 from backend.dl_monhoc import tenmh_ma
 from backend.dl_adminlop import tenlop_ma
+from backend.dl_sinhvien import tensv_ma
 import datetime
 
 db=conect_firebase.connect().database()
@@ -40,7 +41,7 @@ def kt_TT_diemdanh(matkb):
 
 
 def diem_danh_vao_csdl(matkb,masv,thongtin,malop,mamh,magv,ngay,ca):
-    data={'Ma':str(matkb),'MaSV':str(masv),'ThongTin':str(thongtin),'MaLop':str(malop),'MaMH':str(mamh),'MaGV':str(magv),'Ngay':str(ngay),'Ca':str(ca),'TG_Vao':'','TG_Ra':''}
+    data={'Ma':str(matkb),'MaSV':str(masv),'ThongTin':str(thongtin),'MaLop':str(malop),'MaMH':str(mamh),'MaGV':str(magv),'Ngay':str(ngay),'Ca':str(ca),'TG_Vao':'','TG_Ra':'','GhiChu':''}
     try:
         db.child('DiemDanh').push(data)
         return True
@@ -64,7 +65,7 @@ def bangdiemdanh(ma):
         data=db.child("DiemDanh").get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
-                e=[i.val()["MaSV"],i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
                 a.append(e)
     except:
         a=[]

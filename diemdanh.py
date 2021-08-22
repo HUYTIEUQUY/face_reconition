@@ -20,7 +20,7 @@ import backend.dl_diemdanh as diemdanh
 from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
-from backend.dl_sinhvien import bangsv
+from backend.dl_sinhvien import ds_ma_sv
 import numpy as np
 from tkinter import ttk
 import datetime
@@ -92,7 +92,7 @@ def main():
         mamh=mamh_ten(data_mon)
         magv=magv_ten(tengv_email(d[0]))
 
-        a=bangsv(malop)#------------------lấy id theo lop
+        a=ds_ma_sv(malop)#------------------lấy id theo lop
 
         lopp=khong_dau(data_lop.replace(" ","_"))
        
@@ -141,15 +141,14 @@ def main():
                     kq=now-tgbd
                     s=doigiay(kq)
                     
-                    if name not in dd and s>=60:
+                    if name not in dd and s >= 60:
                         
                         tre="Trể "+str(kq)[0:7]
-                        diemdanh.diem_danh_vao_csdl(matkb,name,tre,malop,mamh,magv,ngay,ca)
+                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,tre,malop,mamh,magv,ngay,ca)
                         dd.append(name)
                     elif name not in dd :
-                        print("đúng giờ")
                         print(diemdanh)
-                        diemdanh.diem_danh_vao_csdl(matkb,name,"có",malop,mamh,magv,ngay,ca)
+                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,"có",malop,mamh,magv,ngay,ca)
                         dd.append(name)
                         
             process_this_frame = not process_this_frame
@@ -178,13 +177,15 @@ def main():
         cv2.destroyAllWindows()
         
     #     #----------------------------------------------------------------------------
+        print(a)
         for i in range(0,len(a)):
             if a[i] not in dd:
-                diemdanh.diem_danh_vao_csdl(matkb,a[i],"không",malop,mamh,magv,ngay,ca)
+                diemdanh.diem_danh_vao_csdl(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca)
+                
         
-        diemdanh.update_TT_diemdanh(matkb)
+        diemdanh.update_TT_diemdanh(matkb.get())
         
-        row=diemdanh.bangdiemdanh(matkb)
+        row=diemdanh.bangdiemdanh(matkb.get())
         update(row)
 
     # #---------------------------------------------
@@ -192,7 +193,7 @@ def main():
 
         if data_lop == "Bạn không có tiết dạy !":
             messagebox.showwarning("thông báo","Bạn không có tiết dạy")
-        elif diemdanh.kt_TT_diemdanh(matkb) == "0":
+        elif diemdanh.kt_TT_diemdanh(matkb.get()) == "0":
             batdaudiemdanh()
         else:
             messagebox.showwarning("thông báo","Đã điểm danh rồi !")
@@ -282,6 +283,8 @@ def main():
         matkb.set(thongtin[2])
         
 
+
+
     #lớp
     Label(bg,text=data_lop,font=("Baloo Tamma",12),bg="white").place(x=600,y=90)
     Label(bg,text=data_mon,font=("Baloo Tamma",12),bg="white").place(x=600,y=125)
@@ -291,27 +294,27 @@ def main():
     btndiemdanh.place(x=575,y=229)
 
     #bang diemdanh
-    
+
     row=diemdanh.bangdiemdanh(matkb.get())
   
   
    
    
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-    tv.column(1, width=180 )
-    tv.column(2, width=80,anchor=CENTER)
+    tv.column(1, width=80 )
+    tv.column(2, width=100,anchor=CENTER)
     tv.column(3, width=80,anchor=CENTER)
-    tv.column(4, width=80,anchor=CENTER)
+    tv.column(4, width=100,anchor=CENTER)
     tv.column(5, width=180)
-    tv.heading(1,text="Sinh viên")
-    tv.heading(2,text="Thông tin")
-    tv.heading(3,text="Thời gian vào")
-    tv.heading(4,text="Thời gian ra")
+    tv.heading(1,text="Mã sinh viên")
+    tv.heading(2,text="Tên sinh viên")
+    tv.heading(3,text="Thông tin")
+    tv.heading(4,text="TG vào - TG ra")
     tv.heading(5,text="Ghi chú")
 
     tv.place(x=380,y=350)
     
-    
+  
     update(row)
 
     # #nút  diemdanhlai

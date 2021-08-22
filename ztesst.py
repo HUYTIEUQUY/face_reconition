@@ -22,9 +22,10 @@ def connect():
 
 db=connect().database()
 a=[]
+
 data=db.child("DiemDanh").get()
 for i in data.each():
-    if(i.val()["Ma"]==str(2208202112102820)):
+    if(i.val()['Ma'] == '2208202112102820'):
         e=[i.val()["MaSV"],i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
         a.append(e)
-print(a)
+
