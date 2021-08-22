@@ -48,10 +48,10 @@ def diem_danh_vao_csdl(matkb,masv,thongtin,malop,mamh,magv,ngay,ca):
         return False
 
 def update_TT_diemdanh(ma):
-    data=db.child("DiemDanh").get()
+    data=db.child("ThoiKhoaBieu").get()
     dl={'TrangThaiDD':'1'}
     for i in data.each():
-        if(i.val()["Ma"]==str(ma)):
+        if(i.val()["MaTKB"]==str(ma)):
             try:
                 db.child("ThoiKhoaBieu").child(i.key()).update(dl)
                 return True
@@ -59,12 +59,14 @@ def update_TT_diemdanh(ma):
                 return False
 
 def bangdiemdanh(ma):
-    print(ma)
     a=[]
-    data=db.child("DiemDanh").get()
-    for i in data.each():
-        if(i.val()["Ma"]==str(ma)):
-            e=[i.val()["MaSV"],i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
-            a.append(e)
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            if(i.val()["Ma"]==str(ma)):
+                e=[i.val()["MaSV"],i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+                a.append(e)
+    except:
+        a=[]
     return a
 

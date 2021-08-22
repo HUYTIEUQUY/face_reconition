@@ -271,7 +271,7 @@ def main():
     thongtin=diemdanh.thong_tin_theo_tkb(ma_gv,ngay,ca)
    
 
-  
+    
     if thongtin == []:
         data_lop="Bạn không có tiết giảng !"
         data_mon="Bạn không có tiết giảng !"
@@ -280,6 +280,7 @@ def main():
         data_lop =thongtin[0]
         data_mon=thongtin[1]
         matkb.set(thongtin[2])
+        
 
     #lớp
     Label(bg,text=data_lop,font=("Baloo Tamma",12),bg="white").place(x=600,y=90)
@@ -291,7 +292,7 @@ def main():
 
     #bang diemdanh
     
-    row=diemdanh.bangdiemdanh(matkb)
+    row=diemdanh.bangdiemdanh(matkb.get())
   
   
    
