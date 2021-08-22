@@ -21,11 +21,10 @@ def connect():
 
 
 db=connect().database()
-data=db.child("Lop").get()
 a=[]
+data=db.child("DiemDanh").get()
 for i in data.each():
-    if(i.val()["TenLop"]==str("Công nghệ thông tin k20")):
-        a.append(i.val())
-
-
+    if(i.val()["Ma"]==str(2208202112102820)):
+        e=[i.val()["MaSV"],i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+        a.append(e)
 print(a)

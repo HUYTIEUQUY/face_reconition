@@ -62,6 +62,14 @@ def malop_ten(tenlop):
             a=(i.val()["MaLop"])
     return a
 
+def tenlop_ma(ma):
+    data=db.child("Lop").get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaLop"]==str(ma)):
+            a=(i.val()["TenLop"])
+    return a
+
 # def timlop(makhoa,q):
 #     a=banglop(makhoa)
 #     b=[]

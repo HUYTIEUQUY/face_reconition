@@ -60,7 +60,7 @@ def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
 
 def bang_tkb(malop,namhoc,hocky):
     a=[]
-    stt=1
+
     data=db.child("ThoiKhoaBieu").get()
     try:
         for i in data.each():
@@ -69,7 +69,7 @@ def bang_tkb(malop,namhoc,hocky):
                 mh=tenmh_ma(i.val()["MaMH"])
                 e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
                 a.append(e)
-                stt=stt+1
+ 
     except:a=[]
     return a
 

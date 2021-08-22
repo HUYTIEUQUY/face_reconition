@@ -132,6 +132,9 @@ def main():
         magv=magv_ten(data_gv.get())
         mamh = mamh_ten(data_mon.get())
         ngay=data_ngay.get()
+        namhoc=tkb.manh_ten(data_namhoc.get())
+        hki=data_hocky.get()
+        pp=data_loai.get()
         data_ca=""
         for i in range(len(ca)):
             if ca[i].get() >= 1:
@@ -154,7 +157,7 @@ def main():
             messagebox.showerror("thông báo","Lớp đã có lịch học !")
         else:
             tkb.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
-            tkb.them_tkb(data_matkb,magv,malop,mamh,ngay,data_ca)
+            tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu")
             khoiphuc()
                
@@ -363,9 +366,6 @@ def main():
     
     tv.place(x=380,y=370)
     tv.bind('<Double 1>', getrow)
-
-    
-
    
     khoiphuc()
 
