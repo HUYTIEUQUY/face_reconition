@@ -20,49 +20,57 @@ import re
 import xlsxwriter
 import pandas as pd
 from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
-from backend.dl_adminlop import malop_ten
+from backend.dl_adminlop import malop_ten, tenlop_ma
 import backend.dl_sinhvien as sv
 
 
 
 def main():
-    # def nhap_excel():
-    #     mlop=csdl.tenlop_thanh_ma(cb_lop.get())
-    #     fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
+    def nhap_excel():
+        fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
+        ko_luu=[]
+        malop=malop_ten(cb_lop.get())
+        xl = pd.ExcelFile(fln)
+        df = pd.read_excel(xl, 0) 
+        for i in range(df.shape[0]):
+            masv=df['Mã sinh viên'][i]
+            tensv=df['Tên sinh viên'][i]
+            if sv.kt_masv_tontai(masv) !=[]:
+               ko_luu.append(masv) 
+            else:
+                sv.themsv(masv,tensv,malop,"")
         
-    #     xl = pd.ExcelFile(fln)
-    #     df = pd.read_excel(xl, 0) 
+        if ko_luu !=[]:
+            messagebox.showerror("thông báo","Lưu trùng mã "+str(ko_luu))
+        row=sv.bangsv(malop)
+        update(row)
 
 
-    #     for i in range(df.shape[0]):
-    #         masv=df['Mã sinh viên'][i]
-    #         tensv=df['Tên sinh viên'][i]
-    #         csdl.nhap_excel_csdl(masv,tensv,mlop)
+    def xuat_excel():
+        malop=malop_ten(cb_lop.get())
+        row =sv.bangsv(malop)
+        if len(row)<1:
+            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+            return False
+        else:
 
-    #     update(row)
-    # def xuat_excel():
-    #     malop=csdl.tenlop_thanh_ma(cb_lop.get())
-    #     row =csdl.danhsachsinhvien(malop)
-    #     if len(row)<1:
-    #         messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
-    #         return False
-    #     else:
-
-    #         fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-    #         a=csdl.dong_masinhvien(malop)
-    #         b=csdl.dong_tensinhvien(malop)
-
-    #         out_workbook = xlsxwriter.Workbook(fln+".xlsx")
-    #         outsheet = out_workbook.add_worksheet()
-    #         outsheet.write("A1","Mã sinh viên")
-    #         outsheet.write("B1","Tên sinh viên")
+            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
             
-    #         def write_data_to_file(array,x):
-    #             for i in range(len(array)):
-    #                 outsheet.write(i+1,x,array[i])
-    #         write_data_to_file(a,0)
-    #         write_data_to_file(b,1)
-    #         out_workbook.close()
+        
+            
+            a=sv.dong_ma_sv(malop)
+            b=sv.dong_ten_sv(malop)
+            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+            outsheet = out_workbook.add_worksheet()
+            outsheet.write("A1","Mã sinh viên")
+            outsheet.write("B1","Tên sinh viên")
+            
+            def write_data_to_file(array,x):
+                for i in range(len(array)):
+                    outsheet.write(i+2,x,array[i])
+            write_data_to_file(a,0)
+            write_data_to_file(b,1)
+            out_workbook.close()
 
     
     def khoiphuc():
@@ -108,14 +116,14 @@ def main():
         ten.set(item['values'][2])
         ma.set(item['values'][1])
         macu.set(item['values'][1])
-        manganh=sv.anh(ma.get()).split()
-        anh=""
-        anh=manganh[0]
+        anh=sv.anh(ma.get()).split()
+        
+        
         lb2.config(text=item['values'][1])
-        if(anh==None):
+        if(anh==[]):
             img=Image.open("img_anhsv/aa.jpg")
         else:
-            manganh=anh.split()
+            anh=anh.split()
             img=Image.open("img_anhsv/"+anh)
         img.thumbnail((140,140))
         img=ImageTk.PhotoImage(img)
@@ -164,7 +172,7 @@ def main():
             tensv=ten.get()
             sv.suasv(masv,tensv)
             # xoa_sv_matran(masv)
-            # suamatran()
+            suamatran()
             messagebox.showinfo("thông báo","Bạn đã sửa thành công")
             khoiphuc()
 
@@ -216,19 +224,6 @@ def main():
         for i in range(5):
             os.remove("img_anhsv/"+str(masv)+str(i+1)+".png")
 
-    # def chonanh(lb,i,btn):
-    #     x= filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
-    #     shutil.copyfile(x,"./img_anhsv/"+str(ma.get())+str(i)+".png")
-
-    #     a.insert(i-1,str(ma.get())+str(i)+".png")
-    #     img=Image.open(x)
-    #     img.thumbnail((80,100))
-    #     img=ImageTk.PhotoImage(img)
-    #     lb.config(image=img)
-    #     lb.image=img
-    #     btn.config(command=lambda:sua_anh(lb,i,btn) )
-         
-        
     def menutaikhoan():
         win.destroy()
         taikhoan.main()
@@ -373,15 +368,15 @@ def main():
     anhnen=bg.create_image(500,300,image=img_bg)
 
     #chọn lớp
-    ten_thiet_bi = socket.gethostname()
-    d=[]
+
     ma=StringVar()
     macu=StringVar()
     ten=StringVar()
     lop=StringVar()
     ndtimkiem=StringVar()
     
-
+    ten_thiet_bi = socket.gethostname()
+    d=[]
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
 
@@ -390,8 +385,6 @@ def main():
     data_lop=sv.lop_khoa(makhoa)
 
     
-
-
     cb_lop=Combobox(bg,width=27,values=data_lop, font=("Baloo Tamma",12),textvariable=lop)
     cb_lop.current(1)
     cb_lop.place(x=580,y=102)
@@ -403,11 +396,11 @@ def main():
 
     
     txt_masv=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ma,highlightthickness=0)
-    txt_masv.place(x=578,y=136)
+    txt_masv.place(x=580,y=140)
     txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
-    txt_timkiem.place(x=650,y=308)
+    txt_timkiem.place(x=660,y=308)
     txt_hoten=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ten,highlightthickness=0)
-    txt_hoten.place(x=578,y=169)
+    txt_hoten.place(x=580,y=172)
 
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=kt_nhap)
@@ -417,13 +410,13 @@ def main():
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=240)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=305)
+    btntimkiem.place(x=891,y=305)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    btnkhoiphuc.place(x=915,y=305)
-    # btnexcelnhap=Button(bg,image=img_btnexcel_nhap,bd=0,highlightthickness=0,command=nhap_excel)
-    # btnexcelnhap.place(x=948,y=2)
-    # btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
-    # btnexcelxuat.place(x=898,y=2)
+    btnkhoiphuc.place(x=928,y=305)
+    btnexcelnhap=Button(bg,image=img_btnexcel_nhap,bd=0,highlightthickness=0,command=nhap_excel)
+    btnexcelnhap.place(x=948,y=2)
+    btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
+    btnexcelxuat.place(x=898,y=2)
 
 
 
@@ -487,9 +480,6 @@ def main():
 
     btn_xemanh=Button(f1,image=img_btnxem2,bd=0,highlightthickness=0,command=xemanh)
     btn_xemanh.pack()
-
-
-  
 
     win.mainloop()
 

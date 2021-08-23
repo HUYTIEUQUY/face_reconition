@@ -41,24 +41,25 @@ def main(masv):
         s = re.sub(r'[đ]', 'd', s)
         return s
     a=[]
-    def sua_anh(lb,i,btn):
-        a.pop(i-1)
-        chonanh(lb,i,btn)
+    # def sua_anh(lb,i,btn):
+    #     a.pop(i-1)
+    #     chonanh(lb,i,btn)
 
 
-    def chonanh(lb,i,btn):
-        x= filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
-        shutil.copyfile(x,"./img_anhsv/"+str(masv)+str(i)+".png")
-        a.insert(i-1,str(masv)+str(i)+".png")
-        img=Image.open(x)
-        img.thumbnail((80,100))
-        img=ImageTk.PhotoImage(img)
-        lb.config(image=img)
-        lb.image=img
-        btn.config(command=lambda:sua_anh(lb,i,btn) )
+    # def chonanh(lb,i,btn):
+    #     x= filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
+    #     shutil.copyfile(x,"./img_anhsv/"+str(masv)+str(i)+".png")
+    #     a.insert(i-1,str(masv)+str(i)+".png")
+    #     img=Image.open(x)
+    #     img.thumbnail((80,100))
+    #     img=ImageTk.PhotoImage(img)
+    #     lb.config(image=img)
+    #     lb.image=img
+    #     btn.config(command=lambda:sua_anh(lb,i,btn) )
 
     def loadanh(anh):
         manganh=anh.split()
+        
         for i in range(5):
             img=Image.open("img_anhsv/"+manganh[i])
             img.thumbnail((200,200))
@@ -243,9 +244,11 @@ def main(masv):
     lb5=Label(f5,bg="white")
     lb5.pack()
 
+    
     anh=sv.anh(masv)
-    if anh==[None]:
-        anh=['aa.jpg aa.jpg aa.jpg aa.jpg aa.jpg']
+   
+    if anh=="":
+        anh='aa.jpg aa.jpg aa.jpg aa.jpg aa.jpg'
         
 
 

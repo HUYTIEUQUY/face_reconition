@@ -7,12 +7,13 @@ def banglop(makhoa):
     a=[]
     stt=1
     data=db.child("Lop").get()
-    for i in data.each():
-        if(i.val()["MaKhoa"]==str(makhoa)):
-            e=[str(stt),i.val()["MaLop"],i.val()["TenLop"]]
-            a.append(e)
-            stt=stt+1
-        
+    try:
+        for i in data.each():
+            if(i.val()["MaKhoa"]==str(makhoa)):
+                e=[str(stt),i.val()["MaLop"],i.val()["TenLop"]]
+                a.append(e)
+                stt=stt+1
+    except:a=[]
     return a
 
 def themlop(malop,tenlop,makhoa):

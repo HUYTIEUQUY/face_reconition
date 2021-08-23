@@ -10,6 +10,16 @@ def tengv_email(email):
             a=i.val()["TenGV"]
     return a
 
+
+def sdt_email(email):
+    data=db.child("GiangVien").get()
+    a=""
+    for i in data.each():
+        if(i.val()["Email"]==email):
+            a=str(i.val()["SDT"])
+            print(a)
+    return a
+
 def makhoa_email(email):
     data=db.child("GiangVien").get()
     for i in data.each():
@@ -24,6 +34,7 @@ def kt_ma(ma):
         if(i.val()["MaGV"]==str(ma)):
             a.append(i.val())
     return a
+
 def tao_tk(email,matkhau):
     auth=conect_firebase.connect().auth()
     try:
@@ -92,3 +103,15 @@ def tengv_ma(ma):
         if(i.val()["MaGV"]==str(ma)):
             a=(i.val()["TenGV"])
     return a
+
+
+def update_sdt(magv,sdt):
+    data=db.child("GiangVien").get()
+    dl={'MaGV':str(magv),'SDT':str(sdt)}
+    for i in data.each():
+        if(i.val()["MaGV"]==str(magv)):
+            try:
+                db.child("GiangVien").child(i.key()).update(dl)
+                return True
+            except:
+                return False

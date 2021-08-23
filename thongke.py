@@ -9,70 +9,109 @@ import socket
 import sinhvien
 import diemdanh
 import taikhoan
+from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
+import backend.dl_thongke as tk
+import os
+import xlsxwriter
 
+from tkinter import filedialog
 
 def main():
-    # def timkiem():
-    #     q=data.get()
-    #     mamh1 = csdl.tenmon_thanh_ma(str(mamh.get()))
-    #     ngay1=str(ngay.get())
-    #     ca1=str(ca.get())
-    #     row=csdl.timkiem_diemdanh(magv,ngay1,mamh1,malop,ca.get(),q)
-    #     update(row)
-    # def reset():
-    #     win.destroy()
-    #     main()
-    # def chon3(cbngay,mamh):
-    #     ngay=cbngay.get()
-    #     cbngay.destroy()
-    #     Label(f3,text=ngay,font=("Baloo Tamma",12),bg="white").pack()
-    #     anhnen=bg.create_image(500,300,image=img_bg3)
-    #     data_ca=csdl.tim_ca_trong_diemdanh(magv,malop,mamh,ngay)
-    #     cb_ca=Combobox(f4,width=2,values=data_ca, font=("Baloo Tamma",12),textvariable=ca)
-    #     cb_ca.current(0)
-    #     cb_ca.pack()
-    #     btnchon.config(image=ing_btnxemthongke, command=lambda:batdauthongke(cb_ca))
-    # def chon2(cbmon):
-    #     tenmon=cbmon.get()
-    #     cbmon.destroy()
-    #     Label(f2,text=tenmon,font=("Baloo Tamma",12),bg="white").pack()
-    #     anhnen=bg.create_image(500,300,image=img_bg2)
-    #     mamh1 = csdl.tenmon_thanh_ma(str(mamh.get()))
-    #     data_ngay=csdl.tim_ngay_trong_diemdanh(magv,malop,mamh1)
-    #     cb_ngay=Combobox(f3,width=9,values=data_ngay, font=("Baloo Tamma",12),textvariable=ngay)
-    #     cb_ngay.current(0)
-    #     cb_ngay.pack()
-    #     btnchon.config(command=lambda:chon3(cb_ngay,mamh1))
-    # def chon1():
-    #     tenlop=cb_lop.get()
-    #     cb_lop.destroy()
-    #     Label(f1,text=tenlop,font=("Baloo Tamma",12),bg="white").pack()
-    #     anhnen=bg.create_image(500,300,image=img_bg1)
-    #     data_mon=csdl.tim_mon_trong_diemdanh(magv,malop)
-    #     cb_mon=Combobox(f2,width=20,values=data_mon, font=("Baloo Tamma",12),textvariable=mamh)
-    #     cb_mon.current(0)
-    #     cb_mon.pack()
-        
-    #     btnchon.config(command=lambda:chon2(cb_mon))
-    #     btnchonlai=Button(bg,image=ing_chonlai,bd=0,highlightthickness=0,command=reset)
-    #     btnchonlai.place(x=869,y=207)
-    # def update(row):
-    #     tv.delete(*tv.get_children())
-    #     for i in row:
-    #         tv.insert('','end',values=i)
 
-    # def batdauthongke(cbca):
-    #     cbca.destroy()
-    #     Label(f4,text=ca.get(),font=("Baloo Tamma",12),bg="white").pack()
-    #     mamh1 = csdl.tenmon_thanh_ma(str(mamh.get()))
-    #     ngay1=str(ngay.get())
-    #     ca1=str(ca.get())
-    #     row = csdl.thongke(magv,ngay1,mamh1, malop ,ca1)
-    #     update(row)
+    def dongluu(row,ma,ten,tt,TG,ghichu):
+
+        for i in row:
+            ma.append(i[0]) 
+            ten.append(i[1]) 
+            tt.append(i[2]) 
+            TG.append(i[3]) 
+            ghichu.append(i[4])  
+
+    def xuat_excel():
+        row =tk.thongke(magv,lop.get(),mamh.get(),ngay.get(),ca.get())
+        ma=[]
+        ten=[]
+        tt=[]
+        TG=[]
+        ghichu=[]
+        dongluu(row,ma,ten,tt,TG,ghichu)
+
+        if len(ma)<1:
+            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+            return False
+        else:
+
+            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+          
+
+            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+            outsheet = out_workbook.add_worksheet()
+            tenlop=tk.tenlop_ma(lop.get())
+            tenmh=tk.tenmh_ma(mamh.get())
+            outsheet.write("A1",tenlop)
+            outsheet.write("B1",tenmh)
+            outsheet.write("C1",ngay.get())
+
+            outsheet.write("A3","Mã sinh viên")
+            outsheet.write("B3","Tên sinh viên")
+            outsheet.write("C3","Thông tin")
+            outsheet.write("D3","Thời gian vào-ra")
+            outsheet.write("E3","Ghi chú")
+            def write_data_to_file(array,x):
+                for i in range(len(array)):
+                    outsheet.write(i+3,x,array[i])
+            write_data_to_file(ma,0)
+            write_data_to_file(ten,1)
+            write_data_to_file(tt,2)
+            write_data_to_file(TG,3)
+            write_data_to_file(ghichu,4)
+            out_workbook.close()
+    def update(row):
+        tv.delete(*tv.get_children())
+        for i in row:
+            tv.insert('','end',values=i)
+    def timkiem():
+        return
+    def chon3(cb_ca):
         
-    #     btntimkiem=Button(bg,image=ing_timkiem,bd=0,highlightthickness=0,command=timkiem)
-    #     btntimkiem.place(x=800,y=520)
-    #     Entry(bg,font=("Baloo Tamma",12),width=35,bd=0,highlightthickness=0,textvariable=data).place(x=474,y=515)
+        Label(bg,text=ca.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=142)
+        cb_ca.destroy()
+        row =tk.thongke(magv,lop.get(),mamh.get(),ngay.get(),ca.get())
+        update(row)
+    def chon2(cb_ngay):
+        ngay.set(cb_ngay.get())
+        data_ca = tk.ca_dd(magv,lop.get(),mamh.get(),cb_ngay.get())
+        Label(bg,text=cb_ngay.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=97)
+        cb_ngay.destroy()
+        cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),values=data_ca,width=10)
+        cb_ca.place(x=762,y=145)
+        btnchon.config(image=ing_btnxemthongke,command=lambda:chon3(cb_ca))
+
+    def chon1(cb_mh):
+        mamh.set(tk.mamh_ten(cb_mh.get()))
+        data_ngay = tk.ngay_dd(magv,lop.get(),mamh.get())
+        Label(bg,text=cb_mh.get(),font=("Baloo Tamma",12),bg="white").place(x=468,y=145)
+        cb_mh.destroy()
+        cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),values=data_ngay,width=10)
+        cb_ngay.place(x=762,y=95)
+        btnchon.config(command=lambda:chon2(cb_ngay))
+
+    def chon():
+        mlop=tk.malop_ten(lop.get())
+        data_mh = tk.monhoc_dd(magv,mlop)
+        Label(bg,text=lop.get(),font=("Baloo Tamma",12),bg="white").place(x=468,y=97)
+        cb_lop.destroy()
+        cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),values=data_mh,width=20)
+        cb_mh.place(x=468,y=142)
+        lop.set(mlop)
+        btnchon.config(command=lambda:chon1(cb_mh))
+        btnchonlai=Button(bg,image=ing_chonlai,bd=0,highlightthickness=0,command=reset)
+        btnchonlai.place(x=869,y=207)
+
+    def reset():
+        win.destroy()
+        main()
+   
     def menutaikhoan():
         win.destroy()
         taikhoan.main()
@@ -97,10 +136,7 @@ def main():
     win.resizable(False,False)
     win.config(bg="green")
     win.title("Menu tkinter")
-    img_bg=ImageTk.PhotoImage(file="img/thongke1.png")
-    img_bg1=ImageTk.PhotoImage(file="img/thongke2.png")
-    img_bg2=ImageTk.PhotoImage(file="img/thongke3.png")
-    img_bg3=ImageTk.PhotoImage(file="img/thongke4.png")
+    img_bg=ImageTk.PhotoImage(file="img/bg_thongke.png")
     img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
     
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl1.png")
@@ -112,6 +148,7 @@ def main():
     ing_chon=ImageTk.PhotoImage(file="img/btnchon.png")
     ing_chonlai=ImageTk.PhotoImage(file="img/chonlai.png")
     ing_timkiem=ImageTk.PhotoImage(file="img/btn_timkiem.png")
+    img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
 
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -132,52 +169,56 @@ def main():
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat.place(x=248,y=44)
 
-    # tengv=csdl.tim_tengv_tu_email()
-    # Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
-    # magv=csdl.tim_magv_tu_email()
+    ten_thiet_bi = socket.gethostname()
+    d=[]
+    with open(ten_thiet_bi+".txt","r") as file:
+        d=file.read().split()
+
+    mamh=StringVar()
+    ngay=StringVar()
+    ca=StringVar()
+    lop=StringVar()
+    tengv=tengv_email(d[0])
+    makhoa=makhoa_email(d[0])
+    magv=magv_ten(tengv)
+    data_lop=tk.tenlop_dd(magv)
+    mh=StringVar()
+    row=""
+    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+
+    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),values=data_lop,width=20)
+    cb_lop.place(x=468,y=95)
+
+
+    btnchon=Button(bg,image=ing_chon,bd=0,highlightthickness=0, activebackground="white",command=chon)
+    btnchon.place(x=881,y=176)
+    btntimkiem=Button(bg,image=ing_timkiem,highlightthickness=0,bd=0,command=timkiem)
+    btntimkiem.place(x=880,y=248)
+    btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
+    btnexcelxuat.place(x=948,y=2)
+ 
     
+    if data_lop==[]:
+        anhnen=bg.create_image(500,300,image=img_erorr)
+    else:
+        # f=Frame(bg,bg="green")
+        # f.place(x=367,y=270)
+        tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
+        tv.column(1, width=80 )
+        tv.column(2, width=100,anchor=CENTER)
+        tv.column(3, width=80,anchor=CENTER)
+        tv.column(4, width=100,anchor=CENTER)
+        tv.column(5, width=180)
+        tv.heading(1,text="Mã sinh viên")
+        tv.heading(2,text="Tên sinh viên")
+        tv.heading(3,text="Thông tin")
+        tv.heading(4,text="TG vào - TG ra")
+        tv.heading(5,text="Ghi chú")
+        tv.place(x=367,y=280)
 
-    # a=csdl.tim_lop_trong_diemdanh(magv)
-    
-    # if csdl.tim_lop_trong_diemdanh(magv)==[]:
-    #     anhnen=bg.create_image(500,300,image=img_erorr)
-    # else:
-    #     f=Frame(bg,bg="green")
-    #     f.place(x=367,y=270)
-    #     tv = ttk.Treeview(f, columns=(1,2,3), show="headings")
-    #     tv.column(1, width=150 ,anchor=CENTER)
-    #     tv.column(2, width=240)
-    #     tv.column(3, width=150,anchor=CENTER)
-    #     tv.heading(1,text="Mã số sinh viên")
-    #     tv.heading(2,text="Họ và tên")
-    #     tv.heading(3,text="Điểm danh")
-    #     tv.pack()
-
-    #     f1=Frame(bg)
-    #     f1.place(x=462,y=109)
-    #     f2=Frame(bg)
-    #     f2.place(x=462,y=155)
-    #     f3=Frame(bg)
-    #     f3.place(x=747,y=109)
-    #     f4=Frame(bg)
-    #     f4.place(x=747,y=155)
-
-        
-    #     data_lop=csdl.tim_lop_trong_diemdanh(magv)
-    #     cb_lop=Combobox(f1,width=20,values=data_lop, font=("Baloo Tamma",12))
-    #     cb_lop.current(0)
-    #     cb_lop.pack()
-    #     malop=csdl.tenlop_thanh_ma(str(cb_lop.get()))
-    #     mamh=StringVar()
-    #     ngay=StringVar()
-    #     ca=StringVar()
-    #     data=StringVar()
-    #     btnchon=Button(bg,image=ing_chon,bd=0,highlightthickness=0,command=chon1)
-    #     btnchon.place(x=881,y=176)
-
-    # btnxemthongke=Button(bg,image=ing_btnxemthongke,bd=0,highlightthickness=0,command=batdauthongke)
-    # btnxemthongke.place(x=866,y=176)
+  
     win.mainloop()
+    
 
 if __name__ == '__main__':
     main()

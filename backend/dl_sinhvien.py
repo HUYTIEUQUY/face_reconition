@@ -61,7 +61,7 @@ def anh(masv):
     data=db.child("SinhVien").get()
     for i in data.each():
         if(i.val()["MaSV"]==str(masv)):
-            a=i.val()["Anh"]
+            a=str(i.val()["Anh"])
     return a
 
 def xoasv(masv):
@@ -103,3 +103,26 @@ def tensv_ma(ma):
         if(i.val()["MaSV"]==str(ma)):
             a=(i.val()["TenSV"])
     return a
+
+
+def dong_ma_sv(malop):
+
+    data=db.child("SinhVien").get()
+    e=[]
+    try:
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop)):
+                e.append(i.val()["MaSV"])
+    except: e=[]
+    return e
+
+def dong_ten_sv(malop):
+    
+    data=db.child("SinhVien").get()
+    e=[]
+    try:
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop)):
+                e.append(i.val()["TenSV"])
+    except: e=[]
+    return e

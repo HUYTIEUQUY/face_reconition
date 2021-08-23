@@ -104,3 +104,41 @@ def xoa_dong_tkb(magv,mamh,ngay,ca):
                 return True
             except:
                 return False
+
+
+def tenlop_ma(ma):
+    data=db.child("Lop").get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaLop"]==str(ma)):
+            a=(i.val()["TenLop"])
+    return a
+
+
+
+def kt_lichgiang_gv(magv,ngay):
+    a=[]
+    data=db.child("ThoiKhoaBieu").get()
+    try:
+        for i in data.each():
+            if(i.val()["Ngay"]==str(ngay) and i.val()["MaGV"]==str(magv)):
+                tenl=tenlop_ma(i.val()['MaLop'])
+                tenm=tenmh_ma(i.val()['MaMH'])
+                e = [tenl,tenm,i.val()['Ca']]
+                a.append(e)
+    except: a=[]
+    return a
+
+
+def gv_dd(magv,ngay):
+    a=[]
+    data=db.child("ThoiKhoaBieu").get()
+    try:
+        for i in data.each():
+            if(i.val()["MaGV"]==str(magv) and i.val()["Ngay"] < str(ngay) and i.val()["TrangThaiDD"] =='0' ):
+                tenl=tenlop_ma(i.val()['MaLop'])
+                tenm=tenmh_ma(i.val()['MaMH'])
+                e = [tenl,tenm,i.val()['Ngay'],i.val()['Ca']]
+                a.append(e)
+    except: a=[]
+    return a
