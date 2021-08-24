@@ -10,7 +10,7 @@ import thongke
 from backend.dl_giangvien import tengv_email,makhoa_email,sdt_email,magv_ten,update_sdt
 from backend.dl_khoa import tenkhoa
 from backend.dl_tkb import kt_lichgiang_gv,gv_dd
-# import diemdanhbu
+import doimatkhau
 import taikhoan_thongbao
 import datetime
 
@@ -47,6 +47,9 @@ def main():
         win.destroy()
         taikhoan_thongbao.main(lichgiang)
 
+    def btndoimatkhau():
+        win.destroy()
+        doimatkhau.main()
     def menuthongke():
         win.destroy()
         thongke.main()
@@ -162,7 +165,7 @@ def main():
         lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
         lbstb1.place(x=952,y=420)
 
-    btndoimatkhau=Button(bg,image=ing_btndoimatkhau,bd=0,highlightthickness=0)
+    btndoimatkhau=Button(bg,image=ing_btndoimatkhau,bd=0,highlightthickness=0,command=btndoimatkhau)
     btndoimatkhau.place(x=672,y=539)
 
     btndangxuat1=Button(bg,image=ing_btndangxuat1,bd=0,highlightthickness=0,command=dangxuat)

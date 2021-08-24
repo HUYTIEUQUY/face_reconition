@@ -99,6 +99,14 @@ def main():
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+        img=Image.open("img/bg_themdl2.png")
+        img.thumbnail((180,180))
+        img=ImageTk.PhotoImage(img)
+        lb1.config(image=img)
+        lb1.image=img
+        lb2.config(text="")
+        btn_xemanh.config(image=img_btnxem2)
+        
 
     def timkiem():
         return
@@ -117,14 +125,13 @@ def main():
         ma.set(item['values'][1])
         macu.set(item['values'][1])
         anh=sv.anh(ma.get()).split()
-        
+
         
         lb2.config(text=item['values'][1])
         if(anh==[]):
             img=Image.open("img_anhsv/aa.jpg")
         else:
-            anh=anh.split()
-            img=Image.open("img_anhsv/"+anh)
+            img=Image.open("img_anhsv/"+anh[0])
         img.thumbnail((140,140))
         img=ImageTk.PhotoImage(img)
         lb1.config(image=img)
