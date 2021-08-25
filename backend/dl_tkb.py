@@ -1,9 +1,26 @@
 import conect_firebase
 from backend.dl_giangvien import tengv_ma
 from backend.dl_monhoc import tenmh_ma
+import re
 
 db=conect_firebase.connect().database()
 
+def khong_dau(s):
+    s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
+    s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
+    s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
+    s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
+    s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
+    s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
+    s = re.sub(r'[ìíịỉĩ]', 'i', s)
+    s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
+    s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
+    s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
+    s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
+    s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
+    s = re.sub(r'[Đ]', 'D', s)
+    s = re.sub(r'[đ]', 'd', s)
+    return s
 
 def lop_khoa(ma):
     data=db.child("Lop").get()
@@ -40,15 +57,6 @@ def manh_ten(ten):
 
 def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
     matkb=str(ngay).replace("/","")+str(ca)+str(malop)
-    data={'MaTKB':str(matkb),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'namHoc':str(nam),'TrangThaiDD':"0"}
-    try:
-        db.child('ThoiKhoaBieu').push(data)
-        return True
-    except:
-        return False
-
-def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
-    matkb=str(ngay).replace("/","")+str(ca)+str(malop)
     data={'MaTKB':str(matkb),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
     try:
         db.child('ThoiKhoaBieu').push(data)
@@ -60,7 +68,6 @@ def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
 
 def bang_tkb(malop,namhoc,hocky):
     a=[]
-
     data=db.child("ThoiKhoaBieu").get()
     try:
         for i in data.each():
@@ -69,7 +76,21 @@ def bang_tkb(malop,namhoc,hocky):
                 mh=tenmh_ma(i.val()["MaMH"])
                 e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
                 a.append(e)
- 
+    except:a=[]
+    return a
+
+def timkiem_dong_tkb(malop,namhoc,hocky,q):
+    a=[]
+
+    data=db.child("ThoiKhoaBieu").get()
+    try:
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky)):
+                gv=tengv_ma(i.val()["MaGV"])
+                mh=tenmh_ma(i.val()["MaMH"])
+                e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
+                if str(q) in khong_dau(gv.lower()) or str(q) in khong_dau(mh.lower()) or str(q) in khong_dau(i.val()["PP_Giang"].lower()) or str(q) in khong_dau(i.val()["Ngay"].lower()) or str(q) in khong_dau(i.val()["Ca"].lower()) :
+                    a.append(e)
     except:a=[]
     return a
 

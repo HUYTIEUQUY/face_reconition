@@ -109,7 +109,9 @@ def main():
             messagebox.showinfo("thông báo","Sửa thành công")
 
     def timkiem():
-        return
+        row=mh.tim_mh(makhoa, ndtimkiem.get())
+        update(row)
+
     def menuthongke():
         win.destroy()
         admin_thongke.main()

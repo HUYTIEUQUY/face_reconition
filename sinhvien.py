@@ -109,10 +109,9 @@ def main():
         
 
     def timkiem():
-        return
-        # malop=csdl.tenlop_thanh_ma(lop.get())
-        # row=csdl.timsv(malop,ndtimkiem.get())
-        # update(row)
+        malop=malop_ten(lop.get())
+        row=sv.timsv(malop,ndtimkiem.get())
+        update(row)
 
     def xemanh():
         win.destroy()

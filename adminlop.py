@@ -67,7 +67,6 @@ def main():
         tenmoi=tenlop.get()
         malop1=malop.get()
 
-
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
         elif malop.get()=="":
@@ -86,6 +85,7 @@ def main():
         item=tv.item(tv.focus())
         tenlop.set(item['values'][2])
         malop.set(item['values'][1])
+        
     def khoiphuc():
         ndtimkiem.set("")
         tenlop.set("")
@@ -184,10 +184,8 @@ def main():
  
     
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
-
     
     Label(bg,text=tenk,font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
-    
     
     Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=576,y=129)
     

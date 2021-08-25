@@ -20,10 +20,10 @@ def main():
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
-
         data_ma.set(item['values'][1])
         data_magv.set(item['values'][1])
         data_ten.set(item['values'][2])
@@ -41,8 +41,10 @@ def main():
         data_ghichu.set("")
         row=gv.banggv(makhoa)
         update(row)
+
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
+
     def them():
         ma=data_ma.get()
         ten=data_ten.get()
@@ -93,9 +95,8 @@ def main():
             #     return
     
     def timkiem():
-        return 
-        # row=csdl_admin.timkiem_gv(makhoa,ndtimkiem.get())
-        # update(row)
+        row=gv.tim_gv(makhoa,ndtimkiem.get())
+        update(row)
 
     def menuthongke():
         win.destroy()

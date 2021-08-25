@@ -64,12 +64,10 @@ def main():
                 ca[i].set(0)
 
     def timkiem():
-        return
-        # malop=csdl.tenlop_thanh_ma(data_lop.get())
-        # namhoc=csdl_admin.ma_namhoc(data_namhoc.get())
-        
-        # row=csdl_admin.timkiem_dongtkb(malop,ndtimkiem.get(),namhoc,data_hocky.get())
-        # update(row)
+        malop=malop_ten(data_lop.get())
+        namhoc=tkb.manh_ten(data_namhoc.get())
+        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),ndtimkiem.get())
+        update(row)
 
     def khoiphuc():
         ngaycu.set("")
@@ -87,6 +85,7 @@ def main():
         namhoc=tkb.manh_ten(data_namhoc.get())
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get())
         update(row)
+
     def them():
         malop=malop_ten(data_lop.get())
         magv=magv_ten(data_gv.get())

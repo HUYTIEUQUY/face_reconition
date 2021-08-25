@@ -1,6 +1,24 @@
 import conect_firebase
+import re
 
 db=conect_firebase.connect().database()
+
+def khong_dau(s):
+    s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
+    s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
+    s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
+    s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
+    s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
+    s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
+    s = re.sub(r'[ìíịỉĩ]', 'i', s)
+    s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
+    s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
+    s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
+    s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
+    s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
+    s = re.sub(r'[Đ]', 'D', s)
+    s = re.sub(r'[đ]', 'd', s)
+    return s
 
 
 def tengv_email(email):
@@ -63,7 +81,18 @@ def banggv(makhoa):
             e=[str(stt),i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
             a.append(e)
             stt=stt+1
-        
+    return a
+
+def tim_gv(makhoa,q):
+    a=[]
+    stt=1
+    data=db.child("GiangVien").get()
+    for i in data.each():
+        if(i.val()["MaKhoa"]==str(makhoa) and i.val()["LoaiTK"]==str(0)):
+            e=[str(stt),i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
+            if str(q) in khong_dau(i.val()["MaGV"].lower()) or str(q) in khong_dau(i.val()["TenGV"].lower()) or str(q) in khong_dau(i.val()["Email"].lower()) or str(q) in khong_dau(i.val()["SDT"].lower()):
+                a.append(e)
+            stt=stt+1
     return a
 
 def suagv(magv,tengv,sdt,ghichu):
