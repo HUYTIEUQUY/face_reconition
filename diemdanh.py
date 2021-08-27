@@ -128,7 +128,7 @@ def main():
                 face_names = []
                 for face_encoding in face_encodings:
                     # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
-                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.5)
                     name = "Khongbiet"
                     #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
                     face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
@@ -141,12 +141,12 @@ def main():
                     kq=now-tgbd
                     s=doigiay(kq)
                     
-                    if name not in dd and s >= 60:
+                    if name not in dd and s >= 60 and name != "Khongbiet":
                         
                         tre="Trể "+str(kq)[0:7]
                         diemdanh.diem_danh_vao_csdl(matkb.get(),name,tre,malop,mamh,magv,ngay,ca)
                         dd.append(name)
-                    elif name not in dd :
+                    elif name not in dd and name != "Khongbiet":
                         print(diemdanh)
                         diemdanh.diem_danh_vao_csdl(matkb.get(),name,"có",malop,mamh,magv,ngay,ca)
                         dd.append(name)
@@ -163,7 +163,7 @@ def main():
                 cv2.rectangle(frame, (left, top_s), (right, bottom), (255,0, 0), 2)
                 cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255,0, 0), cv2.FILLED)
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                if name == "Unknown":
+                if name == "Khongbiet":
                     cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
                     cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0,255), cv2.FILLED)
                     cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
@@ -179,7 +179,7 @@ def main():
     #     #----------------------------------------------------------------------------
         print(a)
         for i in range(0,len(a)):
-            if a[i] not in dd:
+            if a[i] not in dd :
                 diemdanh.diem_danh_vao_csdl(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca)
                 
         
