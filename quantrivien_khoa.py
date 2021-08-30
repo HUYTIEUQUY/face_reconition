@@ -6,16 +6,13 @@ from PIL import ImageTk
 from tkinter import messagebox
 import dangnhap
 import socket
-# import admin_giangvien
-# import admin_thongke
-# import admin_tkb
 import quantrivien_khoa
-from backend.dl_giangvien import tengv_email,makhoa_email
-from backend.dl_khoa import sl_khoa, tenkhoa
-# import backend.dl_adminlop as lop
+from backend.dl_giangvien import tengv_email
+from backend.dl_khoa import sl_khoa 
 import backend.dl_khoa as khoa
+import quantrivien_thongke
+import quantrivien_thietlap
 
-import datetime
 
 def main():
 
@@ -26,48 +23,38 @@ def main():
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
     def them():
-        emailgv="admin"+sl_khoa+"@mku.edu.vn"
-        now = datetime.datetime.now()
-        ma = now.strftime("%H:%M:%S")
-        ma=str(ma).replace(":","")
+        makhoa=khoa.sl_khoa()
+        emailgv=makhoa+"@mku.edu.vn"
         ten=tenkhoa.get()
         if ten=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
-        # else:
-            
         elif kt_dau_khoangcach(ten)== False:
             messagebox.showwarning("thông báo","Dữ liệu tên khoa không hợp lệ")
         elif khoa.kt_tenkhoa(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
         else:
-            khoa.themkhoa(sl_khoa,ten)
-            khoa.them_tk_khoa("admin"+sl_khoa, emailgv, sl_khoa,"","")
+            khoa.themkhoa(makhoa,ten)
+            khoa.them_tk_khoa("admin"+makhoa, emailgv, sl_khoa)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
     
 
     def xoa():
         ten=tenkhoa.get()
-        
+        ma=makhoa.get()
         if ten=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            # if csdl_admin.kt_loptontai(malop.get()) == True:
-            #     csdl_admin.xoalop(malop.get())
-            #     messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-            #     khoiphuc()
-            # else:
-            #     messagebox.showerror("thông báo", "Xoá lớp thất bại")
-            if khoa.xoakhoa(khoa.makhoa_ten(ten))==True:
-                messagebox.showinfo("thông báo","Đã xoá")
+            if khoa.kt_lop_in_khoa(ma) == False:
+                khoa.xoakhoa(ma)
+                messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
                 khoiphuc()
             else:
-                messagebox.showerror("thông báo","Xoá thất bại")
+                messagebox.showerror("thông báo", "không thể xoá\nCó lớp tồn tại trong khoa")
         else:
             return
 
     def sua():
-        
         tenmoi=tenkhoa.get()
         makhoa1=makhoa.get()
 
@@ -77,10 +64,10 @@ def main():
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
         elif kt_dau_khoangcach(tenmoi)== False:
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
-        elif lop.kt_tenlop(tenmoi)!= []:
+        elif khoa.kt_tenkhoa(tenmoi)!= []:
             messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
         else:
-            lop.sualop(makhoa1,tenmoi)
+            khoa.suakhoa(makhoa1,tenmoi)
             messagebox.showinfo("thông báo","Đã đổi tên khoa thành công")
             khoiphuc()
             
@@ -89,7 +76,7 @@ def main():
         item=tv.item(tv.focus())
         tenkhoa.set(item['values'][2])
         makhoa.set(item['values'][1])
-        
+
     def khoiphuc():
         ndtimkiem.set("")
         tenkhoa.set("")
@@ -102,10 +89,11 @@ def main():
 
     def menuthietlap():
         win.destroy()
+        quantrivien_thietlap.main()
 
     def menukhoa():
         win.destroy()
-        quantrivien_khoa.main()
+        main()
 
     def menuthongke():
         win.destroy()
@@ -129,7 +117,7 @@ def main():
     img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
     img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke.png")
     img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap.png")
-    img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa.png")
+    img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa1.png")
     img_btnthem=ImageTk.PhotoImage(file="img_qtv/btn_them.png")
     img_btnsua=ImageTk.PhotoImage(file="img_qtv/btn_sua.png")
     img_btnxoa=ImageTk.PhotoImage(file="img_qtv/btn_xoa.png")
@@ -142,15 +130,12 @@ def main():
     d=[]
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
-    email=d[0]
     
     tenkhoa=StringVar()
     ndtimkiem=StringVar()
     makhoa = StringVar()
-    tenk=""
     tengv=tengv_email(d[0])
     row=khoa.bangkhoa()
-    sl_khoa=khoa.sl_khoa()
         
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")

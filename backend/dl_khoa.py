@@ -1,9 +1,25 @@
 from datetime import date
+import re
 import conect_firebase
 
 db=conect_firebase.connect().database()
 
-
+def khong_dau(s):
+    s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
+    s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
+    s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
+    s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
+    s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
+    s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
+    s = re.sub(r'[ìíịỉĩ]', 'i', s)
+    s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
+    s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
+    s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
+    s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
+    s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
+    s = re.sub(r'[Đ]', 'D', s)
+    s = re.sub(r'[đ]', 'd', s)
+    return s
 def tenkhoa(makhoa):
     data=db.child("Khoa").get()
     for i in data.each():
@@ -26,11 +42,15 @@ def bangkhoa():
 def sl_khoa():
     a=""
     data = db.child("Khoa").get()
-    a = str(len(list(data.each()))+1)
+    try:
+        for i in data.each():
+            e=[i.val()["MaKhoa"]]
+            a=str(int(max(e))+1)
+    except:a=""
     return a
 
 def themkhoa(makhoa, tenkhoa):
-    data={'MaKhoa':str(makhoa),'TenKhoa':tenkhoa}
+    data={'MaKhoa':str(makhoa),'TenKhoa':str(tenkhoa)}
     try:
         db.child('Khoa').push(data)
         return True
@@ -102,13 +122,25 @@ def tao_tk(email,matkhau):
     except:
         return False
 
-def them_tk_khoa(tengv,email,makhoa,sdt,ghichu):
+def them_tk_khoa(tengv,email,makhoa):
     if tao_tk(email,"123456"):
-        data={'MaGV':str(makhoa), 'TenGV':str(tengv),'Email':str(email),'SDT':str(sdt),'GhiChu':str(ghichu),'LoaiTK':"1","MaKhoa":str(makhoa)}
+        data={'MaGV':str(makhoa), 'TenGV':str(tengv),'Email':str(email),'LoaiTK':"1","MaKhoa":str(makhoa)}
         try:
             db.child('GiangVien').push(data)
             return True
         except:
             return False
+    else:
+        return False
+
+
+def kt_lop_in_khoa(makhoa):
+    a=[]
+    data=db.child("Lop").get()
+    for i in data.each():
+        if(i.val()["MaKhoa"]==str(makhoa)):
+            a.append(i.val()["MaKhoa"])
+    if a != []:
+        return True
     else:
         return False

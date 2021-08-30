@@ -19,36 +19,18 @@ def connect():
     firebase = pyrebase.initialize_app(firebaseConfig)
     return firebase
 
-def khong_dau(s):
-        s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
-        s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
-        s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
-        s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
-        s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
-        s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
-        s = re.sub(r'[ìíịỉĩ]', 'i', s)
-        s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
-        s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
-        s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
-        s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
-        s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
-        s = re.sub(r'[Đ]', 'D', s)
-        s = re.sub(r'[đ]', 'd', s)
-        return s
+
 
 db=connect().database()
 a=[]
-stt=1
-data=db.child("SinhVien").get()
-try:
-    for i in data.each():
-        if(i.val()["MaLop"]== str(103409)):
-            e=[str(stt),i.val()["MaSV"],i.val()["TenSV"]]
+data=db.child("Lop").get()
+for i in data.each():
+    if(i.val()["MaKhoa"]==str(1)):
+        a.append(i.val()["MaKhoa"])
+if a != []:
+    print(True) 
+else:
+    print(False)
 
-            if "333" in khong_dau(i.val()["MaSV"].lower()) or "333" in khong_dau(i.val()["TenSV"].lower()):
-                a.append(e)
-            stt=stt+1
-except: a=[]
-print(a)
 
 

@@ -1,140 +1,103 @@
-import re
 from tkinter import *
 from tkinter import ttk
-from functools import partial
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
 from tkinter import messagebox
 import dangnhap
 import socket
-import adminlop
-import admin_giangvien
-import admin_tkb
-import admin_monhoc
-import backend.dl_thongke as tk
-from backend.dl_giangvien import tengv_email,makhoa_email,magv_all, magv_ten
-import xlsxwriter
-import os
+import quantrivien_khoa
+from backend.dl_giangvien import tengv_email,makhoa_email
+from backend.dl_khoa import sl_khoa, tenkhoa
+import backend.dl_khoa as khoa
+import quantrivien_khoa
+import quantrivien_thietlap
 
 def main():
-    def dongluu(row,ma,ten,tt,TG,ghichu):
 
-        for i in row:
-            ma.append(i[0]) 
-            ten.append(i[1]) 
-            tt.append(i[2]) 
-            TG.append(i[3]) 
-            ghichu.append(i[4])  
-    def xuat_excel():
-        row =tk.thongke(magv,lop.get(),mamh.get(),ngay.get(),ca.get())
-        ma=[]
-        ten=[]
-        tt=[]
-        TG=[]
-        ghichu=[]
-        dongluu(row,ma,ten,tt,TG,ghichu)
-
-        if len(ma)<1:
-            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
-            return False
-        else:
-
-            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-          
-
-            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
-            outsheet = out_workbook.add_worksheet()
-            tenlop=tk.tenlop_ma(lop.get())
-            tenmh=tk.tenmh_ma(mamh.get())
-            outsheet.write("A1",tenlop)
-            outsheet.write("B1",tenmh)
-            outsheet.write("C1",ngay.get())
-
-            outsheet.write("A3","Mã sinh viên")
-            outsheet.write("B3","Tên sinh viên")
-            outsheet.write("C3","Thông tin")
-            outsheet.write("D3","Thời gian vào-ra")
-            outsheet.write("E3","Ghi chú")
-            def write_data_to_file(array,x):
-                for i in range(len(array)):
-                    outsheet.write(i+3,x,array[i])
-            write_data_to_file(ma,0)
-            write_data_to_file(ten,1)
-            write_data_to_file(tt,2)
-            write_data_to_file(TG,3)
-            write_data_to_file(ghichu,4)
-            out_workbook.close()
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
-    def timkiem():
-        return
+    def kt_dau_khoangcach(s):
+        return bool(s and s.strip())
+    def them():
+        makhoa=khoa.sl_khoa()
+        emailgv=makhoa+"@mku.edu.vn"
+        ten=tenkhoa.get()
+        if ten=="":
+            messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
+        elif kt_dau_khoangcach(ten)== False:
+            messagebox.showwarning("thông báo","Dữ liệu tên khoa không hợp lệ")
+        elif khoa.kt_tenkhoa(ten)!= []:
+            messagebox.showerror("thông báo",ten +" đã tồn tại")
+        else:
+            khoa.themkhoa(makhoa,ten)
+            khoa.them_tk_khoa("admin"+makhoa, emailgv, sl_khoa)
+            messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
+            khoiphuc()
+    
 
-    def chon4(cb_ca):
-        Label(bg,text=ca.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=142)
-        cb_ca.destroy()
-        row =tk.thongke(magv.get(),lop.get(),mamh.get(),ngay.get(),ca.get())
+    def xoa():
+        ten=tenkhoa.get()
+        ma=makhoa.get()
+        if ten=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            if khoa.kt_lop_in_khoa(ma) == False:
+                khoa.xoakhoa(ma)
+                messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
+                khoiphuc()
+            else:
+                messagebox.showerror("thông báo", "không thể xoá\nCó lớp tồn tại trong khoa")
+        else:
+            return
+
+    def sua():
+        tenmoi=tenkhoa.get()
+        makhoa1=makhoa.get()
+
+        if tenmoi=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
+        elif makhoa.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
+        elif kt_dau_khoangcach(tenmoi)== False:
+            messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
+        elif khoa.kt_tenkhoa(tenmoi)!= []:
+            messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
+        else:
+            khoa.suakhoa(makhoa1,tenmoi)
+            messagebox.showinfo("thông báo","Đã đổi tên khoa thành công")
+            khoiphuc()
+            
+    def getrow(event):
+        rowid=tv.identify_row(event.y)
+        item=tv.item(tv.focus())
+        tenkhoa.set(item['values'][2])
+        makhoa.set(item['values'][1])
+
+    def khoiphuc():
+        ndtimkiem.set("")
+        tenkhoa.set("")
+        row=khoa.bangkhoa()
         update(row)
-    def chon3(cb_ngay):
-        ngay.set(cb_ngay.get())
-        data_ca = tk.ca_dd(magv.get(),lop.get(),mamh.get(),cb_ngay.get())
-        Label(bg,text=cb_ngay.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=95)
-        cb_ngay.destroy()
-        cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),values=data_ca,width=10)
-        cb_ca.place(x=762,y=145)
-        btnchon.config(image=ing_btnxemthongke,command=lambda:chon4(cb_ca))
-       
-    def chon2(cb_mh):
-        mamh.set(tk.mamh_ten(cb_mh.get()))
-        data_ngay = tk.ngay_dd(magv.get(),lop.get(),mamh.get())
-        Label(bg,text=cb_mh.get(),font=("Baloo Tamma",12),bg="white").place(x=468,y=189)
-        cb_mh.destroy()
-        cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),values=data_ngay,width=10)
-        cb_ngay.place(x=762,y=95)
-        btnchon.config(command=lambda:chon3(cb_ngay))
-        
 
-    def chon1(cb_tengv1):
-        mlop=tk.malop_ten(lop.get())
-        magv.set(magv_ten(cb_tengv1.get()))
-        data_mh = tk.monhoc_dd(magv_ten(cb_tengv1.get()),mlop)
-        Label(bg,text=lop.get(),font=("Baloo Tamma",12),bg="white").place(x=468,y=142)
-        cb_tengv1.destroy()
-        cb_mh=Combobox(bg,textvariable="",font=("Baloo Tamma",12),values=data_mh,width=10)
-        cb_mh.place(x=468,y=189)
-        lop.set(mlop)
-        btnchon.config(command=lambda:chon2(cb_mh))
-        
+    def timkiem():
+        row=khoa.timkhoa(ndtimkiem.get())
+        update(row)
 
-    def chon():
-        data_tengv = tk.tengv_all()
-        cb_tengv1=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),values=data_tengv,width=15)
-        Label(bg,text=cb_tengv.get(),font=("Baloo Tamma",12),bg="white").place(x=468, y=95)
-        cb_tengv.destroy()
-        cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),values=data_lop,width=16)
-        cb_lop.place(x=468,y=142)
-        # lop.set(mlop)
-        btnchon.config(command=lambda:chon1(cb_tengv1))
-        btnchonlai=Button(bg,image=ing_chonlai,bd=0,highlightthickness=0,command=reset)
-        btnchonlai.place(x=869,y=207)
+    def menuthietlap():
+        win.destroy()
+        quantrivien_thietlap.main()
 
-    def reset():
+    def menukhoa():
+        win.destroy()
+        quantrivien_khoa.main()
+
+    def menuthongke():
         win.destroy()
         main()
-    def menutkb():
-        win.destroy()
-        admin_tkb.main()
-    def menulophoc():
-        win.destroy()
-        adminlop.main()
-    def menugiangvien():
-        win.destroy()
-        admin_giangvien.main()
-    def menumonhoc():
-        win.destroy()
-        admin_monhoc.main()
+
     def menudangxuat():
         ten_thiet_bi = socket.gethostname()
         file=open(ten_thiet_bi+".txt","w")
@@ -142,49 +105,37 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
+
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
     win.title("Menu tkinter")
+    img_bg=ImageTk.PhotoImage(file="img_qtv/bg_khoa.png")
+
+    img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
+    img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke1.png")
+    img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap.png")
+    img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa.png")
+    img_btnthem=ImageTk.PhotoImage(file="img_qtv/btn_them.png")
+    img_btnsua=ImageTk.PhotoImage(file="img_qtv/btn_sua.png")
+    img_btnxoa=ImageTk.PhotoImage(file="img_qtv/btn_xoa.png")
+    img_btntimkiem=ImageTk.PhotoImage(file="img_qtv/btn_timkiem.png")
+    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_qtv/btn_khoiphuc.png")
+
     
-    img_bg=ImageTk.PhotoImage(file="img_admin/bg_thongke_admin.png")
-    img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
-
-    img_menudangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
-    img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc.png")
-    img_menugiangvien=ImageTk.PhotoImage(file="img_admin/menu_giangvien.png")
-    img_menutkb=ImageTk.PhotoImage(file="img_admin/menu_tkb.png")
-    img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke1.png")
-    img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
-    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
-    ing_btnxemthongke=ImageTk.PhotoImage(file="img/btn_xemthongke.png")
-    ing_chon=ImageTk.PhotoImage(file="img/btnchon.png")
-    ing_chonlai=ImageTk.PhotoImage(file="img/chonlai.png")
-    img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
-    ing_timkiem=ImageTk.PhotoImage(file="img/btn_timkiem.png")
-
-
 #------------------------------------------------------------------------------
     ten_thiet_bi = socket.gethostname()
     d=[]
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
-    email=d[0]
-    # makhoa=csdl.makhoa_tu_email(email)
-    mamh=StringVar()
-    ngay=StringVar()
-    ca=StringVar()
-    lop=StringVar()
-    magv=StringVar()
-
+    
+    tenkhoa=StringVar()
+    ndtimkiem=StringVar()
+    makhoa = StringVar()
     tengv=tengv_email(d[0])
-    
-    makhoa=makhoa_email(d[0])
-    
-    data_lop=tk.tenlop_dd1()
-    mh=StringVar()
-    row=""
+    row=khoa.bangkhoa()
+        
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -192,49 +143,48 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT,command=menulophoc)
-    menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
-    menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
-    menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
-    menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0)
-    menuthongke.place(x=30,y=461)
+    
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke.place(x=30,y=212)
+    menukhoa=Button(bg,image=img_menukhoa,bd=0,highlightthickness=0,command=menukhoa)
+    menukhoa.place(x=30,y=128)
+    menuthietlap=Button(bg,image=img_menuthietlap,bd=0,highlightthickness=0,command=menuthietlap)
+    menuthietlap.place(x=30,y=296)
 
+    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
+    btnthem.place(x=487,y=181)
+    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
+    btnsua.place(x=637,y=181)
+    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
+    btnxoa.place(x=770,y=181)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem.place(x=881,y=292)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
+    btnkhoiphuc.place(x=920,y=292)
+
+ 
+    
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    
+    Label(bg,text="Trường Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
+    
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=129)
+    
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=292)
 
-    data_tengv = tk.tengv_all()
-    cb_tengv=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),values=data_tengv,width=15)
-    cb_tengv.place(x=468, y=95)       
+    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
+    tv.column(1, width=120,anchor=CENTER)
+    tv.column(2, width=120,anchor=CENTER)
+    tv.column(3, width=300)
 
-    btnchon=Button(bg,image=ing_chon,bd=0,highlightthickness=0, activebackground="white",command=chon)
-    btnchon.place(x=881,y=176)
-    btntimkiem=Button(bg,image=ing_timkiem,highlightthickness=0,bd=0,command=timkiem)
-    btntimkiem.place(x=880,y=248)
-    btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
-    btnexcelxuat.place(x=948,y=2)
+    tv.heading(1,text="Số thứ tự")
+    tv.heading(2,text="Mã khoa")
+    tv.heading(3,text="Tên Khoa")
+    tv.place(x=390,y=340)
 
-    if data_lop==[]:
-        anhnen=bg.create_image(500,300,image=img_erorr)
-    else:
-        # f=Frame(bg,bg="green")
-        # f.place(x=367,y=270)
-        tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-        tv.column(1, width=80 )
-        tv.column(2, width=100,anchor=CENTER)
-        tv.column(3, width=80,anchor=CENTER)
-        tv.column(4, width=100,anchor=CENTER)
-        tv.column(5, width=180)
-        tv.heading(1,text="Mã sinh viên")
-        tv.heading(2,text="Tên sinh viên")
-        tv.heading(3,text="Thông tin")
-        tv.heading(4,text="TG vào - TG ra")
-        tv.heading(5,text="Ghi chú")
-        tv.place(x=367,y=280)
-
-   
+    tv.bind('<Double 1>', getrow)
+    
+    update(row)
     win.mainloop()
 
 if __name__ == '__main__':

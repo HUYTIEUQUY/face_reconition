@@ -59,7 +59,7 @@ def main():
                 diemdanh.main()
         else: return
         if xacthuc.xacthuc(email,passw)== True:
-            messagebox.showinfo("thông báo", "Đăng nhập thành công")
+            return
         else:
             messagebox.showinfo("thông báo","Đăng nhập thất bại")
         
