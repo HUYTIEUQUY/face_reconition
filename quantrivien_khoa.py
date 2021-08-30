@@ -3,18 +3,18 @@ from tkinter import ttk
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
-# import csdl
-# import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
-import admin_giangvien
-import admin_thongke
-import admin_tkb
-import admin_monhoc
+# import admin_giangvien
+# import admin_thongke
+# import admin_tkb
+import quantrivien_khoa
 from backend.dl_giangvien import tengv_email,makhoa_email
-from backend.dl_khoa import tenkhoa
-import backend.dl_adminlop as lop
+from backend.dl_khoa import sl_khoa, tenkhoa
+# import backend.dl_adminlop as lop
+import backend.dl_khoa as khoa
+
 import datetime
 
 def main():
@@ -26,25 +26,28 @@ def main():
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
     def them():
+        emailgv="admin"+sl_khoa+"@mku.edu.vn"
         now = datetime.datetime.now()
         ma = now.strftime("%H:%M:%S")
         ma=str(ma).replace(":","")
-        ten=tenlop.get()
+        ten=tenkhoa.get()
         if ten=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
         # else:
             
         elif kt_dau_khoangcach(ten)== False:
-            messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
-        elif lop.kt_tenlop(ten)!= []:
+            messagebox.showwarning("thông báo","Dữ liệu tên khoa không hợp lệ")
+        elif khoa.kt_tenkhoa(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
         else:
-            lop.themlop(ma,ten,makhoa)
+            khoa.themkhoa(sl_khoa,ten)
+            khoa.them_tk_khoa("admin"+sl_khoa, emailgv, sl_khoa,"","")
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
+    
 
     def xoa():
-        ten=tenlop.get()
+        ten=tenkhoa.get()
         
         if ten=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
@@ -55,59 +58,59 @@ def main():
             #     khoiphuc()
             # else:
             #     messagebox.showerror("thông báo", "Xoá lớp thất bại")
-            if lop.xoalop(tenlop.get())==True:
+            if khoa.xoakhoa(khoa.makhoa_ten(ten))==True:
                 messagebox.showinfo("thông báo","Đã xoá")
                 khoiphuc()
             else:
                 messagebox.showerror("thông báo","Xoá thất bại")
         else:
             return
+
     def sua():
         
-        tenmoi=tenlop.get()
-        malop1=malop.get()
+        tenmoi=tenkhoa.get()
+        makhoa1=makhoa.get()
 
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
-        elif malop.get()=="":
+        elif makhoa.get()=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
         elif kt_dau_khoangcach(tenmoi)== False:
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
         elif lop.kt_tenlop(tenmoi)!= []:
             messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
         else:
-            lop.sualop(malop1,tenmoi)
-            messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
+            lop.sualop(makhoa1,tenmoi)
+            messagebox.showinfo("thông báo","Đã đổi tên khoa thành công")
             khoiphuc()
             
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
-        tenlop.set(item['values'][2])
-        malop.set(item['values'][1])
+        tenkhoa.set(item['values'][2])
+        makhoa.set(item['values'][1])
         
     def khoiphuc():
         ndtimkiem.set("")
-        tenlop.set("")
-        row=lop.banglop(makhoa)
+        tenkhoa.set("")
+        row=khoa.bangkhoa()
         update(row)
 
     def timkiem():
-        row=lop.timlop(makhoa,ndtimkiem.get())
+        row=khoa.timkhoa(ndtimkiem.get())
         update(row)
+
+    def menuthietlap():
+        win.destroy()
+
+    def menukhoa():
+        win.destroy()
+        quantrivien_khoa.main()
 
     def menuthongke():
         win.destroy()
-        admin_thongke.main()
-    def menutkb():
-        win.destroy()
-        admin_tkb.main()
-    def menugiangvien():
-        win.destroy()
-        admin_giangvien.main()
-    def menumonhoc():
-        win.destroy()
-        admin_monhoc.main()
+        quantrivien_thongke.main()
+
     def menudangxuat():
         ten_thiet_bi = socket.gethostname()
         file=open(ten_thiet_bi+".txt","w")
@@ -115,24 +118,23 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
+
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
     win.title("Menu tkinter")
-    img_bg=ImageTk.PhotoImage(file="img_admin/bg_lop.png")
+    img_bg=ImageTk.PhotoImage(file="img_qtv/bg_khoa.png")
 
-    img_menudangxuat=ImageTk.PhotoImage(file="img_admin/btn_dangxuat.png")
-    img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc1.png")
-    img_menugiangvien=ImageTk.PhotoImage(file="img_admin/menu_giangvien.png")
-    img_menutkb=ImageTk.PhotoImage(file="img_admin/menu_tkb.png")
-    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
-    img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke.png")
-    img_btnthem=ImageTk.PhotoImage(file="img_admin/btn_them.png")
-    img_btnsua=ImageTk.PhotoImage(file="img_admin/btn_sua.png")
-    img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
-    img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
-    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
+    img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
+    img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke.png")
+    img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap.png")
+    img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa.png")
+    img_btnthem=ImageTk.PhotoImage(file="img_qtv/btn_them.png")
+    img_btnsua=ImageTk.PhotoImage(file="img_qtv/btn_sua.png")
+    img_btnxoa=ImageTk.PhotoImage(file="img_qtv/btn_xoa.png")
+    img_btntimkiem=ImageTk.PhotoImage(file="img_qtv/btn_timkiem.png")
+    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_qtv/btn_khoiphuc.png")
 
     
 #------------------------------------------------------------------------------
@@ -142,15 +144,13 @@ def main():
         d=file.read().split()
     email=d[0]
     
-    tenlop=StringVar()
-    malop=StringVar()
+    tenkhoa=StringVar()
     ndtimkiem=StringVar()
+    makhoa = StringVar()
     tenk=""
     tengv=tengv_email(d[0])
-    makhoa=makhoa_email(d[0])
-    tenk=tenkhoa(makhoa)
-    row=lop.banglop(makhoa)
-
+    row=khoa.bangkhoa()
+    sl_khoa=khoa.sl_khoa()
         
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -159,16 +159,13 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT)
-    menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
-    menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
-    menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
-    menumonhoc.place(x=30,y=380)
+    
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
-    menuthongke.place(x=30,y=461)
+    menuthongke.place(x=30,y=212)
+    menukhoa=Button(bg,image=img_menukhoa,bd=0,highlightthickness=0,command=menukhoa)
+    menukhoa.place(x=30,y=128)
+    menuthietlap=Button(bg,image=img_menuthietlap,bd=0,highlightthickness=0,command=menuthietlap)
+    menuthietlap.place(x=30,y=296)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=181)
@@ -185,9 +182,9 @@ def main():
     
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
     
-    Label(bg,text=tenk,font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
+    Label(bg,text="Trường Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=576,y=129)
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=129)
     
     Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=292)
 
@@ -197,8 +194,8 @@ def main():
     tv.column(3, width=300)
 
     tv.heading(1,text="Số thứ tự")
-    tv.heading(2,text="Mã Lớp")
-    tv.heading(3,text="Tên Lớp")
+    tv.heading(2,text="Mã khoa")
+    tv.heading(3,text="Tên Khoa")
     tv.place(x=390,y=340)
 
     tv.bind('<Double 1>', getrow)

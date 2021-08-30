@@ -6,6 +6,7 @@ import socket
 import dangnhap
 import  adminlop
 import  diemdanh
+import quantrivien_khoa
 import backend.xacthuc as xacthuc
 
 def main():
@@ -20,6 +21,8 @@ def main():
     if data[0] != "":
         if xacthuc.kt_loaitk(data[0]) == "1":
             adminlop.main()
+        elif xacthuc.kt_loaitk(data[0]) == "2":
+            quantrivien_khoa.main()
         else:
             diemdanh.main()
     else:

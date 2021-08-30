@@ -20,6 +20,14 @@ def khong_dau(s):
     s = re.sub(r'[đ]', 'd', s)
     return s
 
+def magv_all():
+    data=db.child("GiangVien").get()
+    a=[]
+    for i in data.each():
+        magv= i.val()["MaGV"]
+        if magv not in a:
+            a.append(magv)
+    return a
 
 def tengv_email(email):
     data=db.child("GiangVien").get()

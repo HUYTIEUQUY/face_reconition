@@ -11,6 +11,8 @@ import hashlib
 import backend.xacthuc as xacthuc
 import adminlop
 import diemdanh
+import quantrivien_khoa
+
 
 
 def main():
@@ -49,6 +51,9 @@ def main():
             if xacthuc.kt_loaitk(email) == "1":
                 win.destroy()
                 adminlop.main()
+            if xacthuc.kt_loaitk(email) == "2":
+                win.destroy()
+                quantrivien_khoa.main()
             else:
                 win.destroy()
                 diemdanh.main()

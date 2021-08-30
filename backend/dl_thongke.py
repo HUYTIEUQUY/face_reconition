@@ -115,5 +115,23 @@ def thongke(magv,malop,mamh,ngay,ca):
     except:a=[]
     return a
 
+def tengv_all():
+    data=db.child("GiangVien").get()
+    a=[]
+    for i in data.each(): 
+        tengv=(i.val()["TenGV"])
+        if(tengv!="ADMIN"):
+            if tengv not in a:
+                a.append(tengv)
+    return a
 
+def tenlop_dd1():
+    data=db.child("DiemDanh").get()
+    a=[]
+    
+    for i in data.each():
+        tenlop=tenlop_ma(i.val()["MaLop"]) 
+        if tenlop not in a:
+            a.append(tenlop)
+    return a
 
