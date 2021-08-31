@@ -108,7 +108,7 @@ def timkhoa(q):
     try:
         for i in data.each():
             e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"]]
-            if str(q) in khong_dau(i.val()["Khoa"].lower()) or str(q) in khong_dau(i.val()["TenKhoa"].lower()):
+            if str(q) in khong_dau(i.val()["MaKhoa"].lower()) or str(khong_dau(q)) in khong_dau(i.val()["TenKhoa"].lower()):
                 a.append(e)
             stt=stt+1
     except:a=[]

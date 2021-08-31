@@ -22,15 +22,11 @@ def connect():
 
 
 db=connect().database()
-a=[]
-data=db.child("Lop").get()
+data=db.child("CaHoc").get()
 for i in data.each():
-    if(i.val()["MaKhoa"]==str(1)):
-        a.append(i.val()["MaKhoa"])
-if a != []:
-    print(True) 
-else:
-    print(False)
+    if(i.val()["TenCa"]==str(1)):
+        a=i.val()
+print(a) 
 
-
+print(str(a['TGBD']))
 

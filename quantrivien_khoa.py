@@ -171,7 +171,7 @@ def main():
     
     Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=129)
     
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=292)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=294)
 
     tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
     tv.column(1, width=120,anchor=CENTER)
