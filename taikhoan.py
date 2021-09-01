@@ -7,15 +7,55 @@ import socket
 import sinhvien
 import diemdanh
 import thongke
-from backend.dl_giangvien import tengv_email,makhoa_email,sdt_email,magv_ten,update_sdt
+from backend.dl_giangvien import tengv_email,makhoa_email,sdt_email,magv_email,update_sdt
 from backend.dl_khoa import tenkhoa
 from backend.dl_tkb import kt_lichgiang_gv,gv_dd
 import doimatkhau
 import taikhoan_thongbao
 import datetime
-
+import threading
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
+    
+    def loaddl():
+        makhoa.set(makhoa_email(email))
+        tengv.set(tengv_email(email))
+        magv.set(magv_email(email))
+        tenkh.set(tenkhoa(makhoa.get()))
+        sdt.set(sdt_email(email))
+
+        lbgv.config(text=tengv.get())
+        lb_gv.config(text=tengv.get())
+        lbtk.config(text=tenkh.get())
+
+        lichgiang=(kt_lichgiang_gv(magv.get(),ngay))
+        gvdd=gv_dd(magv.get(),ngay)
+        if lichgiang == []:
+            lbcg=Label(bg,text="Hôm nay, bạn không có tiết giảng",font=("Baloo Tamma",12),fg="black",bg="white")
+            lbcg.place(x=570,y=385)
+        else:
+            lbcg=Label(bg,text="Hôm nay, bạn có lịch giảng !",font=("Baloo Tamma",12),fg="black",bg="white")
+            lbcg.place(x=570,y=385)
+            btnthongbao=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=lambda: chuyentrang_lichgiang(lichgiang))
+            btnthongbao.place(x=920,y=365)
+            lbstb=Label(bg,text=len(lichgiang),fg="red",font=("Arial",10),bg="white")
+            lbstb.place(x=952,y=360)
+
+        if gvdd == []:
+            lbdd=Label(bg,text="Bạn thực hiện việc điểm danh rất tốt",font=("Baloo Tamma",12),fg="black",bg="white")
+            lbdd.place(x=570,y=445)
+        else:
+            lbdd=Label(bg,text="Có lẽ bạn đã quên điểm danh !",font=("Baloo Tamma",12),fg="black",bg="white")
+            lbdd.place(x=570,y=445)
+            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=thongbaodd)
+            btnthongbaodd.place(x=920,y=425)
+            lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
+            lbstb1.place(x=952,y=420)
+
+
+
     def dinh_dang_ngay(ngay):
         ngay=str(ngay).replace("/"," ")
         ngay=str(ngay).replace("-"," ")
@@ -33,7 +73,7 @@ def main():
     def capnhat_sdt():
         if len(sdt.get()) <10 or sdt.get().isnumeric()== False:
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
-        elif update_sdt(magv,sdt.get()):
+        elif update_sdt(magv.get(),sdt.get()):
             messagebox.showinfo("thông báo","Đã cập nhật số điện thoại")
         else:
             messagebox.showwarning("Lỗi ","Cập nhật không thành công")
@@ -43,7 +83,7 @@ def main():
         # diemdanhbu.main()
     def thietlap():
         return
-    def chuyentrang_lichgiang():
+    def chuyentrang_lichgiang(lichgiang):
         win.destroy()
         taikhoan_thongbao.main(lichgiang)
 
@@ -94,17 +134,17 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     email=d[0]
-    makhoa=makhoa_email(email)
-    tengv=tengv_email(email)
-    magv=magv_ten(tengv)
-    tenkh=tenkhoa(makhoa)
+    makhoa=StringVar()
+    tengv=StringVar()
+    magv=StringVar()
+    tenkh=StringVar()
     sdt=StringVar()
-    sdt.set(sdt_email(email))
+
+
     time = datetime.datetime.now()
     now = time.strftime("%x")
     ngay=dinh_dang_ngay(now)
-    lichgiang=kt_lichgiang_gv(magv,ngay)
-    gvdd=gv_dd(magv,ngay)
+    
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -126,12 +166,13 @@ def main():
     btndangxuat.place(x=248,y=44)
 
     
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
 
-    lbgv=Label(bg,text=tengv,font=("Baloo Tamma",12),fg="black",bg="white")
-    lbgv.place(x=570,y=205)
+    lb_gv=Label(bg,font=("Baloo Tamma",12),fg="black",bg="white")
+    lb_gv.place(x=570,y=205)
     
-    lbtk=Label(bg,text=tenkh,font=("Baloo Tamma",12),fg="black",bg="white")
+    lbtk=Label(bg,font=("Baloo Tamma",12),fg="black",bg="white")
     lbtk.place(x=570,y=145)
 
     lbe=Label(bg,text=email,font=("Baloo Tamma",12),fg="black",bg="white")
@@ -143,27 +184,7 @@ def main():
     btn_capnhatsdt=Button(bg,image=ing_capnhatsdt,bd=0,highlightthickness=0,command=capnhat_sdt)
     btn_capnhatsdt.place(x=925,y=310)
 
-    if lichgiang == []:
-        lbcg=Label(bg,text="Hôm nay, bạn không có tiết giảng",font=("Baloo Tamma",12),fg="black",bg="white")
-        lbcg.place(x=570,y=385)
-    else:
-        lbcg=Label(bg,text="Hôm nay, bạn có lịch giảng !",font=("Baloo Tamma",12),fg="black",bg="white")
-        lbcg.place(x=570,y=385)
-        btnthongbao=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=chuyentrang_lichgiang)
-        btnthongbao.place(x=920,y=365)
-        lbstb=Label(bg,text=len(lichgiang),fg="red",font=("Arial",10),bg="white")
-        lbstb.place(x=952,y=360)
-
-    if gvdd == []:
-        lbdd=Label(bg,text="Bạn thực hiện việc điểm danh rất tốt",font=("Baloo Tamma",12),fg="black",bg="white")
-        lbdd.place(x=570,y=445)
-    else:
-        lbdd=Label(bg,text="Có lẽ bạn đã quên điểm danh !",font=("Baloo Tamma",12),fg="black",bg="white")
-        lbdd.place(x=570,y=445)
-        btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=thongbaodd)
-        btnthongbaodd.place(x=920,y=425)
-        lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
-        lbstb1.place(x=952,y=420)
+    
 
     btndoimatkhau=Button(bg,image=ing_btndoimatkhau,bd=0,highlightthickness=0,command=btndoimatkhau)
     btndoimatkhau.place(x=672,y=539)
@@ -173,7 +194,7 @@ def main():
 
     # btnthietlap=Button(bg,image=ing_btnthietlap,bd=0,highlightthickness=0,command=thietlap)
     # btnthietlap.place(x=949,y=2)
-    
+    luong(loaddl)
     win.mainloop()
 
 if __name__ == '__main__':

@@ -15,9 +15,26 @@ from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
 import backend.dl_tkb as tkb
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
-
+import threading
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
+    def loaddl():
+        makhoa.set(makhoa_email(email))
+        tengv.set(tengv_email(email))
+        lbgv.config(text=tengv.get())
+        lop=tkb.lop_khoa(makhoa.get())
+        gv=tkb.gv_khoa(makhoa.get())
+        mon=tkb.mh_khoa(makhoa.get())
+        #set cho combobox to
+        cblop.config(values=lop)
+        cblop.current(0)
+        cbmon.config(values=mon)
+        cbgv.config(values=gv)
+        luong(khoiphuc)
+
+
     def dinh_dang_ngay(ngay):
         ngay=str(ngay).replace("/"," ")
         ngay=str(ngay).replace("-"," ")
@@ -114,7 +131,7 @@ def main():
             messagebox.showerror("thông báo","Lớp đã có lịch học !")
         elif tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
-            khoiphuc()
+            luong(khoiphuc)
         else:
             messagebox.showerror("thông báo", "Thêm thất bại")
             
@@ -158,7 +175,7 @@ def main():
             tkb.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
             tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu")
-            khoiphuc()
+            luong(khoiphuc)
                
     def xoa():
         magv=magv_ten(data_gv.get())
@@ -172,7 +189,7 @@ def main():
             messagebox.showerror("thông báo","Không tìm thấy dữ liệu cần xoá.\n Bạn hãy nhấn 2 lần vào dòng muốn xoá và nhấn nút 'xoá'")
         elif tkb.xoa_dong_tkb(ngay,mamh,magv,data_ca) :
             messagebox.showinfo("thông báo","Đã xoá khỏi thời khoá biểu")
-            khoiphuc()
+            luong(khoiphuc)
         else:
             messagebox.showerror("thông báo","Lỗi")
   
@@ -239,8 +256,9 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     email=d[0]
-    makhoa=makhoa_email(email)
-    tengv=tengv_email(email)
+    makhoa=StringVar()
+    tengv=StringVar()
+    tengv.set("")
    
     data_lop=StringVar()
     data_gv=StringVar()
@@ -251,10 +269,7 @@ def main():
     data_ngay.set("")
     data_ca=StringVar()
     data_matkb=StringVar()
-
-    lop=tkb.lop_khoa(makhoa)
-    gv=tkb.gv_khoa(makhoa)
-    mon=tkb.mh_khoa(makhoa)
+    
     ndtimkiem=StringVar()
     ngaycu=StringVar()
     cacu=StringVar()
@@ -282,37 +297,49 @@ def main():
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
     menuthongke.place(x=30,y=461)
 
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
 
-    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Times new roman",12), width=10,values=namhoc)
+    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Times new roman",12), width=10,state='readonly',values=namhoc)
     cbnam.current(0)
     cbnam.bind('<<ComboboxSelected>>', capnhatbang)
     cbnam.place(x=410,y=5)
+    Frame(bg,width=102,height=2,bg="white").place(x=410,y=5)
+    Frame(bg,width=3,height=23,bg="white").place(x=410,y=5)
+    Frame(bg,width=102,height=2,bg="white").place(x=410,y=28)
 
 
-    cbhk =Combobox(bg,textvariable=data_hocky,font=("Times new roman",12), width=6, values=hocky)
+    cbhk =Combobox(bg,textvariable=data_hocky,font=("Times new roman",12), width=8, state='readonly', values=hocky)
     cbhk.current(0)
     cbhk.bind('<<ComboboxSelected>>', capnhatbang)
-    cbhk.place(x=580,y=5)
+    cbhk.place(x=583,y=5)
+    Frame(bg,width=87,height=2,bg="white").place(x=582,y=5)
+    Frame(bg,width=3,height=23,bg="white").place(x=582,y=5)
+    Frame(bg,width=87,height=2,bg="white").place(x=582,y=28)
 
-    cbloai =Combobox(bg,textvariable=data_loai,font=("Times new roman",12), width=7,values=loai)
+    cbloai =Combobox(bg,textvariable=data_loai,font=("Times new roman",12),state='readonly', width=7,values=loai)
     cbloai.current(0)
     cbloai.place(x=825,y=120)
+    Frame(bg,width=81,height=2,bg="white").place(x=825,y=120)
+    Frame(bg,width=3,height=23,bg="white").place(x=825,y=120)
+    Frame(bg,width=81,height=2,bg="white").place(x=825,y=143)
 
-    cblop =Combobox(bg,textvariable=data_lop,font=("Times new roman",12), width=28,values=lop)
-    cblop.current(0)
+    cblop =Combobox(bg,textvariable=data_lop,font=("Times new roman",12),state='readonly', width=30)
     cblop.bind('<<ComboboxSelected>>', capnhatbang)
     cblop.place(x=730,y=5)
+    Frame(bg,width=262,height=2,bg="white").place(x=730,y=5)
+    Frame(bg,width=3,height=23,bg="white").place(x=730,y=5)
+    Frame(bg,width=262,height=2,bg="white").place(x=730,y=28)
 
     Label(bg,font=("Baloo Tamma",11),bg="white",textvariable=data_ngay).place(x=616,y=155)
 
-    cbgv =Combobox(bg,textvariable=data_gv,font=("Times new roman",11), width=47,values=gv)
+    cbgv =Combobox(bg,textvariable=data_gv,font=("Times new roman",11),state='readonly', width=47)
     cbgv.place(x=552,y=90)
-    Frame(bg,width=300,height=2,bg="white").place(x=552,y=90)
+    Frame(bg,width=353,height=2,bg="white").place(x=552,y=90)
     Frame(bg,width=3,height=23,bg="white").place(x=552,y=90)
-    Frame(bg,width=300,height=2,bg="white").place(x=552,y=112)
+    Frame(bg,width=353,height=2,bg="white").place(x=552,y=112)
 
-    cbmon =Combobox(bg,textvariable=data_mon,font=("Times new roman",11), width=25,values=mon)
+    cbmon =Combobox(bg,textvariable=data_mon,font=("Times new roman",11),state='readonly', width=25)
     cbmon.place(x=552,y=124)
     Frame(bg,width=200,height=2,bg="white").place(x=552,y=124)
     Frame(bg,width=3,height=23,bg="white").place(x=552,y=124)
@@ -336,7 +363,7 @@ def main():
     btnsua.place(x=637,y=247)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=247)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=luong(timkiem))
     btntimkiem.place(x=881,y=313)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=920,y=313)
@@ -366,7 +393,7 @@ def main():
     tv.place(x=380,y=370)
     tv.bind('<Double 1>', getrow)
    
-    khoiphuc()
+    luong(loaddl)
 
     win.mainloop()
 

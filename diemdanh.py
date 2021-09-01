@@ -17,7 +17,7 @@ import backend.dl_diemdanh as diemdanh
 # import playsound
 # from webdriver_manager . chrome import ChromeDriverManager
 # import os
-from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
+from backend.dl_giangvien import tengv_email,makhoa_email,magv_email
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
 from backend.dl_sinhvien import ds_ma_sv
@@ -25,9 +25,32 @@ import numpy as np
 from tkinter import ttk
 import datetime
 import re
+import threading
 
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
+
+    def loaddl():
+        tengv.set(tengv_email(d[0]))
+        ma_gv.set(magv_email(d[0]))
+
+        thongtin=diemdanh.thong_tin_theo_tkb(ma_gv.get(),ngay,ca)
+        if thongtin == []:
+            data_lop.set("Bạn không có tiết giảng !")
+            data_mon.set("Bạn không có tiết giảng !")
+            matkb.set("")
+        else:
+            data_lop.set(thongtin[0])
+            data_mon.set(thongtin[1])
+            matkb.set(thongtin[2])
+
+        lbgv.config(text=tengv.get())
+        lblop.config(text=data_lop.get())
+        lbmon.config(text=data_mon.get())
+        row=diemdanh.bangdiemdanh(matkb.get())
+        update(row)
     # wikipedia.set_lang('vi')
     # language ='vi'
     # path = ChromeDriverManager().install()
@@ -90,7 +113,7 @@ def main():
         tgbd= datetime.datetime.now()
         malop=malop_ten(data_lop)
         mamh=mamh_ten(data_mon)
-        magv=magv_ten(tengv_email(d[0]))
+        magv=ma_gv.get()
 
         a=ds_ma_sv(malop)#------------------lấy id theo lop
 
@@ -190,8 +213,7 @@ def main():
 
     # #---------------------------------------------
     def kt ():
-
-        if data_lop == "Bạn không có tiết dạy !":
+        if data_lop.get() == "Bạn không có tiết giảng !":
             messagebox.showwarning("thông báo","Bạn không có tiết dạy")
         elif diemdanh.kt_TT_diemdanh(matkb.get()) == "0":
             batdaudiemdanh()
@@ -259,35 +281,30 @@ def main():
     d=[]
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
-    makhoa=makhoa_email(d[0])
-    tengv=tengv_email(d[0])
-    ma_gv=magv_ten(tengv)
+    makhoa=StringVar()
+    tengv=StringVar()
+    ma_gv=StringVar()
     ca=diemdanh.cahoc()
     time = datetime.datetime.now()
     now = time.strftime("%x")
     ngay=dinh_dang_ngay(now)
     matkb=StringVar()
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    data_lop=StringVar()
+    data_mon=StringVar()
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
     
-    thongtin=diemdanh.thong_tin_theo_tkb(ma_gv,ngay,ca)
-   
 
-    
-    if thongtin == []:
-        data_lop="Bạn không có tiết giảng !"
-        data_mon="Bạn không có tiết giảng !"
-        matkb.set("")
-    else:
-        data_lop =thongtin[0]
-        data_mon=thongtin[1]
-        matkb.set(thongtin[2])
+
         
 
 
 
     #lớp
-    Label(bg,text=data_lop,font=("Baloo Tamma",12),bg="white").place(x=600,y=90)
-    Label(bg,text=data_mon,font=("Baloo Tamma",12),bg="white").place(x=600,y=125)
+    lblop=Label(bg,font=("Baloo Tamma",12),bg="white")
+    lblop.place(x=600,y=90)
+    lbmon=Label(bg,font=("Baloo Tamma",12),bg="white")
+    lbmon.place(x=600,y=125)
 
     #nút điểm diemdanh
     btndiemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=kt)
@@ -295,7 +312,7 @@ def main():
 
     #bang diemdanh
 
-    row=diemdanh.bangdiemdanh(matkb.get())
+    
   
   
    
@@ -314,8 +331,7 @@ def main():
 
     tv.place(x=380,y=350)
     
-  
-    update(row)
+    
 
     # #nút  diemdanhlai
     # btndiemdanhlai=Button(bg,image=ing_btndiemdanhlai,bd=0,highlightthickness=0,command=diemdanhlai)
@@ -329,6 +345,8 @@ def main():
     #     btnthongbao.place(x=943,y=0)
     #     lbstb1=Label(bg,text=len(l),fg="red",font=("Arial",10),bg="white")
     #     lbstb1.place(x=978,y=2)
+
+    luong(loaddl)
     win.mainloop()
 
 if __name__ == '__main__':

@@ -16,8 +16,20 @@ from backend.dl_giangvien import tengv_email,makhoa_email
 from backend.dl_khoa import tenkhoa
 import backend.dl_adminlop as lop
 import datetime
+import threading
 
 def main():
+    def loaddl():
+        tengv.set(tengv_email(email))
+        makhoa.set(makhoa_email(email))
+        tenk.set(tenkhoa(makhoa.get()))
+        lbgv.config(text=tengv.get())
+        lbtk.config(text=tenk.get())
+        luong(khoiphuc())
+        
+
+    def luong(ham):
+        threading.Thread(target=ham).start()
 
     def update(row):
         tv.delete(*tv.get_children())
@@ -89,7 +101,7 @@ def main():
     def khoiphuc():
         ndtimkiem.set("")
         tenlop.set("")
-        row=lop.banglop(makhoa)
+        row=lop.banglop(makhoa.get())
         update(row)
 
     def timkiem():
@@ -141,15 +153,14 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     email=d[0]
-    
+    makhoa=StringVar()
+    tengv=StringVar()
     tenlop=StringVar()
     malop=StringVar()
     ndtimkiem=StringVar()
-    tenk=""
-    tengv=tengv_email(d[0])
-    makhoa=makhoa_email(d[0])
-    tenk=tenkhoa(makhoa)
-    row=lop.banglop(makhoa)
+
+    tenk=StringVar()
+
 
         
 #-------------------------------------------------------------------------------
@@ -183,9 +194,11 @@ def main():
 
  
     
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
     
-    Label(bg,text=tenk,font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
+    lbtk=Label(bg,font=("Baloo Tamma",11),fg="black",bg="white")
+    lbtk.place(x=578,y=90)
     
     Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=576,y=129)
     
@@ -200,10 +213,10 @@ def main():
     tv.heading(2,text="Mã Lớp")
     tv.heading(3,text="Tên Lớp")
     tv.place(x=390,y=340)
-
     tv.bind('<Double 1>', getrow)
     
-    update(row)
+    luong(loaddl)
+    
     win.mainloop()
 
 if __name__ == '__main__':

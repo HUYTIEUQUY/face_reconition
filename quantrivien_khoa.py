@@ -12,10 +12,15 @@ from backend.dl_khoa import sl_khoa
 import backend.dl_khoa as khoa
 import quantrivien_thongke
 import quantrivien_thietlap
+import threading
 
 
 def main():
-
+    def loaddl():
+        tengv.set(tengv_email(d[0]))
+        row=khoa.bangkhoa()
+        lbgv.config(text=tengv.get())
+        update(row)
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
@@ -134,9 +139,8 @@ def main():
     tenkhoa=StringVar()
     ndtimkiem=StringVar()
     makhoa = StringVar()
-    tengv=tengv_email(d[0])
-    row=khoa.bangkhoa()
-        
+    tengv=StringVar()
+
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -165,13 +169,15 @@ def main():
 
  
     
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
+
     
-    Label(bg,text="Trường Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
+    Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
     
     Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=129)
     
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=292)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=294)
 
     tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
     tv.column(1, width=120,anchor=CENTER)
@@ -182,10 +188,9 @@ def main():
     tv.heading(2,text="Mã khoa")
     tv.heading(3,text="Tên Khoa")
     tv.place(x=390,y=340)
-
     tv.bind('<Double 1>', getrow)
     
-    update(row)
+    threading.Thread(target=loaddl).start()
     win.mainloop()
 
 if __name__ == '__main__':

@@ -22,10 +22,23 @@ import pandas as pd
 from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
 from backend.dl_adminlop import malop_ten, tenlop_ma
 import backend.dl_sinhvien as sv
-
+import threading
 
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
+
+    def loaddl():
+        tengv.set(tengv_email(d[0]))
+        makhoa.set(makhoa_email(d[0]))
+        data_lop=sv.lop_khoa(makhoa.get())
+        cb_lop.config(values=data_lop)
+        cb_lop.current(0)
+        lbgv.config(text=tengv.get())
+        khoiphuc()
+
+
     def nhap_excel():
         fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
         ko_luu=[]
@@ -386,15 +399,13 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
 
-    tengv=tengv_email(d[0])
-    makhoa=makhoa_email(d[0])
-    data_lop=sv.lop_khoa(makhoa)
+    tengv=StringVar()
+    makhoa=StringVar()
+    
 
     
-    cb_lop=Combobox(bg,width=27,values=data_lop, font=("Baloo Tamma",12),textvariable=lop)
-    cb_lop.current(1)
+    cb_lop=Combobox(bg,width=27, font=("Baloo Tamma",12),state='readonly',textvariable=lop)
     cb_lop.place(x=580,y=102)
-
     cb_lop.bind('<<ComboboxSelected>>', capnhat)
     Frame(bg,width=287,height=5,bg= "white").place(x=570,y=102)
     Frame(bg,width=276,height=5,bg= "white").place(x=570,y=122)
@@ -443,7 +454,8 @@ def main():
     btndangxuat.place(x=248,y=44)
 
  
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
     
 
         
@@ -465,9 +477,7 @@ def main():
 
     tv.bind('<Double 1>', getrow)
 
-    malop=malop_ten(cb_lop.get())
-    row=sv.bangsv(malop)
-    update(row)
+    
 
     f1=Frame(bg,bg="white",width=140,height=140)
     f1.place(x=772,y=380)
@@ -486,6 +496,8 @@ def main():
 
     btn_xemanh=Button(f1,image=img_btnxem2,bd=0,highlightthickness=0,command=xemanh)
     btn_xemanh.pack()
+
+    luong(loaddl)
 
     win.mainloop()
 

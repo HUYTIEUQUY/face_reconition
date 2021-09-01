@@ -12,9 +12,19 @@ import admin_thongke
 import admin_tkb
 from backend.dl_giangvien import tengv_email,makhoa_email
 import backend.dl_monhoc as mh
-
+import threading
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
+
+    def loaddl():
+        makhoa.set(makhoa_email(email))
+        tengv.set(tengv_email(email))
+        lbgv.config(text=tengv.get())
+        khoiphuc()
+
+
     def khoiphuc():
         ndtimkiem.set("")
         data_mamon.set("")
@@ -23,7 +33,7 @@ def main():
         data_ten.set("")
         data_sotietlt.set("")
         data_sotietth.set("")
-        row=mh.bangmh(makhoa)
+        row=mh.bangmh(makhoa.get())
         update(row)
 
     def update(row):
@@ -70,7 +80,7 @@ def main():
         lt=data_sotietlt.get()
         th=data_sotietth.get()
         if kt_nhap(ma,ten,lt,th) == True:
-            mh.themmh(ma,ten,lt,th,makhoa)
+            mh.themmh(ma,ten,lt,th,makhoa.get())
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
     def xoa():
@@ -109,7 +119,7 @@ def main():
             messagebox.showinfo("thông báo","Sửa thành công")
 
     def timkiem():
-        row=mh.tim_mh(makhoa, ndtimkiem.get())
+        row=mh.tim_mh(makhoa.get(), ndtimkiem.get())
         update(row)
 
     def menuthongke():
@@ -157,8 +167,8 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     email=d[0]
-    makhoa=makhoa_email(email)
-    tengv=tengv_email(email)
+    makhoa=StringVar()
+    tengv=StringVar()
     data_ten=StringVar()
     data_tenmon=StringVar()
     data_mamon=StringVar()
@@ -184,7 +194,8 @@ def main():
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
     menuthongke.place(x=30,y=461)
 
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
 
     Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=72)
     Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=590,y=107)
@@ -220,7 +231,7 @@ def main():
 
     tv.bind('<Double 1>', getrow)
 
-    khoiphuc()
+    luong(loaddl)
 
     win.mainloop()
 

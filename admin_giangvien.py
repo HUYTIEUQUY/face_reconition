@@ -12,10 +12,20 @@ import admin_thongke
 import admin_monhoc
 import backend.dl_giangvien as gv
 from backend.dl_giangvien import tengv_email,makhoa_email
-
+import threading
 
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
+
+    def loaddl():
+        makhoa.set(makhoa_email(d[0]))
+        tengv.set(tengv_email(d[0]))
+        lbgv.config(text=tengv.get())
+        khoiphuc()
+
+
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
@@ -39,7 +49,7 @@ def main():
         data_ten.set("")
         data_sdt.set("")
         data_ghichu.set("")
-        row=gv.banggv(makhoa)
+        row=gv.banggv(makhoa.get())
         update(row)
 
     def kt_dau_khoangcach(s):
@@ -145,10 +155,10 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     email=d[0]
-    makhoa=makhoa_email(d[0])
-
+    
+    makhoa=StringVar()
+    tengv=StringVar()
     ndtimkiem=StringVar()
-    tengv=tengv_email(d[0])
     data_ma=StringVar()
     data_ten=StringVar()
     data_email=StringVar()
@@ -174,7 +184,8 @@ def main():
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
     menuthongke.place(x=30,y=461)
 
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
 
     Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ma,bd=0,highlightthickness=0).place(x=575,y=75)
     Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=110)
@@ -214,10 +225,11 @@ def main():
     tv.heading(6,text="Ghi chú")
     tv.place(x=370,y=340)
     tv.bind('<Double 1>', getrow)
-    khoiphuc()
+    
+    luong(loaddl)
     win.mainloop()
 
-    win.mainloop()
+   
 
 if __name__ == '__main__':
     main()

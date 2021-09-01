@@ -132,6 +132,14 @@ def magv_ten(ten):
             a=(i.val()["MaGV"])
     return a
 
+def magv_email(email):
+    data=db.child("GiangVien").get()
+    a=""
+    for i in data.each():
+        if(i.val()["Email"]==str(email)):
+            a=(i.val()["MaGV"])
+    return a
+
 
 def tengv_ma(ma):
     data=db.child("GiangVien").get()
