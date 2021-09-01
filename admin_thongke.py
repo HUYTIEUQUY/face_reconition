@@ -1,5 +1,7 @@
+from backend.dl_adminlop import malop_ten
 import re
 from tkinter import *
+from tkinter import filedialog
 from tkinter import ttk
 from functools import partial
 from tkinter import PhotoImage
@@ -26,15 +28,15 @@ def main():
             tt.append(i[2]) 
             TG.append(i[3]) 
             ghichu.append(i[4])  
+
     def xuat_excel():
-        row =tk.thongke(magv,lop.get(),mamh.get(),ngay.get(),ca.get())
+        row =tk.thongke(magv.get(),lop.get(),mamh.get(),ngay.get(),ca.get())
         ma=[]
         ten=[]
         tt=[]
         TG=[]
         ghichu=[]
         dongluu(row,ma,ten,tt,TG,ghichu)
-
         if len(ma)<1:
             messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
             return False
@@ -70,7 +72,8 @@ def main():
         for i in row:
             tv.insert('','end',values=i)
     def timkiem():
-        return
+        row=tk.tim_tk(magv.get(),lop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
+        update(row)
 
     def chon4(cb_ca):
         Label(bg,text=ca.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=142)
@@ -184,6 +187,7 @@ def main():
     
     data_lop=tk.tenlop_dd1()
     mh=StringVar()
+    ndtimkiem=StringVar()
     row=""
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -204,6 +208,8 @@ def main():
     menuthongke.place(x=30,y=461)
 
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=630,y=250)
+
 
     data_tengv = tk.tengv_all()
     cb_tengv=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),values=data_tengv,width=15)
