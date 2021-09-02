@@ -39,7 +39,7 @@ def main():
             messagebox.showerror("thông báo",ten +" đã tồn tại")
         else:
             khoa.themkhoa(makhoa,ten)
-            khoa.them_tk_khoa("admin"+makhoa, emailgv, sl_khoa)
+            khoa.them_tk_khoa("admin"+makhoa, emailgv, makhoa)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
     
@@ -47,13 +47,17 @@ def main():
     def xoa():
         ten=tenkhoa.get()
         ma=makhoa.get()
+        email=str(ma)+"@mku.edu.vn"
         if ten=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             if khoa.kt_lop_in_khoa(ma) == False:
-                khoa.xoakhoa(ma)
-                messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-                khoiphuc()
+                if khoa.xoakhoa(ma)==True or khoa.xoakhoa_bgv(ma)==True:
+                    khoa.xoa_tk(email)
+                    messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
+                    khoiphuc()
+                else: 
+                    messagebox.showerror("thông báo","Lỗi")
             else:
                 messagebox.showerror("thông báo", "không thể xoá\nCó lớp tồn tại trong khoa")
         else:

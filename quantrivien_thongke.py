@@ -7,15 +7,118 @@ from tkinter import messagebox
 import dangnhap
 import socket
 import quantrivien_khoa
-from backend.dl_giangvien import tengv_email,makhoa_email
-from backend.dl_khoa import sl_khoa, tenkhoa
-import backend.dl_khoa as khoa
+from backend.dl_giangvien import tengv_email
+from backend.dl_adminlop import malop_ten
+from backend.dl_monhoc import mamh_ten
+import backend.dl_thongke as tk
 import quantrivien_khoa
 import quantrivien_thietlap
+import threading
 
 def main():
+    def luong(ham):
+        threading.Thread(target=ham).start()
 
+    def chongiatridau(data,cb):
+        if data==[]:
+            cb.set("")
+            cb_lop.config(text="",values=[])
+            cb_mh.config(text="",values=[])
+            cb_ngay.config(text="",values=[])
+            cb_ca.config(text="",values=[])
+            magv.set("")
+        else:
+            cb.current(0)
 
+    def loaddl():
+        tengv.set(tengv_email(d[0]))
+        lbgv.config(text=tengv.get())
+        data_khoa = tk.ds_khoa()
+        cb_khoa.config(values=data_khoa)
+        chongiatridau(data_khoa,cb_khoa)
+        cb_khoa.bind('<<ComboboxSelected>>', chongv)
+        luong(khoiphuc)
+
+    def chongv(event):
+        # lb_khoa=Label(bg,text=cb_khoa.get(),font=("Baloo Tamma",12),bg="white")
+        # lb_khoa.place(x=468,y=100)
+        # cb_khoa.destroy()
+        makhoa.set(tk.makhoa_ten(cb_khoa.get()))
+        data_gv = tk.ds_gv(makhoa.get())
+        cb_gv.config(values=data_gv)
+        chongiatridau(data_gv,cb_gv)
+        if cb_gv.get() !="":
+            tachma=str(cb_gv.get()).replace(" ","").replace("-"," ").split()
+            magv.set(str(tachma[0]))
+        cb_gv.bind('<<ComboboxSelected>>', chonlop)
+        luong(khoiphuc)
+
+    def chonlop(event):
+        # lb_gv=Label(bg,text=cb_gv.get(),font=("Baloo Tamma",12),bg="white")
+        # lb_gv.place(x=468,y=125)
+        
+        tachma=str(cb_gv.get()).replace(" ","").replace("-"," ").split()
+        magv.set(str(tachma[0]))
+        # cb_gv.destroy()
+        data_lop = tk.tenlop_dd(magv.get())
+        cb_lop.config(values=data_lop)
+        cb_lop.current(0)
+        cb_lop.bind('<<ComboboxSelected>>', chonmh)
+        luong(khoiphuc)
+
+    def chonmh(event):
+        # lb_lop=Label(bg,text=cb_lop.get(),font=("Baloo Tamma",12),bg="white")
+        # lb_lop.place(x=468,y=150)
+
+        malop.set(malop_ten(cb_lop.get()))
+        # cb_lop.destroy()
+        data_mh = tk.monhoc_dd(magv.get(),malop.get())
+        cb_mh.config(values=data_mh)
+
+        cb_mh.current(0)
+        cb_mh.bind('<<ComboboxSelected>>', chonngay)
+        luong(khoiphuc)
+
+    def chonngay(event):
+        # lb_mh=Label(bg,text=cb_mh.get(),font=("Baloo Tamma",12),bg="white")
+        # lb_mh.place(x=468,y=175)
+        mamh.set(mamh_ten(cb_mh.get()))
+        # cb_mh.destroy()
+        data_ngay = tk.ngay_dd(magv.get(),malop.get(),mamh.get())
+        cb_ngay.config(values=data_ngay)
+
+        cb_ngay.current(0)
+        cb_ngay.bind('<<ComboboxSelected>>', chonca)
+        luong(khoiphuc)
+
+    def chonca(event):
+        # lb_ngay=Label(bg,text=cb_ngay.get(),font=("Baloo Tamma",12),bg="white")
+        # lb_ngay.place(x=468,y=200)
+        ngay.set(cb_ngay.get())
+        # cb_ngay.destroy()
+        data_ca = tk.ca_dd(magv.get(),malop.get(),mamh.get(),ngay.get())
+        cb_ca.config(values=data_ca)
+
+        cb_ca.current(0)
+        cb_ca.bind('<<ComboboxSelected>>', xem)
+        luong(khoiphuc)
+
+    def xem(event):
+        ca.set(cb_ca.get())
+        luong(khoiphuc)
+
+    def timkiem():
+        row=tk.tim_tk(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
+        update(row)
+
+    def khoiphuc():
+        row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
+        update(row)
+    def update(row):
+        tv.delete(*tv.get_children())
+        for i in row:
+            tv.insert('','end',values=i)
+    
     def menuthietlap():
         win.destroy()
         quantrivien_thietlap.main()
@@ -41,7 +144,7 @@ def main():
     win.resizable(False,False)
     win.config(bg="green")
     win.title("Menu tkinter")
-    img_bg=ImageTk.PhotoImage(file="img_qtv/bg_khoa.png")
+    img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thongke.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
     img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke1.png")
@@ -60,12 +163,22 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     
-    tenkhoa=StringVar()
     ndtimkiem=StringVar()
-    makhoa = StringVar()
-    tengv=tengv_email(d[0])
-    row=khoa.bangkhoa()
-        
+    tengv=StringVar()
+
+
+    khoa =StringVar()
+    makhoa=StringVar()
+    gv=StringVar()
+    magv=StringVar()
+    lop=StringVar()
+    malop=StringVar()
+    mh=StringVar()
+    mamh=StringVar()
+    ngay=StringVar()
+    ca=StringVar()
+
+
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -81,12 +194,51 @@ def main():
     menuthietlap=Button(bg,image=img_menuthietlap,bd=0,highlightthickness=0,command=menuthietlap)
     menuthietlap.place(x=30,y=296)
 
+    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=40)
+
+    cb_khoa=Combobox(bg,textvariable=khoa,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_khoa.place(x=600,y=70)
+    cb_gv=Combobox(bg,textvariable=gv,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_gv.place(x=600,y=100)
+    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_lop.place(x=600,y=130)
+    cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_mh.place(x=600,y=160)
+    cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_ngay.place(x=600,y=190)
+    cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_ca.place(x=600,y=220)
+
     
 
 
+    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
+    tv.column(1, width=80 )
+    tv.column(2, width=100,anchor=CENTER)
+    tv.column(3, width=80,anchor=CENTER)
+    tv.column(4, width=100,anchor=CENTER)
+    tv.column(5, width=180)
+    tv.heading(1,text="Mã sinh viên")
+    tv.heading(2,text="Tên sinh viên")
+    tv.heading(3,text="Thông tin")
+    tv.heading(4,text="TG vào - TG ra")
+    tv.heading(5,text="Ghi chú")
+    tv.place(x=367,y=350)
 
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=635,y=297)
+
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem.place(x=862,y=295)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
+    btnkhoiphuc.place(x=905,y=295)
+    
+
+
+    luong(loaddl)
     win.mainloop()
+
+    
 
 if __name__ == '__main__':
     main()

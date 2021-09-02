@@ -17,3 +17,4 @@ def kt_loaitk(email):
         if(i.val()["Email"]==email):
             a=i.val()["LoaiTK"]
     return a
+

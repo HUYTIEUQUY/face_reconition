@@ -1,6 +1,11 @@
 from datetime import date
 import re
 import conect_firebase
+from firebase_admin import auth
+from firebase_admin import credentials
+import firebase_admin
+
+
 
 db=conect_firebase.connect().database()
 
@@ -80,6 +85,21 @@ def xoakhoa(makhoa):
             except:
                 return False
 
+def xoakhoa_bgv(magv):
+    data=db.child("GiangVien").get()
+    for i in data.each():
+        if(i.val()["MaGV"]==str(magv)):
+            try:
+                db.child("GiangVien").child(i.key()).remove()
+                return True
+            except:
+                return False
+def xoa_tk(email):
+    cred = credentials.Certificate("nckh.json")
+    firebase_admin.initialize_app(cred)
+    a=auth.get_user_by_email(str(email))
+    auth.delete_user(a.uid)
+
 def kt_tenkhoa(tenkhoa):
     data=db.child("Khoa").get()
     a=[]
@@ -127,7 +147,7 @@ def tao_tk(email,matkhau):
 
 def them_tk_khoa(tengv,email,makhoa):
     if tao_tk(email,"123456"):
-        data={'MaGV':str(makhoa), 'TenGV':str(tengv),'Email':str(email),'LoaiTK':"1","MaKhoa":str(makhoa)}
+        data={'MaGV':str(makhoa), 'TenGV':str(tengv),'Email':str(email),'LoaiTK':"1","MaKhoa":str(makhoa),'GhiChu':"",'SDT':""}
         try:
             db.child('GiangVien').push(data)
             return True

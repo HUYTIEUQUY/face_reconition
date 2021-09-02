@@ -143,10 +143,44 @@ def tim_tk(magv,malop,mamh,ngay,ca,q):
         for i in data.each():
             if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca)):
                 e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
-                if str(q) in khong_dau(i.val()["MaSV"].lower()) or str(q) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()):
+                if khong_dau(str(q)) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"].lower())or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"].lower()):
                     a.append(e)
-                print(e)
     except: a=[]
-    print(a)
     return a
+
+def ds_khoa():
+    a=[]
+    data=db.child("Khoa").get()
+    try:
+        for i in data.each():
+            a.append(i.val()["TenKhoa"])
+    except:a=[]
+    return a
+
+def makhoa_ten(tenkhoa):
+    a=''
+    data=db.child("Khoa").get()
+    try:
+        for i in data.each():
+            if i.val()["TenKhoa"]==str(tenkhoa):
+                a=i.val()["MaKhoa"]
+    except:a=''
+    return a
+
+def tengv_dd():
+    data=db.child("DiemDanh").get()
+    a=[]
+    for i in data.each():
+        a.append(i.val()['MaGV'])
+    return a
+
+def ds_gv(makhoa):
+    data=db.child("GiangVien").get()
+    a=[]
+    b=tengv_dd()
+    for i in data.each():
+        if i.val()['MaKhoa'] == str(makhoa) and i.val()['LoaiTK']=="0" and i.val()['MaGV'] in b:
+            a.append(i.val()['MaGV']+"-"+i.val()['TenGV'])
+    return a
+
 

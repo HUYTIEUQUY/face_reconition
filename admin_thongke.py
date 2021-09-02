@@ -225,8 +225,6 @@ def main():
     if data_lop==[]:
         anhnen=bg.create_image(500,300,image=img_erorr)
     else:
-        # f=Frame(bg,bg="green")
-        # f.place(x=367,y=270)
         tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
         tv.column(1, width=80 )
         tv.column(2, width=100,anchor=CENTER)
