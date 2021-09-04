@@ -19,27 +19,68 @@ from tkinter import filedialog
 def main():
     def luong(ham):
         threading.Thread(target=ham).start()
+    
+    def chongiatridau(data,cb):
+        if data==[]:
+            cb.set("")
+            cb_lop.config(text="",values=[])
+            cb_mh.config(text="",values=[])
+            cb_ngay.config(text="",values=[])
+            cb_ca.config(text="",values=[])
+            magv.set("")
+        else:
+            cb.current(0)
 
     def loaddl():
         tengv.set(tengv_email(d[0]))
         makhoa.set(makhoa_email(d[0]))
         magv.set(magv_email(d[0]))
         data_lop=tk.tenlop_dd(magv.get())
-        cb_lop.config(values=data_lop,state='readonly')
-        cb_lop.current(0)
         lbgv.config(text=tengv.get())
 
         if data_lop==[]:
             anhnen=bg.create_image(500,300,image=img_erorr)
         else:
-            # f=Frame(bg,bg="green")
-            # f.place(x=367,y=270)
-            tv.place(x=367,y=280)
+            tv.place(x=367,y=350)
+            cb_lop.config(values=data_lop)
+            chongiatridau(data_lop,cb_lop)
+            cb_lop.bind('<<ComboboxSelected>>', chonmh)
+            luong(khoiphuc)
+
+    def chonmh(event):
+        malop.set(tk.malop_ten(cb_lop.get()))
+        data_mh = tk.monhoc_dd(magv.get(),malop.get())
+        cb_mh.config(values=data_mh)
+        cb_mh.current(0)
+        cb_mh.bind('<<ComboboxSelected>>', chonngay)
+        luong(khoiphuc)
+
+    def chonngay(event):
+        mamh.set(tk.mamh_ten(cb_mh.get()))
+        data_ngay = tk.ngay_dd(magv.get(),malop.get(),mamh.get())
+        cb_ngay.config(values=data_ngay)
+        cb_ngay.current(0)
+        cb_ngay.bind('<<ComboboxSelected>>', chonca)
+        luong(khoiphuc)
+
+    def chonca(event):
+        ngay.set(cb_ngay.get())
+        data_ca = tk.ca_dd(magv.get(),malop.get(),mamh.get(),ngay.get())
+        cb_ca.config(values=data_ca)
+        cb_ca.current(0)
+        cb_ca.bind('<<ComboboxSelected>>', xem)
+        luong(khoiphuc)
+
+    def xem(event):
+        ca.set(cb_ca.get())
+        luong(khoiphuc)
 
 
+    def khoiphuc():
+        row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
+        update(row)
 
     def dongluu(row,ma,ten,tt,TG,ghichu):
-
         for i in row:
             ma.append(i[0]) 
             ten.append(i[1]) 
@@ -48,7 +89,7 @@ def main():
             ghichu.append(i[4])  
 
     def xuat_excel():
-        row=tk.thongke(magv.get(),lop.get(),mamh.get(),ngay.get(),ca.get())
+        row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
         ma=[]
         ten=[]
         tt=[]
@@ -66,11 +107,11 @@ def main():
 
             out_workbook = xlsxwriter.Workbook(fln+".xlsx")
             outsheet = out_workbook.add_worksheet()
-            tenlop=tk.tenlop_ma(lop.get())
+            tenlop=tk.tenlop_ma(malop.get())
             tenmh=tk.tenmh_ma(mamh.get())
-            outsheet.write("A1",tenlop)
-            outsheet.write("B1",tenmh)
-            outsheet.write("C1",ngay.get())
+            outsheet.write("A1","Tên lớp: "+tenlop)
+            outsheet.write("B1","Môn học: "+tenmh)
+            outsheet.write("C1","Ngày: "+ngay.get())
 
             outsheet.write("A3","Mã sinh viên")
             outsheet.write("B3","Tên sinh viên")
@@ -91,45 +132,9 @@ def main():
         for i in row:
             tv.insert('','end',values=i)
     def timkiem():
-        return
-    def chon3(cb_ca):
-        Label(bg,text=ca.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=142)
-        cb_ca.destroy()
-        row=tk.thongke(magv.get(),lop.get(),mamh.get(),ngay.get(),ca.get())
+        row=tk.tim_tk(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
         update(row)
-    def chon2(cb_ngay):
-        ngay.set(cb_ngay.get())
-        data_ca = tk.ca_dd(magv.get(),lop.get(),mamh.get(),cb_ngay.get())
-        Label(bg,text=cb_ngay.get(),font=("Baloo Tamma",12),bg="white").place(x=762,y=97)
-        cb_ngay.destroy()
-        cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',values=data_ca,width=10)
-        cb_ca.place(x=762,y=145)
-        btnchon.config(image=ing_btnxemthongke,command=lambda:chon3(cb_ca))
-
-    def chon1(cb_mh):
-        mamh.set(tk.mamh_ten(cb_mh.get()))
-        data_ngay = tk.ngay_dd(magv.get(),lop.get(),mamh.get())
-        Label(bg,text=cb_mh.get(),font=("Baloo Tamma",12),bg="white").place(x=468,y=145)
-        cb_mh.destroy()
-        cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',values=data_ngay,width=10)
-        cb_ngay.place(x=762,y=95)
-        btnchon.config(command=lambda:chon2(cb_ngay))
-
-    def chon():
-        mlop=tk.malop_ten(lop.get())
-        data_mh = tk.monhoc_dd(magv.get(),mlop)
-        Label(bg,text=lop.get(),font=("Baloo Tamma",12),bg="white").place(x=468,y=97)
-        cb_lop.destroy()
-        cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),state='readonly',values=data_mh,width=20)
-        cb_mh.place(x=468,y=142)
-        lop.set(mlop)
-        btnchon.config(command=lambda:chon1(cb_mh))
-        btnchonlai=Button(bg,image=ing_chonlai,bd=0,highlightthickness=0,command=reset)
-        btnchonlai.place(x=869,y=207)
-
-    def reset():
-        win.destroy()
-        main()
+    
    
     def menutaikhoan():
         win.destroy()
@@ -163,9 +168,7 @@ def main():
     ing_menutaikhoan=ImageTk.PhotoImage(file="img/menutaikhoan.png")
     ing_menuthongke=ImageTk.PhotoImage(file="img/menuthongke1.png")
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
-    ing_btnxemthongke=ImageTk.PhotoImage(file="img/btn_xemthongke.png")
-    ing_chon=ImageTk.PhotoImage(file="img/btnchon.png")
-    ing_chonlai=ImageTk.PhotoImage(file="img/chonlai.png")
+    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
     ing_timkiem=ImageTk.PhotoImage(file="img/btn_timkiem.png")
     img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
 
@@ -188,6 +191,11 @@ def main():
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat.place(x=248,y=44)
 
+    btntimkiem=Button(bg,image=ing_timkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem.place(x=862,y=295)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
+    btnkhoiphuc.place(x=905,y=295)
+
     ten_thiet_bi = socket.gethostname()
     d=[]
     with open(ten_thiet_bi+".txt","r") as file:
@@ -197,24 +205,28 @@ def main():
     ngay=StringVar()
     ca=StringVar()
     lop=StringVar()
+    malop=StringVar()
     tengv=StringVar()
     makhoa=StringVar()
     magv=StringVar()
     mh=StringVar()
+    ndtimkiem=StringVar()
     row=''
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
 
-    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),width=20)
-    cb_lop.place(x=468,y=95)
 
-
-    btnchon=Button(bg,image=ing_chon,bd=0,highlightthickness=0, activebackground="white",command=chon)
-    btnchon.place(x=881,y=176)
-    btntimkiem=Button(bg,image=ing_timkiem,highlightthickness=0,bd=0,command=timkiem)
-    btntimkiem.place(x=880,y=248)
     btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
     btnexcelxuat.place(x=948,y=2)
+
+    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_lop.place(x=520,y=100)
+    cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_mh.place(x=520,y=130)
+    cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_ngay.place(x=520,y=160)
+    cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_ca.place(x=520,y=190)
  
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
     tv.column(1, width=80 )
@@ -228,6 +240,7 @@ def main():
     tv.heading(4,text="TG vào - TG ra")
     tv.heading(5,text="Ghi chú")
 
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=635,y=297)
 
     luong(loaddl)
     win.mainloop()

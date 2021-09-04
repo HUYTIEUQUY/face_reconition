@@ -89,8 +89,14 @@ def main():
         if data_mamonsx.get()== "":
             messagebox.showwarning("thông báo","Chưa có dữ liệu để xoá\nHãy nhấn 2 lần vào dòng dữ liệu muốn xoá và nhấn nút 'xoá'")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            mh.xoamh(ma)
-            khoiphuc()
+            if mh.kt_monhoc_tontai_diemdanh(ma)!=[] :
+                messagebox.showerror("thông báo","Không thể xoá môn học này\nMôn học vẫn còn tồn tại trong bảng điểm danh")
+            elif mh.kt_monhoc_tontai_tkb(ma)!=[]:
+                messagebox.showerror("thông báo","Không thể xoá môn học này\nMôn học vẫn còn tồn tại trong bảng thời khoá biểu")
+            else:
+                mh.xoamh(ma)
+                messagebox.showinfo("thông báo","Đã xoá")
+                khoiphuc()
         else: 
             return 
 

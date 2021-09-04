@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import filedialog
 from tkinter import ttk
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
@@ -10,12 +11,16 @@ import quantrivien_khoa
 from backend.dl_giangvien import tengv_email
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
+from backend.dl_khoa import tenkhoa_ma
 import backend.dl_thongke as tk
 import quantrivien_khoa
 import quantrivien_thietlap
 import threading
+import xlsxwriter
+import os
 
 def main():
+    
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -110,6 +115,55 @@ def main():
     def timkiem():
         row=tk.tim_tk(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
         update(row)
+    
+    def dongluu(row,ma,ten,tt,TG,ghichu):
+        for i in row:
+            ma.append(i[0]) 
+            ten.append(i[1]) 
+            tt.append(i[2]) 
+            TG.append(i[3]) 
+            ghichu.append(i[4])  
+
+    def xuat_excel():
+        row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
+        ma=[]
+        ten=[]
+        tt=[]
+        TG=[]
+        ghichu=[]
+        dongluu(row,ma,ten,tt,TG,ghichu)
+
+        if len(ma)<1:
+            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+            return False
+        else:
+
+            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+          
+
+            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+            outsheet = out_workbook.add_worksheet()
+            tenlop=tk.tenlop_ma(malop.get())
+            tenmh=tk.tenmh_ma(mamh.get())
+            outsheet.write("A1","Khoa:"+tenkhoa_ma(makhoa.get()))
+            outsheet.write("B1",tenlop)
+            outsheet.write("C1",tenmh)
+            outsheet.write("D1",ngay.get())
+
+            outsheet.write("A3","Mã sinh viên")
+            outsheet.write("B3","Tên sinh viên")
+            outsheet.write("C3","Thông tin")
+            outsheet.write("D3","Thời gian vào-ra")
+            outsheet.write("E3","Ghi chú")
+            def write_data_to_file(array,x):
+                for i in range(len(array)):
+                    outsheet.write(i+3,x,array[i])
+            write_data_to_file(ma,0)
+            write_data_to_file(ten,1)
+            write_data_to_file(tt,2)
+            write_data_to_file(TG,3)
+            write_data_to_file(ghichu,4)
+            out_workbook.close()
 
     def khoiphuc():
         row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
@@ -150,12 +204,9 @@ def main():
     img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke1.png")
     img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap.png")
     img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa.png")
-    img_btnthem=ImageTk.PhotoImage(file="img_qtv/btn_them.png")
-    img_btnsua=ImageTk.PhotoImage(file="img_qtv/btn_sua.png")
-    img_btnxoa=ImageTk.PhotoImage(file="img_qtv/btn_xoa.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_qtv/btn_timkiem.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_qtv/btn_khoiphuc.png")
-
+    img_btnexcel_xuat=ImageTk.PhotoImage(file="img_qtv/xuat_excel.png")
     
 #------------------------------------------------------------------------------
     ten_thiet_bi = socket.gethostname()
@@ -232,7 +283,8 @@ def main():
     btntimkiem.place(x=862,y=295)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
     btnkhoiphuc.place(x=905,y=295)
-    
+    btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
+    btnexcelxuat.place(x=948,y=2)
 
 
     luong(loaddl)

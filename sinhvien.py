@@ -150,7 +150,6 @@ def main():
         lb1.image=img
 
         btn_xemanh.config(image=img_btnxem)
-      
 
     a=[]
     
@@ -270,7 +269,7 @@ def main():
         elif kt_dau_khoangcach(ma.get())==False or kt_dau_khoangcach(ten.get()==False):
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
         
-        elif str(ma.get()).isnumeric()==False:
+        elif str(ma.get()).isnumeric()==False or len(str(ma.get()))!=10:
             messagebox.showwarning("thông báo","Kiểm tra lại mã sinh viên")
             
         elif sv.kt_masv_tontai(ma.get()) !=[]:

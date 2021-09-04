@@ -38,9 +38,7 @@ def main():
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
     def them():
-        now = datetime.datetime.now()
-        ma = now.strftime("%H:%M:%S")
-        ma=str(ma).replace(":","")
+        ma=lop.malop()
         ten=tenlop.get()
         if ten=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
@@ -51,7 +49,7 @@ def main():
         elif lop.kt_tenlop(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
         else:
-            lop.themlop(ma,ten,makhoa)
+            lop.themlop(ma,ten,makhoa.get())
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
 
@@ -61,21 +59,19 @@ def main():
         if ten=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            # if csdl_admin.kt_loptontai(malop.get()) == True:
-            #     csdl_admin.xoalop(malop.get())
-            #     messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-            #     khoiphuc()
-            # else:
-            #     messagebox.showerror("thông báo", "Xoá lớp thất bại")
-            if lop.xoalop(tenlop.get())==True:
-                messagebox.showinfo("thông báo","Đã xoá")
-                khoiphuc()
+            if lop.kt_lop_tontai_diemdanh(malop.get()) == [] and lop.kt_lop_tontai_tkb(malop.get())==[]:
+                if lop.xoalop(malop.get())==True:
+                    messagebox.showinfo("thông báo","Đã xoá")
+                    khoiphuc()
+                else:
+                    messagebox.showerror("Lỗi","Xoá thất bại")
             else:
-                messagebox.showerror("thông báo","Xoá thất bại")
+                messagebox.showerror("thông báo", "Xoá lớp thất bại")
         else:
             return
+
+
     def sua():
-        
         tenmoi=tenlop.get()
         malop1=malop.get()
 
@@ -105,7 +101,7 @@ def main():
         update(row)
 
     def timkiem():
-        row=lop.timlop(makhoa,ndtimkiem.get())
+        row=lop.timlop(makhoa.get(),ndtimkiem.get())
         update(row)
 
     def menuthongke():

@@ -3,7 +3,7 @@ from backend.dl_monhoc import tenmh_ma
 from backend.dl_adminlop import tenlop_ma
 from backend.dl_sinhvien import tensv_ma
 import datetime
-
+import re
 db=conect_firebase.connect().database()
 # https://qastack.vn/programming/2405292/how-to-check-if-text-is-empty-spaces-tabs-newlines-in-python
 # kt chuooix chir cos khoangr troongs
@@ -40,8 +40,8 @@ def kt_TT_diemdanh(matkb):
     return a
 
 
-def diem_danh_vao_csdl(matkb,masv,thongtin,malop,mamh,magv,ngay,ca):
-    data={'Ma':str(matkb),'MaSV':str(masv),'ThongTin':str(thongtin),'MaLop':str(malop),'MaMH':str(mamh),'MaGV':str(magv),'Ngay':str(ngay),'Ca':str(ca),'TG_Vao':'','TG_Ra':'','GhiChu':''}
+def diem_danh_vao_csdl(matkb,masv,thongtin,malop,mamh,magv,ngay,ca,tgvao):
+    data={'Ma':str(matkb),'MaSV':str(masv),'ThongTin':str(thongtin),'MaLop':str(malop),'MaMH':str(mamh),'MaGV':str(magv),'Ngay':str(ngay),'Ca':str(ca),'TG_Vao':str(tgvao),'TG_Ra':'','GhiChu':''}
     try:
         db.child('DiemDanh').push(data)
         return True
@@ -71,5 +71,37 @@ def bangdiemdanh(ma):
         a=[]
     return a
 
+def tg_tre():
+    data=db.child("TGtre").get()
+    return data.val()
 
 
+def khong_dau(s):
+    s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
+    s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
+    s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
+    s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
+    s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
+    s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
+    s = re.sub(r'[ìíịỉĩ]', 'i', s)
+    s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
+    s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
+    s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
+    s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
+    s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
+    s = re.sub(r'[Đ]', 'D', s)
+    s = re.sub(r'[đ]', 'd', s)
+    return s
+
+def timkiem_dd(ma,q):
+    a=[]
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            if(i.val()["Ma"]==str(ma)):
+                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
+                if khong_dau(str(q)) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"].lower())or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"].lower()):
+                    a.append(e)
+    except:
+        a=[]
+    return a

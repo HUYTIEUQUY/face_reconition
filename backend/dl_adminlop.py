@@ -104,4 +104,34 @@ def timlop(makhoa,q):
     return a
 
 
+def kt_lop_tontai_diemdanh(malop):
+    data=db.child("DiemDanh").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaLop"]==str(malop)):
+            a.append(i.val()['MaLop'])
+    return a
+
+def kt_lop_tontai_tkb(malop):
+    data=db.child("ThoiKhoaBieu").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaLop"]==str(malop)):
+            a.append(i.val()['MaLop'])
+    return a
+
+def malop():
+    a=""
+    data = db.child("Lop").get()
+    try:
+        for i in data.each():
+            e=[i.val()["MaLop"]]
+            a=str(int(max(e))+1)
+    except:a=""
+    return a
+
+
+
+
+
 

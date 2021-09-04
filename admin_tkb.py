@@ -69,6 +69,7 @@ def main():
 
         ngaycu.set(item['values'][3])
         moncu.set(item['values'][1])
+        pp_giangcu.set(item['values'][2])
         gvcu.set(item['values'][0])
         cacu.set(item['values'][4])
         dataca=str(item['values'][4])
@@ -142,6 +143,8 @@ def main():
         mon_cu=mamh_ten(moncu.get())
         gv_cu=magv_ten(gvcu.get())
         ca_cu=cacu.get()
+        pp_giang=pp_giangcu.get()
+        tkb.xoa_dong_tkb(gv_cu,mon_cu,ngay_cu,ca_cu,pp_giang)
         # 
         #du liệu cập nhật
         malop=malop_ten(data_lop.get())
@@ -172,22 +175,25 @@ def main():
         elif(tkb.kt_lich_tkb(malop,ngay,data_ca)!= [] or tkb.kt_lich_tkb(malop,ngay,ca1)!= [] or tkb.kt_lich_tkb(malop,ngay,ca2)!= []):
             messagebox.showerror("thông báo","Lớp đã có lịch học !")
         else:
-            tkb.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
+            
             tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)
-            messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu")
+            messagebox.showinfo("thông báo", "Đã sửa thành công")
             luong(khoiphuc)
                
     def xoa():
         magv=magv_ten(data_gv.get())
         mamh = mamh_ten(data_mon.get())
         ngay=data_ngay.get()
+        pp=pp_giangcu.get()
         data_ca=""
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
+        print(pp)
+        
         if ngay=="":
             messagebox.showerror("thông báo","Không tìm thấy dữ liệu cần xoá.\n Bạn hãy nhấn 2 lần vào dòng muốn xoá và nhấn nút 'xoá'")
-        elif tkb.xoa_dong_tkb(ngay,mamh,magv,data_ca) :
+        elif tkb.xoa_dong_tkb(magv,mamh,ngay,data_ca,pp) == True:
             messagebox.showinfo("thông báo","Đã xoá khỏi thời khoá biểu")
             luong(khoiphuc)
         else:
@@ -275,6 +281,7 @@ def main():
     cacu=StringVar()
     moncu=StringVar()
     gvcu=StringVar()
+    pp_giangcu=StringVar()
     data_loai=StringVar()
     hocky=[1,2]
     loai=["lý thuyết","thực hành"]

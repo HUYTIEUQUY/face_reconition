@@ -29,6 +29,12 @@ import threading
 
 
 def main():
+    def timkiem():
+        row=diemdanh.timkiem_dd(matkb.get(),ndtimkiem.get())
+        update(row)
+    def khoiphuc():
+        row=diemdanh.bangdiemdanh(matkb.get())
+        update(row)
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -102,22 +108,24 @@ def main():
         for i in row:
             tv.insert('','end',values=i)
     def doigiay(s):
-        h=str(s)[0:1]
-        p=str(s)[2:4]
-        s=str(s)[5:7]
+        i=str(s).replace('.',' ').replace(':'," ").split()
+        h=i[0]
+        p=i[1]
+        s=i[2]
         giay=int(h)*60*60+int(p)*60+int(s)
         return giay
 
     def batdaudiemdanh():
         messagebox.showwarning("thông báo","Nhấn 'q' để thoát ")
         tgbd= datetime.datetime.now()
-        malop=malop_ten(data_lop)
-        mamh=mamh_ten(data_mon)
+        malop=malop_ten(data_lop.get())
+        mamh=mamh_ten(data_mon.get())
         magv=ma_gv.get()
+        tg_tre=doigiay(diemdanh.tg_tre())
 
         a=ds_ma_sv(malop)#------------------lấy id theo lop
 
-        lopp=khong_dau(data_lop.replace(" ","_"))
+        lopp=khong_dau(data_lop.get().replace(" ","_"))
        
         f=open("mahoa/"+lopp+".pkl","rb")
         ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
@@ -163,15 +171,14 @@ def main():
                     now = datetime.datetime.now()
                     kq=now-tgbd
                     s=doigiay(kq)
-                    
-                    if name not in dd and s >= 60 and name != "Khongbiet":
-                        
+
+                    if name not in dd and s >= tg_tre and name != "Khongbiet":
                         tre="Trể "+str(kq)[0:7]
-                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,tre,malop,mamh,magv,ngay,ca)
+                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,tre,malop,mamh,magv,ngay,ca,now.strftime("%X"))
                         dd.append(name)
                     elif name not in dd and name != "Khongbiet":
                         print(diemdanh)
-                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,"có",malop,mamh,magv,ngay,ca)
+                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,"có",malop,mamh,magv,ngay,ca,now.strftime("%X"))
                         dd.append(name)
                         
             process_this_frame = not process_this_frame
@@ -200,14 +207,12 @@ def main():
         cv2.destroyAllWindows()
         
     #     #----------------------------------------------------------------------------
-        print(a)
+        now=""
         for i in range(0,len(a)):
             if a[i] not in dd :
-                diemdanh.diem_danh_vao_csdl(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca)
-                
-        
+                diemdanh.diem_danh_vao_csdl(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca,now)
+
         diemdanh.update_TT_diemdanh(matkb.get())
-        
         row=diemdanh.bangdiemdanh(matkb.get())
         update(row)
 
@@ -254,6 +259,8 @@ def main():
     ing_btndiemdanh=ImageTk.PhotoImage(file="img/btndiemdanh.png")
     ing_btndiemdanhlai=ImageTk.PhotoImage(file="img/btndiemdanhlai.png")
     ing_btnthongbao=ImageTk.PhotoImage(file="img/btnthongbaodd.png")
+    img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
+    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
     
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -290,12 +297,12 @@ def main():
     matkb=StringVar()
     data_lop=StringVar()
     data_mon=StringVar()
+    ndtimkiem=StringVar()
+
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
     
 
-
-        
 
 
 
@@ -308,7 +315,12 @@ def main():
     #nút điểm diemdanh
     btndiemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=kt)
     btndiemdanh.place(x=575,y=229)
-
+    # btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    # btntimkiem.place(x=891,y=305)
+    # btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
+    # btnkhoiphuc.place(x=928,y=305)
+    # txt_timkiem=Entry(bg,width=20,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
+    # txt_timkiem.place(x=520,y=295)
     #bang diemdanh
 
     
@@ -344,7 +356,7 @@ def main():
     #     btnthongbao.place(x=943,y=0)
     #     lbstb1=Label(bg,text=len(l),fg="red",font=("Arial",10),bg="white")
     #     lbstb1.place(x=978,y=2)
-
+    
     luong(loaddl)
     win.mainloop()
 

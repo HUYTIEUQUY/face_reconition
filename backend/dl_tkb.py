@@ -116,10 +116,10 @@ def kt_lich_tkb(malop,ngay,ca):
     return a
 
 
-def xoa_dong_tkb(magv,mamh,ngay,ca):
+def xoa_dong_tkb(magv,mamh,ngay,ca,pp):
     data=db.child("ThoiKhoaBieu").get()
     for i in data.each():
-        if(i.val()["MaGV"]==str(magv), i.val()["MaMH"]==str(mamh), i.val()["Ngay"]==str(ngay), i.val()["Ca"]==str(ca)):
+        if(i.val()["MaGV"]==str(magv) and  i.val()["MaMH"]==str(mamh)and i.val()["Ngay"]==str(ngay)and i.val()["Ca"]==str(ca) and i.val()["PP_Giang"]==str(pp)):
             try:
                 db.child("ThoiKhoaBieu").child(i.key()).remove()
                 return True
@@ -151,12 +151,24 @@ def kt_lichgiang_gv(magv,ngay):
     return a
 
 
+def ngaya_nhohon_ngayb(a,b):
+    ngay_a=a.replace("/"," ").split()
+    ngay_b=b.replace("/"," ").split()
+    if ngay_a[2]>ngay_b[2]:
+        return False
+    elif ngay_a[2]==ngay_b[2] and ngay_a[1]>ngay_b[1]:
+        return False
+    elif ngay_a[2]==ngay_b[2] and ngay_a[1]==ngay_b[1] and ngay_a[0]>=ngay_b[0]:
+        return False
+    else:
+        return True
+
 def gv_dd(magv,ngay):
     a=[]
     data=db.child("ThoiKhoaBieu").get()
     try:
         for i in data.each():
-            if(i.val()["MaGV"]==str(magv) and i.val()["Ngay"] < str(ngay) and i.val()["TrangThaiDD"] =='0' ):
+            if(i.val()["MaGV"]==str(magv) and ngaya_nhohon_ngayb(i.val()["Ngay"] , str(ngay)) and i.val()["TrangThaiDD"] =='0' ):
                 tenl=tenlop_ma(i.val()['MaLop'])
                 tenm=tenmh_ma(i.val()['MaMH'])
                 e = [tenl,tenm,i.val()['Ngay'],i.val()['Ca']]

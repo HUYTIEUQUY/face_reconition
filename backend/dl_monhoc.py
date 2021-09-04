@@ -111,3 +111,18 @@ def tim_mh(makhoa,q):
                 a.append(e)
             stt=stt+1
     return a
+
+def kt_monhoc_tontai_diemdanh(ma):
+    data=db.child("DiemDanh").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaMH"]==str(ma)):
+            a.append(i.val()['MaMH'])
+    return a
+def kt_monhoc_tontai_tkb(ma):
+    data=db.child("ThoiKhoaBieu").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaMH"]==str(ma)):
+            a.append(i.val()['MaMH'])
+    return a

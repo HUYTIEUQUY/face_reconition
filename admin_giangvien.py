@@ -70,7 +70,7 @@ def main():
         elif kt_dau_khoangcach(data_ten.get())==False :
             messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
         elif gv.kt_ma(ma) == []:
-            gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa)
+            gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa.get())
             messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
         else:
             messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách danh sách")
@@ -105,7 +105,7 @@ def main():
             #     return
     
     def timkiem():
-        row=gv.tim_gv(makhoa,ndtimkiem.get())
+        row=gv.tim_gv(makhoa.get(),ndtimkiem.get())
         update(row)
 
     def menuthongke():

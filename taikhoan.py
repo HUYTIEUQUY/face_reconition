@@ -31,7 +31,9 @@ def main():
         lbtk.config(text=tenkh.get())
 
         lichgiang=(kt_lichgiang_gv(magv.get(),ngay))
+
         gvdd=gv_dd(magv.get(),ngay)
+
         if lichgiang == []:
             lbcg=Label(bg,text="Hôm nay, bạn không có tiết giảng",font=("Baloo Tamma",12),fg="black",bg="white")
             lbcg.place(x=570,y=385)
