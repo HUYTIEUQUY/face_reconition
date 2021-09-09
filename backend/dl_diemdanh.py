@@ -71,6 +71,27 @@ def bangdiemdanh(ma):
         a=[]
     return a
 
+def sv_da_dd_khac_vang(ma):
+    a=[]
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            if i.val()["Ma"]==str(ma) and i.val()["ThongTin"] != "không":
+                a.append(i.val()["MaSV"])
+    except:
+        a=[]
+    return a
+def sv_da_dd(ma):
+    a=[]
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            if i.val()["Ma"]==str(ma):
+                a.append(i.val()["MaSV"])
+    except:
+        a=[]
+    return a
+
 def tg_tre():
     data=db.child("TGtre").get()
     return data.val()
@@ -105,3 +126,27 @@ def timkiem_dd(ma,q):
     except:
         a=[]
     return a
+
+
+def capnhat_tgra(matkb,masv,tgra):
+    data=db.child("DiemDanh").get()
+    dl={'TG_Ra':str(tgra)}
+    for i in data.each():
+        if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
+            try:
+                db.child("DiemDanh").child(i.key()).update(dl)
+                return True
+            except:
+                return False
+    pass
+
+def xoasv_dd(matkb,masv):
+    data=db.child("DiemDanh").get()
+    for i in data.each():
+        if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
+            try:
+                db.child("DiemDanh").child(i.key()).remove()
+                return True
+            except:
+                return False
+

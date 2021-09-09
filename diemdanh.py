@@ -11,21 +11,16 @@ import sinhvien
 import thongke
 import taikhoan
 import backend.dl_diemdanh as diemdanh
-# import diemdanhbu
-# import wikipedia
-# from gtts import gTTS
-# import playsound
-# from webdriver_manager . chrome import ChromeDriverManager
-# import os
 from backend.dl_giangvien import tengv_email,makhoa_email,magv_email
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
-from backend.dl_sinhvien import ds_ma_sv
+from backend.dl_sinhvien import ds_ma_sv, tensv_ma
 import numpy as np
 from tkinter import ttk
 import datetime
 import re
 import threading
+from speak import speak
 
 
 def main():
@@ -35,6 +30,7 @@ def main():
     def khoiphuc():
         row=diemdanh.bangdiemdanh(matkb.get())
         update(row)
+
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -55,17 +51,9 @@ def main():
         lbgv.config(text=tengv.get())
         lblop.config(text=data_lop.get())
         lbmon.config(text=data_mon.get())
-        row=diemdanh.bangdiemdanh(matkb.get())
-        update(row)
-    # wikipedia.set_lang('vi')
-    # language ='vi'
-    # path = ChromeDriverManager().install()
-
-    # def speak(text):
-    #     tts = gTTS(text=text,lang=language,slow=False)
-    #     tts.save("sound.mp3")
-    #     playsound.playsound("sound.mp3", True)
-    #     os.remove("sound.mp3")
+        luong(khoiphuc)
+        
+  
     def dinh_dang_ngay(ngay):
         ngay=str(ngay).replace("/"," ")
         ngay=str(ngay).replace("-"," ")
@@ -116,7 +104,8 @@ def main():
         return giay
 
     def batdaudiemdanh():
-        messagebox.showwarning("thông báo","Nhấn 'q' để thoát ")
+        dd=diemdanh.sv_da_dd_khac_vang(matkb.get())
+        messagebox.showwarning("thông báo","Nhấn 'Q' để thoát ")
         tgbd= datetime.datetime.now()
         malop=malop_ten(data_lop.get())
         mamh=mamh_ten(data_mon.get())
@@ -146,10 +135,10 @@ def main():
         face_locations = []
         face_encodings = []
         face_names     = []
-        dd       =[]
         process_this_frame = True #xử lý khung
+        ret = video_capture.set(cv2.CAP_PROP_FRAME_WIDTH,1000)
+        ret = video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
         while True  :
-        
             ret, frame = video_capture.read()
             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
             rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
@@ -176,14 +165,20 @@ def main():
                         tre="Trể "+str(kq)[0:7]
                         diemdanh.diem_danh_vao_csdl(matkb.get(),name,tre,malop,mamh,magv,ngay,ca,now.strftime("%X"))
                         dd.append(name)
+                        
                     elif name not in dd and name != "Khongbiet":
-                        print(diemdanh)
+                        diemdanh.xoasv_dd(matkb.get(),name)
                         diemdanh.diem_danh_vao_csdl(matkb.get(),name,"có",malop,mamh,magv,ngay,ca,now.strftime("%X"))
                         dd.append(name)
+                        tensv = tensv_ma(name)
+                        speak(tensv)
+                        threading.Thread(target=speak, args=[tensv,])
+                    else:
+                        diemdanh.capnhat_tgra(matkb.get(),name,now.strftime("%X"))
+                        luong(khoiphuc)
                         
             process_this_frame = not process_this_frame
             
-
             #Hiển thị kết quả
             for (top_s, right, bottom, left), name in zip(face_locations, face_names):
                 top_s *= 4
@@ -199,31 +194,28 @@ def main():
                     cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
                 else:
                     cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.7, (255, 255, 255), 1)
-                
             cv2.imshow('Video', frame)
+            
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         video_capture.release()
         cv2.destroyAllWindows()
-        
     #     #----------------------------------------------------------------------------
+        dd=diemdanh.sv_da_dd(matkb.get())
         now=""
         for i in range(0,len(a)):
             if a[i] not in dd :
                 diemdanh.diem_danh_vao_csdl(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca,now)
-
         diemdanh.update_TT_diemdanh(matkb.get())
         row=diemdanh.bangdiemdanh(matkb.get())
         update(row)
-
-    # #---------------------------------------------
+    # #-----------------------------------------------------------------------------------------------------------------------
     def kt ():
         if data_lop.get() == "Bạn không có tiết giảng !":
             messagebox.showwarning("thông báo","Bạn không có tiết dạy")
-        elif diemdanh.kt_TT_diemdanh(matkb.get()) == "0":
-            batdaudiemdanh()
         else:
-            messagebox.showwarning("thông báo","Đã điểm danh rồi !")
+            luong(batdaudiemdanh)
+            
     def menutaikhoan():
         win.destroy()
         taikhoan.main()
@@ -248,7 +240,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Điểm danh sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_diemdanh.png")
     
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl1.png")
@@ -266,16 +258,16 @@ def main():
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
-    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,command=menuthemsv)
+    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
     menuthem.place(x=46,y=129)
 
-    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0)
+    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,activebackground='#857EBD',highlightthickness=0)
     menudiemdanh.place(x=46,y=248)
 
-    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0, command=menuthongke)
+    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD', command=menuthongke)
     menuthongke.place(x=46,y=366)
 
-    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0, command=menutaikhoan)
+    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0,activebackground='#857EBD', command=menutaikhoan)
     menutaikhoan.place(x=46,y=484)
 
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
@@ -298,14 +290,11 @@ def main():
     data_lop=StringVar()
     data_mon=StringVar()
     ndtimkiem=StringVar()
+    dd=[]
 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
     
-
-
-
-
     #lớp
     lblop=Label(bg,font=("Baloo Tamma",12),bg="white")
     lblop.place(x=600,y=90)
@@ -314,49 +303,28 @@ def main():
 
     #nút điểm diemdanh
     btndiemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=kt)
-    btndiemdanh.place(x=575,y=229)
-    # btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    # btntimkiem.place(x=891,y=305)
-    # btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    # btnkhoiphuc.place(x=928,y=305)
-    # txt_timkiem=Entry(bg,width=20,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
-    # txt_timkiem.place(x=520,y=295)
+    btndiemdanh.place(x=573,y=229)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem.place(x=883,y=292)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
+    btnkhoiphuc.place(x=920,y=292)
+    txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
+    txt_timkiem.place(x=650,y=295)
     #bang diemdanh
-
-    
-  
-  
-   
    
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
     tv.column(1, width=80 )
-    tv.column(2, width=100,anchor=CENTER)
+    tv.column(2, width=120)
     tv.column(3, width=80,anchor=CENTER)
-    tv.column(4, width=100,anchor=CENTER)
-    tv.column(5, width=180)
+    tv.column(4, width=140,anchor=CENTER)
+    tv.column(5, width=120)
     tv.heading(1,text="Mã sinh viên")
     tv.heading(2,text="Tên sinh viên")
     tv.heading(3,text="Thông tin")
     tv.heading(4,text="TG vào - TG ra")
     tv.heading(5,text="Ghi chú")
-
     tv.place(x=380,y=350)
-    
-    
 
-    # #nút  diemdanhlai
-    # btndiemdanhlai=Button(bg,image=ing_btndiemdanhlai,bd=0,highlightthickness=0,command=diemdanhlai)
-    # btndiemdanhlai.place(x=757,y=530)
-    # #nút thông báo
-    # l=[]
-    # i=[]
-    # magv=csdl.tim_magv_tu_email()
-    # if csdl.gvdiemdanh(magv,l,i,i,i)== True:
-    #     btnthongbao=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=diemdanhbulai)
-    #     btnthongbao.place(x=943,y=0)
-    #     lbstb1=Label(bg,text=len(l),fg="red",font=("Arial",10),bg="white")
-    #     lbstb1.place(x=978,y=2)
-    
     luong(loaddl)
     win.mainloop()
 

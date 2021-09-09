@@ -5,6 +5,7 @@ from tkinter import messagebox
 import socket
 import backend.xacthuc as xacthuc
 import taikhoan
+import dangnhap
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import auth
@@ -13,9 +14,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+import threading
 
 
-def main():
+def main(trang):
     
     def hien(txtPass):
         if txtPass["show"]=="*":
@@ -59,11 +61,15 @@ def main():
         if kt_dangnhap(email,passw,passwn) == True:
             truycapwweb(email,passwn)
             messagebox.showinfo("thông báo","Đã đổi mật khẩu")
-            win.destroy()
-            taikhoan.main()
+            trove()
         else:
             messagebox.showerror("Lỗi","Đổi mật khẩu thất bại")
-            
+    def trove():
+        win.destroy()
+        if trang==1:
+            taikhoan.main()
+        else: 
+            dangnhap.main()
 
     win=Tk()
     win.geometry("600x600+400+100")
@@ -71,10 +77,9 @@ def main():
     win.config(bg="green")
     win.title("Menu tkinter")
     img_bg=ImageTk.PhotoImage(file="img/bg_doimatkhau.png")
-
     img_btn=ImageTk.PhotoImage(file=f"img/btn_doimatkhau.png")
-
     img_btnhien=ImageTk.PhotoImage(file="img/img_btnhienmk.png")
+    ing_btntrolai=ImageTk.PhotoImage(file="img/trove_bgdoimatkhau.png")
 
     bg=Canvas(win,width=600,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -85,15 +90,19 @@ def main():
     data_p=StringVar()
     data_pn=StringVar()
     ten_thiet_bi = socket.gethostname()
-    d=[]
-    with open(ten_thiet_bi+".txt","r") as file:
-        d=file.read().split()
-
-    data_e.set(d[0])
     
 
-    txtEmail=Label(bg,width=25,font=("Baloo Tamma",12),bg="white",bd=0,textvariable=data_e)
-    txtEmail.place(x=220,y=228)
+    if trang==1:
+        d=[]
+        with open(ten_thiet_bi+".txt","r") as file:
+            d=file.read().split()
+        data_e.set(d[0])
+        txtEmail=Label(bg,width=25,font=("Baloo Tamma",12),bg="white",bd=0,textvariable=data_e)
+        txtEmail.place(x=220,y=228)
+    else:
+        txtEmail=Entry(bg,width=24,font=("Baloo Tamma",12),bg="white",bd=0,textvariable=data_e)
+        txtEmail.place(x=240,y=228)
+    
     
     txtPass=Entry(bg,width=17,font=("Baloo Tamma",12), bd=0, show="*", textvariable=data_p)
     txtPass.place(x=280,y=290)
@@ -102,8 +111,11 @@ def main():
     txtpassnew.place(x=280,y=350)
 
 
-    btn=Button(bg,image=img_btn,bd=0,borderwidth=0, highlightthickness=0, command=doimatkhau)
+    btn=Button(bg,image=img_btn,bd=0,borderwidth=0, highlightthickness=0, command=doimatkhau )
     btn.place(x=231,y=494)
+
+    btn_trolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trove)
+    btn_trolai.place(x=550,y=2)
 
     btnhien=Button(bg,image=img_btnhien,bd=0,highlightthickness=0,command=lambda:hien(txtPass))
     btnhien.place(x=434,y=287)

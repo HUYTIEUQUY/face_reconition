@@ -12,10 +12,15 @@ import backend.xacthuc as xacthuc
 import adminlop
 import diemdanh
 import quantrivien_khoa
+import doimatkhau
 
 
 
 def main():
+
+    def doimk():
+        win.destroy()
+        doimatkhau.main(0)
     
     def hien():
         if txtPass["show"]=="*":
@@ -74,6 +79,7 @@ def main():
     img_btn=ImageTk.PhotoImage(file=f"img/buttonDN.png")
 
     img_btnhien=ImageTk.PhotoImage(file="img/img_btnhien.png")
+    img_lb_doimatkhau=ImageTk.PhotoImage(file="img/lb_doimatkhau.png")
 
     bg=Canvas(win,width=600,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -87,6 +93,9 @@ def main():
     data_p=StringVar()
     txtPass=Entry(bg,width=22,font=("Baloo Tamma",12), bd=0, show="*", textvariable=data_p)
     txtPass.place(x=200,y=346)
+
+    lb_doimatkhau=Button(bg,image=img_lb_doimatkhau,bd=0, highlightthickness=0,activebackground="#BCA8E6",relief=RIDGE,command=doimk)
+    lb_doimatkhau.place(x=231,y=440)
 
 
     btn=Button(bg,image=img_btn,bd=0,borderwidth=0, highlightthickness=0,relief="flat",command=dangnhap)

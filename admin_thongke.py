@@ -195,15 +195,15 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=dangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT,command=menulophoc)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
+    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,activebackground='#857EBD',command=menugiangvien)
     menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0)
+    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,activebackground='#857EBD', command=menutkb)
     menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menumonhoc)
     menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
 

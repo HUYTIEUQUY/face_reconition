@@ -13,6 +13,7 @@ import admin_tkb
 from backend.dl_giangvien import tengv_email,makhoa_email
 import backend.dl_monhoc as mh
 import threading
+import kt_nhap as kt
 
 def main():
     def luong(ham):
@@ -50,17 +51,15 @@ def main():
         data_sotietlt.set(item['values'][3])
         data_sotietth.set(item['values'][4])
 
-    def kt_dau_khoangcach(s):
-        return bool(s and s.strip())
+
 
     def kt_nhap(ma,ten,lt,th):
         if ma=="" or ten=="" or lt=="" or th=="" :
             messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
-        elif len(str(ma)) <6 or ma.isnumeric()== False :
-            messagebox.showerror("thông báo","Mã môn học phải ít nhất 6 kí tự và là số")
+        elif len(str(ma)) != 6 or ma.isnumeric()== False :
+            messagebox.showerror("thông báo","Mã môn học phải 6 kí tự và là số")
             return False
-        
-        elif kt_dau_khoangcach(ten)==False:
+        elif kt.kt_dau_khoangcach(ten)==False or kt.kt_kitudacbiet(ten) != "":
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
             return False
         elif lt.isnumeric()== False or th.isnumeric()== False:
@@ -75,14 +74,15 @@ def main():
             return True
 
     def them():
-        ten=data_tenmon.get()
+        ten=kt.xoa_khoangcach(data_tenmon.get())
         ma=data_mamon.get()
         lt=data_sotietlt.get()
         th=data_sotietth.get()
         if kt_nhap(ma,ten,lt,th) == True:
             mh.themmh(ma,ten,lt,th,makhoa.get())
+            luong(khoiphuc)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
-            khoiphuc()
+            
     def xoa():
         ma=data_mamon.get()
 
@@ -95,8 +95,9 @@ def main():
                 messagebox.showerror("thông báo","Không thể xoá môn học này\nMôn học vẫn còn tồn tại trong bảng thời khoá biểu")
             else:
                 mh.xoamh(ma)
+                luong(khoiphuc)
                 messagebox.showinfo("thông báo","Đã xoá")
-                khoiphuc()
+                
         else: 
             return 
 
@@ -113,7 +114,7 @@ def main():
             data_mamon.set(data_mamonsx.get())
         elif ten=="" or lt=="" or th=="" :
             messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
-        elif kt_dau_khoangcach(ten)==False :
+        elif kt.kt_dau_khoangcach(ten)==False :
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
         elif lt.isnumeric()== False or th.isnumeric()== False:
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
@@ -189,15 +190,15 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT,command=menulophoc)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
+    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,activebackground='#857EBD',command=menugiangvien)
     menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
+    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,activebackground='#857EBD',command=menutkb)
     menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,activebackground='#857EBD',highlightthickness=0)
     menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")

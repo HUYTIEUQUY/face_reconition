@@ -35,7 +35,7 @@ def kt_ten_tt(ten):
     a=[]
     try:
         for i in data.each():
-            if(i.val()["TenMH"]==str(ten)):
+            if(i.val()["TenMH"].lower()==str(ten).lower()):
                 a.append(i.val()["MaMH"])
     except:
         a=[]

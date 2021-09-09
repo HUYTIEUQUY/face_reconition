@@ -16,6 +16,7 @@ import backend.dl_tkb as tkb
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
 import threading
+import datetime
 
 def main():
     def luong(ham):
@@ -27,12 +28,16 @@ def main():
         lop=tkb.lop_khoa(makhoa.get())
         gv=tkb.gv_khoa(makhoa.get())
         mon=tkb.mh_khoa(makhoa.get())
+        namhoc=tkb.namhoc()
         #set cho combobox to
         cblop.config(values=lop)
         cblop.current(0)
         cbmon.config(values=mon)
         cbgv.config(values=gv)
-        luong(khoiphuc)
+        cbnam.config(values=namhoc)
+        cbnam.current(0)
+        
+        khoiphuc()
 
 
     def dinh_dang_ngay(ngay):
@@ -48,6 +53,7 @@ def main():
         else:
             ngay=d[1]+"/"+d[0]+"/20"+d[2]
         return ngay
+
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
@@ -74,7 +80,6 @@ def main():
         cacu.set(item['values'][4])
         dataca=str(item['values'][4])
         
-        
         for i in range(5):
             if dataca.find(str(i)) != -1:
                 ca[i].set(1)
@@ -86,6 +91,25 @@ def main():
         namhoc=tkb.manh_ten(data_namhoc.get())
         row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),ndtimkiem.get())
         update(row)
+
+    def kt_lich_gv(magv, ngay, ca):
+        data_ca1= " "
+        data_ca=data_ca1.join(ca).split()
+        tam=[]
+        for i in data_ca:
+            if tkb.kt_lichgiang(magv,ngay,i) !=[]:
+                tam.append(i)
+        return tam
+    def kt_lich_lop(malop, ngay, ca):
+        data_ca1= " "
+        data_ca=data_ca1.join(ca).split()
+        tam=[]
+        for i in data_ca:
+            if tkb.kt_lich_tkb(malop,ngay,i) !=[]:
+                tam.append(i)
+        return tam
+
+
 
     def khoiphuc():
         ngaycu.set("")
@@ -116,25 +140,20 @@ def main():
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
-        if len(data_ca)==2:
-            ca1=data_ca[0:1]
-            ca2=data_ca[1:2]
-        else:
-            ca1=ca2=data_ca
-
-      
-
+        
         if data_ca=="" or magv=="" or mamh=="" or ngay =="":
             messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
-        elif(tkb.kt_lichgiang(magv,ngay,ca1) != [] or tkb.kt_lichgiang(magv,ngay,data_ca) != [] or tkb.kt_lichgiang(magv,ngay,ca2)!=[]):
+        elif tkb.ngaya_nhohon_ngayb(ngay,now) ==True:
+            messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
+        elif kt_lich_gv(magv,ngay,data_ca) !=[]:
             messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
-        elif(tkb.kt_lich_tkb(malop,ngay,data_ca)!= [] or tkb.kt_lich_tkb(malop,ngay,ca1)!= [] or tkb.kt_lich_tkb(malop,ngay,ca2)!= []):
+        elif kt_lich_lop(malop,ngay,data_ca) != []:
             messagebox.showerror("thông báo","Lớp đã có lịch học !")
         elif tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
             luong(khoiphuc)
         else:
-            messagebox.showerror("thông báo", "Thêm thất bại")
+            messagebox.showerror("thông báo", "Đã thêm")
             
             
     def sua():
@@ -144,41 +163,43 @@ def main():
         gv_cu=magv_ten(gvcu.get())
         ca_cu=cacu.get()
         pp_giang=pp_giangcu.get()
-        tkb.xoa_dong_tkb(gv_cu,mon_cu,ngay_cu,ca_cu,pp_giang)
-        # 
-        #du liệu cập nhật
-        malop=malop_ten(data_lop.get())
-        magv=magv_ten(data_gv.get())
-        mamh = mamh_ten(data_mon.get())
-        ngay=data_ngay.get()
-        namhoc=tkb.manh_ten(data_namhoc.get())
-        hki=data_hocky.get()
-        pp=data_loai.get()
-        data_ca=""
-        for i in range(len(ca)):
-            if ca[i].get() >= 1:
-                data_ca += str(i)
-
-
-        if len(data_ca)==2:
-            ca1=data_ca[0:1]
-            ca2=data_ca[1:2]
-        else:
-            ca1=ca2=data_ca
         
-        if(ngaycu.get()== ""):
-            messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa ! Bạn hãy nhấn 2 lần vào dòng muốn sửa , rồi sửa dữ liệu và nhấn nút sửa")
-        elif data_ca=="" or magv=="" or mamh=="" or ngay =="":
-            messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
-        elif(tkb.kt_lichgiang(magv,ngay,ca1) != [] or tkb.kt_lichgiang(magv,ngay,data_ca) != [] or tkb.kt_lichgiang(magv,ngay,ca2)!=[]):
-            messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
-        elif(tkb.kt_lich_tkb(malop,ngay,data_ca)!= [] or tkb.kt_lich_tkb(malop,ngay,ca1)!= [] or tkb.kt_lich_tkb(malop,ngay,ca2)!= []):
-            messagebox.showerror("thông báo","Lớp đã có lịch học !")
-        else:
+        if tkb.xoa_dong_tkb(gv_cu,mon_cu,ngay_cu,ca_cu,pp_giang):
+
+            # 
+            #du liệu cập nhật
+            malop=malop_ten(data_lop.get())
+            magv=magv_ten(data_gv.get())
+            mamh = mamh_ten(data_mon.get())
+            ngay=data_ngay.get()
+            namhoc=tkb.manh_ten(data_namhoc.get())
+            hki=data_hocky.get()
+            pp=data_loai.get()
+            data_ca=""
+            for i in range(len(ca)):
+                if ca[i].get() >= 1:
+                    data_ca += str(i)
+
+
             
-            tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)
-            messagebox.showinfo("thông báo", "Đã sửa thành công")
-            luong(khoiphuc)
+            
+            if(ngaycu.get()== ""):
+                messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa ! Bạn hãy nhấn 2 lần vào dòng muốn sửa , rồi sửa dữ liệu và nhấn nút sửa")
+            elif data_ca=="" or magv=="" or mamh=="" or ngay =="":
+                messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
+            elif tkb.ngaya_nhohon_ngayb(ngay,now) ==True:
+                messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
+            elif kt_lich_gv(magv,ngay,data_ca) !=[]:
+                messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
+            elif kt_lich_lop(malop,ngay,data_ca) != []:
+                messagebox.showerror("thông báo","Lớp đã có lịch học !")
+            else:
+                
+                tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)
+                messagebox.showinfo("thông báo", "Đã sửa thành công")
+                luong(khoiphuc)
+        else: 
+            messagebox.showwarning("Thông báo","Đã điểm danh không thể sửa")
                
     def xoa():
         magv=magv_ten(data_gv.get())
@@ -189,15 +210,17 @@ def main():
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
-        print(pp)
         
-        if ngay=="":
-            messagebox.showerror("thông báo","Không tìm thấy dữ liệu cần xoá.\n Bạn hãy nhấn 2 lần vào dòng muốn xoá và nhấn nút 'xoá'")
-        elif tkb.xoa_dong_tkb(magv,mamh,ngay,data_ca,pp) == True:
-            messagebox.showinfo("thông báo","Đã xoá khỏi thời khoá biểu")
-            luong(khoiphuc)
+        if messagebox.askyesno("Thông báo","Bạn có thật sự muốn xoá"):
+            if ngay=="":
+                messagebox.showerror("thông báo","Không tìm thấy dữ liệu cần xoá.\n Bạn hãy nhấn 2 lần vào dòng muốn xoá và nhấn nút 'xoá'")
+            elif tkb.xoa_dong_tkb(magv,mamh,ngay,data_ca,pp) == True:
+                messagebox.showinfo("thông báo","Đã xoá khỏi thời khoá biểu")
+                luong(khoiphuc)
+            else:
+                messagebox.showerror("thông báo","Không thể xoá")
         else:
-            messagebox.showerror("thông báo","Lỗi")
+            return
   
     def chonngay(cal,btn):
         data_ngay.set(dinh_dang_ngay(cal.get_date()))
@@ -206,15 +229,15 @@ def main():
         lb.config(text="|")
         btnchonlich.config(command=chonlich)
     def chonlich():
-        cal = Calendar(lb,selectmode="day",year=2021,month=8,day=16,bg="white")
+        cal = Calendar(lb,selectmode="day",year=int(lich[2]),month=int(lich[1]),day=int(lich[0]),bg="white")
         cal.pack()
         btn=Button(f,image=img_btnchon,bg="white",command=lambda:chonngay(cal,btn),bd=0,highlightthickness=0)
         btn.pack()
         btnchonlich.config(command=tam)
-   
 
     def tam():
         return
+    
     def menuthongke():
         win.destroy()
         admin_thongke.main()
@@ -284,8 +307,10 @@ def main():
     pp_giangcu=StringVar()
     data_loai=StringVar()
     hocky=[1,2]
-    loai=["lý thuyết","thực hành"]
-    namhoc=["2021-2022","2022-2022"]
+    loai=["Lý thuyết","Thực hành"]
+    x= datetime.datetime.now()
+    now = dinh_dang_ngay(x.strftime("%x"))
+    lich= now.replace("/"," ").split()
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -293,22 +318,21 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT,command=menulophoc)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
+    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,activebackground='#857EBD',command=menugiangvien)
     menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0)
+    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,activebackground='#857EBD')
     menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menumonhoc)
     menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
 
-    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Times new roman",12), width=10,state='readonly',values=namhoc)
-    cbnam.current(0)
+    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Times new roman",12), width=10,state='readonly')
     cbnam.bind('<<ComboboxSelected>>', capnhatbang)
     cbnam.place(x=410,y=5)
     Frame(bg,width=102,height=2,bg="white").place(x=410,y=5)
@@ -370,7 +394,7 @@ def main():
     btnsua.place(x=637,y=247)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=247)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=luong(timkiem))
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
     btntimkiem.place(x=881,y=313)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=920,y=313)

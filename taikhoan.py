@@ -73,7 +73,7 @@ def main():
         return ngay
 
     def capnhat_sdt():
-        if len(sdt.get()) <10 or sdt.get().isnumeric()== False:
+        if len(sdt.get()) !=10 or sdt.get().isnumeric()== False:
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
         elif update_sdt(magv.get(),sdt.get()):
             messagebox.showinfo("thông báo","Đã cập nhật số điện thoại")
@@ -91,7 +91,7 @@ def main():
 
     def btndoimatkhau():
         win.destroy()
-        doimatkhau.main()
+        doimatkhau.main(1)
     def menuthongke():
         win.destroy()
         thongke.main()
@@ -152,16 +152,16 @@ def main():
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
-    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,command=menuthemsv)
+    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
     menuthem.place(x=46,y=129)
 
-    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0,command=menudiemdanh)
+    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0,activebackground='#857EBD',command=menudiemdanh)
     menudiemdanh.place(x=46,y=248)
 
-    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=46,y=366)
 
-    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0)
+    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0,activebackground='#857EBD')
     menutaikhoan.place(x=46,y=484)
 
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)

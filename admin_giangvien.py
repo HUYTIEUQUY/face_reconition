@@ -11,8 +11,9 @@ import admin_tkb
 import admin_thongke
 import admin_monhoc
 import backend.dl_giangvien as gv
-from backend.dl_giangvien import tengv_email,makhoa_email
+from backend.dl_giangvien import email_ma, tengv_email,makhoa_email
 import threading
+import kt_nhap as kt
 
 
 def main():
@@ -38,8 +39,10 @@ def main():
         data_magv.set(item['values'][1])
         data_ten.set(item['values'][2])
         data_email.set(item['values'][3])
-        data_sdt.set(item['values'][4])
+        data_sdt.set(str(item['values'][4]))
         data_ghichu.set(item['values'][5])
+        sdt=gv.sdt_ma(data_ma.get())
+        data_sdt.set(sdt)
 
     def khoiphuc():
         ndtimkiem.set("")
@@ -52,30 +55,33 @@ def main():
         row=gv.banggv(makhoa.get())
         update(row)
 
-    def kt_dau_khoangcach(s):
-        return bool(s and s.strip())
+
 
     def them():
         ma=data_ma.get()
         ten=data_ten.get()
+        ten=kt.xoa_khoangcach(ten)
         sdt=data_sdt.get()
         ghichu=data_ghichu.get()
-        emailgv=ma+"@teacher.mku.edu.vn"
+        tenemail=kt.xoa_khoangcach(kt.khong_dau(ten)).lower().replace(" ","")
+        emailgv=tenemail+ma+"@mku.edu.vn"
+        print(gv.kt_ma(ma))
         if ma =="" or ten == "" or sdt=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
         elif len(ma) < 6 or ma.isnumeric()== False:
             messagebox.showwarning("thông báo","Mã giảng viên phải ít nhất 6 kí tự và là số")
-        elif len(sdt) <10 or sdt.isnumeric()== False:
+        elif len(sdt) !=10 or sdt.isnumeric()== False:
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
-        elif kt_dau_khoangcach(data_ten.get())==False :
+        elif kt.kt_dau_khoangcach(ten)==False or kt.kt_kitudacbiet(ten) != "":
             messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
-        elif gv.kt_ma(ma) == []:
-            gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa.get())
-            messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
         else:
-            messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách danh sách")
-            khoiphuc()
-    
+            if gv.kt_ma(ma) == []:
+                gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa.get())
+                messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
+                khoiphuc()
+            else:
+                messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách danh sách")
+                
     def sua():
         if data_ma.get() != data_magv.get():
             messagebox.showwarning("thông báo","khổng thể sửa mã")
@@ -84,7 +90,7 @@ def main():
             messagebox.showwarning("thông báo","Chưa có dữ liệu sửa. Bạn hãy click 2 lần vào dòng muốn sửa !")
         elif data_ten.get()=="" or data_sdt.get()=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
-        elif kt_dau_khoangcach(data_ten.get())==False :
+        elif kt.kt_dau_khoangcach(data_ten.get())==False or kt.kt_kitudacbiet(data_ten.get()) !="":
             messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
         elif data_sdt.get().isnumeric()== False:
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
@@ -98,11 +104,15 @@ def main():
         if data_ma.get()=="" or data_ten.get()=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn thực sự muốn xoá"):
-            # if csdl_admin.kt_gv_tontai(data_ma.get()):
-            gv.xoagv(data_ma.get())
-            khoiphuc()
-            # else:
-            #     return
+            if gv.kt_gv_tontai_tkb(data_ma.get()) ==[] and gv.kt_gv_tontai_diemdanh(data_ma.get())==[]:
+                tenemail=email_ma(data_ma.get())
+                gv.xoa_tk(tenemail)
+                gv.xoagv(data_ma.get())
+                luong(khoiphuc)
+                messagebox.showinfo("thông báo","Đã xoá giảng viên ra khỏi danh sách")
+            else:
+                messagebox.showerror("thông báo","Xoá thất bại")
+
     
     def timkiem():
         row=gv.tim_gv(makhoa.get(),ndtimkiem.get())
@@ -173,15 +183,15 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT,command=menulophoc)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0)
+    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,activebackground='#857EBD')
     menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
+    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,activebackground='#857EBD',command=menutkb)
     menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menumonhoc)
     menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")

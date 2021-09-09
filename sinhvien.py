@@ -23,6 +23,7 @@ from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
 from backend.dl_adminlop import malop_ten, tenlop_ma
 import backend.dl_sinhvien as sv
 import threading
+import kt_nhap as kt
 
 
 def main():
@@ -54,7 +55,7 @@ def main():
                 sv.themsv(masv,tensv,malop,"")
         
         if ko_luu !=[]:
-            messagebox.showerror("thông báo","Lưu trùng mã "+str(ko_luu))
+            messagebox.showerror("thông báo","Mã sinh viên đã tồn tại\n"+str(ko_luu))
         row=sv.bangsv(malop)
         update(row)
 
@@ -153,22 +154,7 @@ def main():
 
     a=[]
     
-    def khong_dau(s):
-        s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
-        s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
-        s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
-        s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
-        s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
-        s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
-        s = re.sub(r'[ìíịỉĩ]', 'i', s)
-        s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
-        s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
-        s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
-        s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
-        s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
-        s = re.sub(r'[Đ]', 'D', s)
-        s = re.sub(r'[đ]', 'd', s)
-        return s
+    
 
     # def sua_anh(lb,i,btn):
     #     a.pop(i-1)
@@ -196,9 +182,9 @@ def main():
 
     def suamatran():
         id=ma.get()
-        namemahoa=khong_dau(ten.get())
+        namemahoa=kt.khong_dau(ten.get())
         lop=cb_lop.get().replace(" ","_")
-        lopmahoa=khong_dau(lop)
+        lopmahoa=kt.khong_dau(lop)
         try:
             f=open("mahoa/"+lopmahoa+".pkl","rb")
             ref_dictt=pickle.load(f)
@@ -223,7 +209,7 @@ def main():
         
     def xoa_sv_matran(masv):
         tenlop=lop.get().replace(" ","_")
-        lopmahoa=khong_dau(tenlop)
+        lopmahoa=kt.khong_dau(tenlop)
         with open("mahoa/"+str(lopmahoa)+"mahoa.pkl","rb") as f:
             ref_dictt=pickle.load(f)
             ref_dictt.pop(masv)
@@ -261,34 +247,42 @@ def main():
     
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
+    
+    def xoa_khoangcach(s):
+        s=s.split()
+        a=""
+        for i in s:
+            a=a+i+" "
+        return a
+
+    def kt_kitudacbiet(s):
+        s=xoa_khoangcach(s).replace(" ","")
+        s=kt.khong_dau(s)
+        kitu = re.sub(r"[a-zA-Z0-9]","",str(s))
+        return kitu
 
     def kt_nhap():
         if ma.get()=="" or ten.get() == "" :
             messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
-            
-        elif kt_dau_khoangcach(ma.get())==False or kt_dau_khoangcach(ten.get()==False):
+        elif kt_dau_khoangcach(ma.get())==False or kt_dau_khoangcach(ten.get())==False or kt_kitudacbiet(ten.get()) != "":
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
-        
         elif str(ma.get()).isnumeric()==False or len(str(ma.get()))!=10:
             messagebox.showwarning("thông báo","Kiểm tra lại mã sinh viên")
-            
         elif sv.kt_masv_tontai(ma.get()) !=[]:
             messagebox.showerror("thông báo","Mã sinh viên đã tồn tại")
-
         else:
-            themdlkhuonmat()
+            luong(themdlkhuonmat)
 
 
     def themdlkhuonmat():
         anh=""
         id=txt_masv.get()
-        name=txt_hoten.get()
-        name_mahoa=khong_dau(name)
+        name=xoa_khoangcach(txt_hoten.get())
+        name_mahoa=kt.khong_dau(name)
         malop=malop_ten(cb_lop.get())
         #thêm id , name vào co sở dữ liệu
-        
         lop=cb_lop.get().replace(" ","_")
-        lop=khong_dau(lop)
+        lop=kt.khong_dau(lop)
         try:
             f=open("mahoa/"+lop+".pkl","rb")
             ref_dictt=pickle.load(f)
@@ -304,15 +298,12 @@ def main():
         except:
             return
 
-
-
         try:
             f=open("mahoa/"+lop+"mahoa.pkl","rb")
             embed_dictt=pickle.load(f)
             f.close()
         except:
             embed_dictt={}
-
 
         for i in range(5):
             key = cv2. waitKey(1)
@@ -339,31 +330,26 @@ def main():
                         else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
                             embed_dictt[id]=[face_encoding]
                         if(i==4):
-                            messagebox.showinfo("thông báo", "Đã lưu mã hoá khuôn mặt")
+                            messagebox.showinfo("thông báo", "Đã lưu")
                         webcam.release()
                         cv2.destroyAllWindows()
                         break
-
-                elif key == ord('q'):
-                    print("Turning off camera.")
-                    webcam.release()
-                    print("Camera off.")
-                    print("Program ended.")
-                    cv2.destroyAllWindows() # thoát khỏi camera
-                    break
+            if key == ord('q'):
+                webcam.release()
+                cv2.destroyAllWindows() # thoát khỏi camera
+                break
 
         sv.themsv(id,name,malop,anh)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()
-
         khoiphuc()
 
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Quản lý thông tin sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_themdl.png")
  
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl.png")
@@ -437,16 +423,16 @@ def main():
 
 
 
-    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0)
+    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD')
     menuthem.place(x=46,y=129)
 
-    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0,command=menudiemdanh)
+    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0,activebackground='#857EBD',command=menudiemdanh)
     menudiemdanh.place(x=46,y=248)
 
-    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=46,y=366)
 
-    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0,command=menutaikhoan)
+    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0,activebackground='#857EBD',command=menutaikhoan)
     menutaikhoan.place(x=46,y=484)
 
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)

@@ -89,7 +89,7 @@ def timkiem_dong_tkb(malop,namhoc,hocky,q):
                 gv=tengv_ma(i.val()["MaGV"])
                 mh=tenmh_ma(i.val()["MaMH"])
                 e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
-                if str(q) in khong_dau(gv.lower()) or str(q) in khong_dau(mh.lower()) or str(q) in khong_dau(i.val()["PP_Giang"].lower()) or str(q) in khong_dau(i.val()["Ngay"].lower()) or str(q) in khong_dau(i.val()["Ca"].lower()) :
+                if khong_dau(str(q.lower())) in khong_dau(gv.lower()) or khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
                     a.append(e)
     except:a=[]
     return a
@@ -100,7 +100,7 @@ def kt_lichgiang(magv,ngay,ca):
     data=db.child("ThoiKhoaBieu").get()
     try:
         for i in data.each():
-            if(i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca) and i.val()["MaGV"]==str(magv)):
+            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaGV"]==str(magv)):
                 a.append(i.val()["MaGV"])
     except: a=[]
     return a
@@ -110,7 +110,7 @@ def kt_lich_tkb(malop,ngay,ca):
     data=db.child("ThoiKhoaBieu").get()
     try:
         for i in data.each():
-            if(i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca) and i.val()["MaLop"]==str(malop)):
+            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaLop"]==str(malop)):
                 a.append(i.val()["MaLop"])
     except:a=[]
     return a
@@ -119,13 +119,12 @@ def kt_lich_tkb(malop,ngay,ca):
 def xoa_dong_tkb(magv,mamh,ngay,ca,pp):
     data=db.child("ThoiKhoaBieu").get()
     for i in data.each():
-        if(i.val()["MaGV"]==str(magv) and  i.val()["MaMH"]==str(mamh)and i.val()["Ngay"]==str(ngay)and i.val()["Ca"]==str(ca) and i.val()["PP_Giang"]==str(pp)):
+        if(i.val()["MaGV"]==str(magv) and  i.val()["MaMH"]==str(mamh)and i.val()["Ngay"]==str(ngay)and i.val()["Ca"]==str(ca) and i.val()["PP_Giang"]==str(pp) and i.val()["TrangThaiDD"]=="0"):
             try:
                 db.child("ThoiKhoaBieu").child(i.key()).remove()
                 return True
             except:
                 return False
-
 
 def tenlop_ma(ma):
     data=db.child("Lop").get()
@@ -174,4 +173,11 @@ def gv_dd(magv,ngay):
                 e = [tenl,tenm,i.val()['Ngay'],i.val()['Ca']]
                 a.append(e)
     except: a=[]
+    return a
+
+def namhoc():
+    data=db.child("NamHoc").get()
+    a=""
+    for i in data.each():
+        a=(i.val()["TenNH"])
     return a

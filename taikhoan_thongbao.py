@@ -60,19 +60,19 @@ def main(lichgiang):
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg1)
 
-    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,command=menuthemsv)
+    menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
     menuthem.place(x=46,y=129)
 
-    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0,command=menudiemdanh)
+    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,highlightthickness=0,activebackground='#857EBD',command=menudiemdanh)
     menudiemdanh.place(x=46,y=248)
 
-    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=46,y=366)
 
-    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0,command=quaylai)
+    menutaikhoan=Button(bg,image=ing_menutaikhoan,bd=0,highlightthickness=0,activebackground='#857EBD',command=quaylai)
     menutaikhoan.place(x=46,y=484)
 
-    btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
+    btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,activebackground='#857EBD',command=dangxuat)
     btndangxuat.place(x=248,y=44)
 
     bglichgiang=Frame(bg,width=450,height=140,bg="#A672BB")

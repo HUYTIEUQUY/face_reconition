@@ -1,5 +1,8 @@
 import conect_firebase
 import re
+from firebase_admin import auth
+from firebase_admin import credentials
+import firebase_admin
 
 db=conect_firebase.connect().database()
 
@@ -43,7 +46,6 @@ def sdt_email(email):
     for i in data.each():
         if(i.val()["Email"]==email):
             a=str(i.val()["SDT"])
-            print(a)
     return a
 
 def makhoa_email(email):
@@ -114,6 +116,12 @@ def suagv(magv,tengv,sdt,ghichu):
             except:
                 return False
 
+def xoa_tk(email):
+    cred = credentials.Certificate("nckh.json")
+    firebase_admin.initialize_app(cred)
+    a=auth.get_user_by_email(str(email))
+    auth.delete_user(a.uid)
+
 def xoagv(magv):
     data=db.child("GiangVien").get()
     for i in data.each():
@@ -140,13 +148,28 @@ def magv_email(email):
             a=(i.val()["MaGV"])
     return a
 
-
 def tengv_ma(ma):
     data=db.child("GiangVien").get()
     a=""
     for i in data.each():
         if(i.val()["MaGV"]==str(ma)):
             a=(i.val()["TenGV"])
+    return a
+
+def email_ma(ma):
+    data=db.child("GiangVien").get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaGV"]==str(ma)):
+            a=(i.val()["Email"])
+    return a
+
+def sdt_ma(ma):
+    data=db.child("GiangVien").get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaGV"]==str(ma)):
+            a=(i.val()["SDT"])
     return a
 
 
@@ -160,3 +183,20 @@ def update_sdt(magv,sdt):
                 return True
             except:
                 return False
+
+def kt_gv_tontai_tkb(magv):
+    data=db.child("ThoiKhoaBieu").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaGV"]==str(magv)):
+            a.append(i.val()["MaGV"])
+    return a
+
+def kt_gv_tontai_diemdanh(magv):
+    data=db.child("DiemDanh").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaGV"]==str(magv)):
+            a.append(i.val()["MaGV"])
+    return a
+

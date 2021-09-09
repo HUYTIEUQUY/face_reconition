@@ -15,7 +15,7 @@ import admin_monhoc
 from backend.dl_giangvien import tengv_email,makhoa_email
 from backend.dl_khoa import tenkhoa
 import backend.dl_adminlop as lop
-import datetime
+import kt_nhap as kt
 import threading
 
 def main():
@@ -35,16 +35,16 @@ def main():
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
-    def kt_dau_khoangcach(s):
-        return bool(s and s.strip())
+
     def them():
         ma=lop.malop()
         ten=tenlop.get()
+        ten=kt.xoa_khoangcach(ten)
         if ten=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
         # else:
             
-        elif kt_dau_khoangcach(ten)== False:
+        elif kt.kt_dau_khoangcach(ten)== False or kt.kt_kitudacbiet(ten) != "":
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
         elif lop.kt_tenlop(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
@@ -73,13 +73,13 @@ def main():
 
     def sua():
         tenmoi=tenlop.get()
+        tenmoi= kt.xoa_khoangcach(tenmoi)
         malop1=malop.get()
-
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
         elif malop.get()=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
-        elif kt_dau_khoangcach(tenmoi)== False:
+        elif kt.kt_dau_khoangcach(tenmoi)== False or kt.kt_kitudacbiet(tenmoi)!= "":
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
         elif lop.kt_tenlop(tenmoi)!= []:
             messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
@@ -166,15 +166,15 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD')
     menulophoc.place(x=30,y=128)
-    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
+    menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,activebackground='#857EBD',command=menugiangvien)
     menugiangvien.place(x=30,y=212)
-    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
+    menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,activebackground='#857EBD',command=menutkb)
     menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menumonhoc)
     menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
