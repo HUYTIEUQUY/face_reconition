@@ -192,7 +192,7 @@ def main():
     tv.heading(2,text="Mã khoa")
     tv.heading(3,text="Tên Khoa")
     tv.place(x=390,y=340)
-    tv.bind('<Double 1>', getrow)
+    
     
     threading.Thread(target=loaddl).start()
     win.mainloop()

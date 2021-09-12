@@ -21,6 +21,7 @@ import datetime
 import re
 import threading
 from speak import speak
+import thietlap
 
 
 def main():
@@ -215,6 +216,9 @@ def main():
             messagebox.showwarning("thông báo","Bạn không có tiết dạy")
         else:
             luong(batdaudiemdanh)
+    def thietlaptre():
+        win.destroy()
+        thietlap.main()
             
     def menutaikhoan():
         win.destroy()
@@ -250,7 +254,7 @@ def main():
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
     ing_btndiemdanh=ImageTk.PhotoImage(file="img/btndiemdanh.png")
     ing_btndiemdanhlai=ImageTk.PhotoImage(file="img/btndiemdanhlai.png")
-    ing_btnthongbao=ImageTk.PhotoImage(file="img/btnthongbaodd.png")
+    ing_btnthetlap=ImageTk.PhotoImage(file="img/thietlap.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
     
@@ -290,7 +294,6 @@ def main():
     data_lop=StringVar()
     data_mon=StringVar()
     ndtimkiem=StringVar()
-    dd=[]
 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
@@ -311,6 +314,10 @@ def main():
     txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
     txt_timkiem.place(x=650,y=295)
     #bang diemdanh
+
+    tl=Button(bg,image=ing_btnthetlap,bd=0,highlightthickness=0,command=thietlaptre)
+    tl.place(x=948,y=2)
+    
    
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
     tv.column(1, width=80 )

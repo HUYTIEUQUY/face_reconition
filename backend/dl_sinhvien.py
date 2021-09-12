@@ -146,3 +146,11 @@ def dong_ten_sv(malop):
                 e.append(i.val()["TenSV"])
     except: e=[]
     return e
+
+def ds_masv_lop(malop):
+    data=db.child("SinhVien").get()
+    a=[]
+    for i in data.each():
+        if(i.val()["MaLop"]==str(malop)):
+            a.append(i.val()['MaSV'])
+    return a

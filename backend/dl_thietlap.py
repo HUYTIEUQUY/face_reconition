@@ -10,13 +10,18 @@ def loadca(soca):
             a=i.val()
     return a
 
-def load_dl_tre():
-    data=db.child("TGtre").get()
-    return data
-
-def luutre(tg):
+def load_dl_tre(ma):
+    a=""
     try:
-        data=db.child("TGtre").set(str(tg))
+        data=db.child("tgtre").child(ma).get()
+        a= data.val()['thoigian']
+    except: a=""
+    return a
+
+def luutre(ma,tg):
+    data={'thoigian':str(tg)}
+    try:
+        db.child("tgtre").child(ma).set(data)
         return True
     except:
         return False

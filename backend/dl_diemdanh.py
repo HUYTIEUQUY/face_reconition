@@ -150,3 +150,31 @@ def xoasv_dd(matkb,masv):
             except:
                 return False
 
+def diemdanhbangexcel(matkb,masv,thongtin,malop,mamh,magv,ngay,ca,tgvao,tgra):
+    data={'Ma':str(matkb),'MaSV':str(masv),'ThongTin':str(thongtin),'MaLop':str(malop),'MaMH':str(mamh),'MaGV':str(magv),'Ngay':str(ngay),'Ca':str(ca),'TG_Vao':str(tgvao),'TG_Ra':str(tgra),'GhiChu':''}
+    try:
+        db.child('DiemDanh').push(data)
+        return True
+    except:
+        return False
+
+def xoadd(matkb):
+    data=db.child("DiemDanh").get()
+    for i in data.each():
+        if i.val()["Ma"] == str(matkb):
+            db.child("DiemDanh").child(i.key()).remove()
+               
+
+# def tgca(tgvao,tgra,ca):
+#     data=db.child("CaHoc").get()
+#     for i in data.each():
+#         if i.val()["TenCa"]==str(ca) and i.val()["TGBD"] <= str(tgvao) and i.val()["TGKT"] >= str(tgra):
+#             return True
+#     return False
+def tgca(ca,e):
+    data=db.child("CaHoc").get()
+    for i in data.each():
+        if i.val()["TenCa"] == str(ca) :
+            e.append(i.val()['TGBD'])
+            e.append(i.val()['TGKT'])
+

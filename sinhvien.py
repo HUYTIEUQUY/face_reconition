@@ -69,9 +69,6 @@ def main():
         else:
 
             fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-            
-        
-            
             a=sv.dong_ma_sv(malop)
             b=sv.dong_ten_sv(malop)
             out_workbook = xlsxwriter.Workbook(fln+".xlsx")
@@ -152,7 +149,6 @@ def main():
 
         btn_xemanh.config(image=img_btnxem)
 
-    a=[]
     
     
 

@@ -56,8 +56,8 @@ def manh_ten(ten):
 
 
 def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
-    matkb=str(ngay).replace("/","")+str(ca)+str(malop)
-    data={'MaTKB':str(matkb),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
+    ma=matkb()
+    data={'MaTKB':str(ma),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
     try:
         db.child('ThoiKhoaBieu').push(data)
         return True
@@ -170,8 +170,9 @@ def gv_dd(magv,ngay):
             if(i.val()["MaGV"]==str(magv) and ngaya_nhohon_ngayb(i.val()["Ngay"] , str(ngay)) and i.val()["TrangThaiDD"] =='0' ):
                 tenl=tenlop_ma(i.val()['MaLop'])
                 tenm=tenmh_ma(i.val()['MaMH'])
-                e = [tenl,tenm,i.val()['Ngay'],i.val()['Ca']]
+                e = [i.val()['MaTKB'],tenl,tenm,i.val()['Ngay'],i.val()['Ca']]
                 a.append(e)
+                
     except: a=[]
     return a
 
@@ -180,4 +181,14 @@ def namhoc():
     a=""
     for i in data.each():
         a=(i.val()["TenNH"])
+    return a
+
+def matkb():
+    a=""
+    data = db.child("ThoiKhoaBieu").get()
+    try:
+        for i in data.each():
+            e=[i.val()["MaTKB"]]
+            a=str(int(max(e))+1)
+    except:a=""
     return a

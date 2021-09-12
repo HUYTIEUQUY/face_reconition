@@ -250,13 +250,7 @@ def main(masv):
     if anh=="":
         anh='aa.jpg aa.jpg aa.jpg aa.jpg aa.jpg'
         
-
-
     loadanh(anh)
-
-
-
-
     btn_capnhat=Button(bg,image=ing_btncapnhat,bd=0,highlightthickness=0,command=capnhat)
     btn_capnhat.place(x=618,y=518)
     btn_trolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trolai)

@@ -14,6 +14,7 @@ import doimatkhau
 import taikhoan_thongbao
 import datetime
 import threading
+import diemdanh_bu
 
 def main():
     def luong(ham):
@@ -35,23 +36,19 @@ def main():
         gvdd=gv_dd(magv.get(),ngay)
 
         if lichgiang == []:
-            lbcg=Label(bg,text="Hôm nay, bạn không có tiết giảng",font=("Baloo Tamma",12),fg="black",bg="white")
-            lbcg.place(x=570,y=385)
+            data_lichgiang.set("Hôm nay, bạn không có tiết giảng")
         else:
-            lbcg=Label(bg,text="Hôm nay, bạn có lịch giảng !",font=("Baloo Tamma",12),fg="black",bg="white")
-            lbcg.place(x=570,y=385)
+            data_lichgiang.set("Hôm nay, có lịch giảng !")
             btnthongbao=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=lambda: chuyentrang_lichgiang(lichgiang))
             btnthongbao.place(x=920,y=365)
             lbstb=Label(bg,text=len(lichgiang),fg="red",font=("Arial",10),bg="white")
             lbstb.place(x=952,y=360)
 
         if gvdd == []:
-            lbdd=Label(bg,text="Bạn thực hiện việc điểm danh rất tốt",font=("Baloo Tamma",12),fg="black",bg="white")
-            lbdd.place(x=570,y=445)
+            data_dd.set("Đã điểm danh tất cả")
         else:
-            lbdd=Label(bg,text="Có lẽ bạn đã quên điểm danh !",font=("Baloo Tamma",12),fg="black",bg="white")
-            lbdd.place(x=570,y=445)
-            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=thongbaodd)
+            data_dd.set("Chưa điểm danh")
+            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=lambda: thongbaodd(gvdd))
             btnthongbaodd.place(x=920,y=425)
             lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
             lbstb1.place(x=952,y=420)
@@ -79,10 +76,9 @@ def main():
             messagebox.showinfo("thông báo","Đã cập nhật số điện thoại")
         else:
             messagebox.showwarning("Lỗi ","Cập nhật không thành công")
-    def thongbaodd():
-        return
-        # win.destroy()
-        # diemdanhbu.main()
+    def thongbaodd(gvdd):
+        win.destroy()
+        diemdanh_bu.main(gvdd)
     def thietlap():
         return
     def chuyentrang_lichgiang(lichgiang):
@@ -141,6 +137,8 @@ def main():
     magv=StringVar()
     tenkh=StringVar()
     sdt=StringVar()
+    data_lichgiang=StringVar()
+    data_dd=StringVar()
 
 
     time = datetime.datetime.now()
@@ -193,6 +191,12 @@ def main():
 
     btndangxuat1=Button(bg,image=ing_btndangxuat1,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat1.place(x=836,y=537)
+
+    lbcg=Label(bg,textvariable=data_lichgiang,font=("Baloo Tamma",12),fg="black",bg="white")
+    lbcg.place(x=570,y=385)
+
+    lbdd=Label(bg,textvariable=data_dd,font=("Baloo Tamma",12),fg="black",bg="white")
+    lbdd.place(x=570,y=445)
 
     # btnthietlap=Button(bg,image=ing_btnthietlap,bd=0,highlightthickness=0,command=thietlap)
     # btnthietlap.place(x=949,y=2)
