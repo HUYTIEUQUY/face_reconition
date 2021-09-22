@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import PhotoImage
-from tkinter.ttk import Combobox
+from tkinter.ttk import Combobox, Style
 from PIL import Image, ImageTk
 import os
 import shutil
@@ -39,7 +39,6 @@ def main():
         lbgv.config(text=tengv.get())
         khoiphuc()
 
-
     def nhap_excel():
         fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
         ko_luu=[]
@@ -53,12 +52,10 @@ def main():
                ko_luu.append(masv) 
             else:
                 sv.themsv(masv,tensv,malop,"")
-        
         if ko_luu !=[]:
             messagebox.showerror("thông báo","Mã sinh viên đã tồn tại\n"+str(ko_luu))
         row=sv.bangsv(malop)
         update(row)
-
 
     def xuat_excel():
         malop=malop_ten(cb_lop.get())
@@ -67,7 +64,6 @@ def main():
             messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
             return False
         else:
-
             fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
             a=sv.dong_ma_sv(malop)
             b=sv.dong_ten_sv(malop)
@@ -82,7 +78,6 @@ def main():
             write_data_to_file(a,0)
             write_data_to_file(b,1)
             out_workbook.close()
-
     
     def khoiphuc():
         macu.set("")
@@ -118,11 +113,13 @@ def main():
         lb2.config(text="")
         btn_xemanh.config(image=img_btnxem2)
         
-
     def timkiem():
         malop=malop_ten(lop.get())
         row=sv.timsv(malop,ndtimkiem.get())
-        update(row)
+        if row ==[]:
+            messagebox.showwarning("thông báo","Không tìm được kết quả")
+        else:
+            update(row)
 
     def xemanh():
         win.destroy()
@@ -130,7 +127,9 @@ def main():
 
     def getrow(event):
         rowid=tv.identify_row(event.y)
+        
         item=tv.item(tv.focus())
+
         ten.set(item['values'][2])
         ma.set(item['values'][1])
         macu.set(item['values'][1])
@@ -148,14 +147,6 @@ def main():
         lb1.image=img
 
         btn_xemanh.config(image=img_btnxem)
-
-    
-    
-
-    # def sua_anh(lb,i,btn):
-    #     a.pop(i-1)
-    #     print(a)
-    #     chonanh(lb,i,btn)
 
     def sua():
         if macu.get()=="":
@@ -300,10 +291,14 @@ def main():
             f.close()
         except:
             embed_dictt={}
-
+        key = cv2. waitKey(1)
         for i in range(5):
             key = cv2. waitKey(1)
-            webcam = cv2.VideoCapture(0)
+            try:
+                webcam = cv2.VideoCapture(1)
+                check, frame = webcam.read()
+                cv2.imshow("Capturing", frame)
+            except:webcam = cv2.VideoCapture(0)
             while True:
             
                 check, frame = webcam.read()
@@ -330,10 +325,10 @@ def main():
                         webcam.release()
                         cv2.destroyAllWindows()
                         break
-            if key == ord('q'):
-                webcam.release()
-                cv2.destroyAllWindows() # thoát khỏi camera
-                break
+        if key == ord('q'):
+            webcam.release()
+            cv2.destroyAllWindows() # thoát khỏi camera
+            
 
         sv.themsv(id,name,malop,anh)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
@@ -385,11 +380,11 @@ def main():
     
 
     
-    cb_lop=Combobox(bg,width=27, font=("Baloo Tamma",12),state='readonly',textvariable=lop)
+    cb_lop=Combobox(bg,width=30, font=("Baloo Tamma",12),state='readonly',textvariable=lop)
     cb_lop.place(x=580,y=102)
     cb_lop.bind('<<ComboboxSelected>>', capnhat)
-    Frame(bg,width=287,height=5,bg= "white").place(x=570,y=102)
-    Frame(bg,width=276,height=5,bg= "white").place(x=570,y=122)
+    Frame(bg,width=308,height=5,bg= "white").place(x=570,y=102)
+    Frame(bg,width=308,height=5,bg= "white").place(x=570,y=123)
     Frame(bg,width=5,height=20,bg= "white").place(x=577,y=102)
 
     
@@ -407,9 +402,9 @@ def main():
     btnsua.place(x=637,y=240)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=240)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='#ffffff',command=timkiem)
     btntimkiem.place(x=891,y=305)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='#ffffff',command=khoiphuc)
     btnkhoiphuc.place(x=928,y=305)
     btnexcelnhap=Button(bg,image=img_btnexcel_nhap,bd=0,highlightthickness=0,command=nhap_excel)
     btnexcelnhap.place(x=948,y=2)
@@ -446,14 +441,9 @@ def main():
     tv.column(1, width=50,anchor=CENTER)
     tv.column(2, width=100,anchor=CENTER)
     tv.column(3, width=200)
-    
-    
-
     tv.heading(1,text="STT")
     tv.heading(2,text="Mã sinh viên")
     tv.heading(3,text="Tên sinh viên")
-    
-    
     tv.place(x=368,y=350)
 
     tv.bind('<Double 1>', getrow)

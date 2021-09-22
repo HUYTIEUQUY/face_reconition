@@ -50,7 +50,7 @@ def themsv(masv,tensv,malop,anh):
 def bangsv(malop):
     a=[]
     stt=1
-    data=db.child("SinhVien").get()
+    data=db.child("SinhVien").order_by_child("MaLop").equal_to(str(malop)).get()
     try:
         for i in data.each():
             if(i.val()["MaLop"]==str(malop)):
@@ -110,7 +110,7 @@ def timsv(malop,q):
             if(i.val()["MaLop"]==str(malop)):
                 e=[str(stt),i.val()["MaSV"],i.val()["TenSV"]]
 
-                if str(q) in khong_dau(i.val()["MaSV"].lower()) or str(q) in khong_dau(i.val()["TenSV"].lower()):
+                if khong_dau(str(q).lower()) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["TenSV"].lower()):
                     a.append(e)
                 stt=stt+1
     except: a=[]

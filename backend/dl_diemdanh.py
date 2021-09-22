@@ -11,7 +11,7 @@ db=conect_firebase.connect().database()
 def cahoc():
     time = datetime.datetime.now()
     now = time.strftime("%H:%M:%S")
-    a=""
+    a="0"
     data=db.child("CaHoc").get()
     for i in data.each():
         if(i.val()["TGBD"]<=str(now) and i.val()["TGKT"]>=str(now)):
@@ -21,8 +21,8 @@ def cahoc():
 
 def thong_tin_theo_tkb(magv,ngay,ca):
     a=[]
-    data=db.child("ThoiKhoaBieu").get()
     try:
+        data=db.child("ThoiKhoaBieu").order_by_child("Ngay").equal_to(str(ngay)).get()
         for i in data.each():
             if(i.val()["MaGV"]==str(magv) and i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"]):
                 a.append(tenlop_ma(str(i.val()["MaLop"])))
@@ -62,7 +62,7 @@ def update_TT_diemdanh(ma):
 def bangdiemdanh(ma):
     a=[]
     try:
-        data=db.child("DiemDanh").get()
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
                 e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
@@ -92,9 +92,16 @@ def sv_da_dd(ma):
         a=[]
     return a
 
-def tg_tre():
-    data=db.child("TGtre").get()
-    return data.val()
+def tg_tre(magv):
+    try:
+        data=db.child("tgtre").child(str(magv)).get()
+        tgtre=data.val()['thoigian']
+    except:
+        tgtre="00:00"
+    
+    if tgtre== None:
+        tgtre="00:00"
+    return tgtre
 
 
 def khong_dau(s):
@@ -138,7 +145,7 @@ def capnhat_tgra(matkb,masv,tgra):
                 return True
             except:
                 return False
-    pass
+    
 
 def xoasv_dd(matkb,masv):
     data=db.child("DiemDanh").get()
@@ -178,3 +185,12 @@ def tgca(ca,e):
             e.append(i.val()['TGBD'])
             e.append(i.val()['TGKT'])
 
+def tgbd_dd(matkb):
+    data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
+    for i in data.each():
+        e=i.val()["Ca"]
+    a=e[0]
+    root=db.child("CaHoc").order_by_child("TenCa").equal_to(str(a)).get()
+    for i in root.each():
+        tgbd=i.val()["TGBD"]
+    return tgbd

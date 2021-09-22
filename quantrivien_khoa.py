@@ -21,39 +21,53 @@ def main():
         row=khoa.bangkhoa()
         lbgv.config(text=tengv.get())
         update(row)
+
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
+
+    def kt_email(email):
+        if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
+            return True
+        else:
+            return False
+
     def them():
         makhoa=khoa.sl_khoa()
-        emailgv=makhoa+"@mku.edu.vn"
+        e=email.get()
         ten=tenkhoa.get()
-        if ten=="":
+
+        if ten=="" or e=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
-        elif kt_dau_khoangcach(ten)== False:
-            messagebox.showwarning("thông báo","Dữ liệu tên khoa không hợp lệ")
+        elif kt_dau_khoangcach(ten) == False or kt_dau_khoangcach(e)== False:
+            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
+        elif kt_email(email.get()) == False:
+            messagebox.showwarning("thông báo","email không hợp lệ\n\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn'")
         elif khoa.kt_tenkhoa(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
-        else:
-            khoa.themkhoa(makhoa,ten)
-            khoa.them_tk_khoa("admin"+makhoa, emailgv, makhoa)
+        elif messagebox.askyesno("thông báo","Hãy kiểm tra kỹ email vì không thể sửa đổi khi đã tạo tài khoản."):
+            e=e.strip()
+            tenemail= str(e)[0:e.index("@")]
+            khoa.themkhoa(makhoa,ten,email.get())
+            khoa.them_tk_khoa("admin"+tenemail, email.get(), makhoa)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
-    
+        else: return
 
     def xoa():
         ten=tenkhoa.get()
         ma=makhoa.get()
-        email=str(ma)+"@mku.edu.vn"
+        
         if ten=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             if khoa.kt_lop_in_khoa(ma) == False:
                 if khoa.xoakhoa(ma)==True or khoa.xoakhoa_bgv(ma)==True:
-                    khoa.xoa_tk(email)
+                    khoa.xoa_tk(email.get())
                     messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
                     khoiphuc()
                 else: 
@@ -66,11 +80,14 @@ def main():
     def sua():
         tenmoi=tenkhoa.get()
         makhoa1=makhoa.get()
-
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
         elif makhoa.get()=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
+        elif email.get() != emailcu.get():
+            messagebox.showwarning("thông báo","Không thể đổi tài khoản")
+        elif kt_email(email.get())==False:
+            messagebox.showwarning("thông báo","Email không hợp lệ\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn' ")
         elif kt_dau_khoangcach(tenmoi)== False:
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
         elif khoa.kt_tenkhoa(tenmoi)!= []:
@@ -85,10 +102,13 @@ def main():
         item=tv.item(tv.focus())
         tenkhoa.set(item['values'][2])
         makhoa.set(item['values'][1])
+        email.set(item['values'][3])
+        emailcu.set(item['values'][3])
 
     def khoiphuc():
         ndtimkiem.set("")
         tenkhoa.set("")
+        email.set("")
         row=khoa.bangkhoa()
         update(row)
 
@@ -120,7 +140,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Quản lý khoa")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_khoa.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
@@ -144,6 +164,8 @@ def main():
     ndtimkiem=StringVar()
     makhoa = StringVar()
     tengv=StringVar()
+    email=StringVar()
+    emailcu=StringVar()
 
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -161,11 +183,11 @@ def main():
     menuthietlap.place(x=30,y=296)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
-    btnthem.place(x=487,y=181)
+    btnthem.place(x=487,y=200)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
-    btnsua.place(x=637,y=181)
+    btnsua.place(x=637,y=200)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
-    btnxoa.place(x=770,y=181)
+    btnxoa.place(x=770,y=200)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
     btntimkiem.place(x=881,y=292)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
@@ -180,19 +202,22 @@ def main():
     Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
     
     Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=129)
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=email,bd=0,highlightthickness=0).place(x=576,y=163)
     
     Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=294)
 
-    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
-    tv.column(1, width=120,anchor=CENTER)
-    tv.column(2, width=120,anchor=CENTER)
-    tv.column(3, width=300)
+    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
+    tv.column(1, width=80,anchor=CENTER)
+    tv.column(2, width=80,anchor=CENTER)
+    tv.column(3, width=200)
+    tv.column(3, width=250)
 
     tv.heading(1,text="Số thứ tự")
     tv.heading(2,text="Mã khoa")
     tv.heading(3,text="Tên Khoa")
-    tv.place(x=390,y=340)
-    
+    tv.heading(4,text="Email khoa")
+    tv.place(x=350,y=340)
+    tv.bind('<Double 1>', getrow)
     
     threading.Thread(target=loaddl).start()
     win.mainloop()

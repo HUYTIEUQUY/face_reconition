@@ -33,26 +33,23 @@ def magv_all():
     return a
 
 def tengv_email(email):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
     for i in data.each():
-        if(i.val()["Email"]==email):
-            a=i.val()["TenGV"]
+        a=i.val()["TenGV"]
     return a
 
 
 def sdt_email(email):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
     a=""
     for i in data.each():
-        if(i.val()["Email"]==email):
-            a=str(i.val()["SDT"])
+        a=str(i.val()["SDT"])
     return a
 
 def makhoa_email(email):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
     for i in data.each():
-        if(i.val()["Email"]==str(email)):
-            ma=i.val()["MaKhoa"]
+        ma=i.val()["MaKhoa"]
     return ma
 
 def kt_ma(ma):
@@ -72,7 +69,7 @@ def tao_tk(email,matkhau):
         return False
 
 def themgv(magv,tengv,email,sdt,ghichu,makhoa):
-    if tao_tk(email,"123456"):
+    if tao_tk(email,str(magv)):
         data={'MaGV':str(magv), 'TenGV':str(tengv),'Email':str(email),'SDT':str(sdt),'GhiChu':str(ghichu),'LoaiTK':"0","MaKhoa":str(makhoa)}
         try:
             db.child('GiangVien').push(data)
@@ -187,16 +184,20 @@ def update_sdt(magv,sdt):
 def kt_gv_tontai_tkb(magv):
     data=db.child("ThoiKhoaBieu").get()
     a=[]
-    for i in data.each():
-        if(i.val()["MaGV"]==str(magv)):
-            a.append(i.val()["MaGV"])
+    try:
+        for i in data.each():
+            if(i.val()["MaGV"]==str(magv)):
+                a.append(i.val()["MaGV"])
+    except:a=[]
     return a
 
 def kt_gv_tontai_diemdanh(magv):
     data=db.child("DiemDanh").get()
     a=[]
-    for i in data.each():
-        if(i.val()["MaGV"]==str(magv)):
-            a.append(i.val()["MaGV"])
+    try:
+        for i in data.each():
+            if(i.val()["MaGV"]==str(magv)):
+                a.append(i.val()["MaGV"])
+    except:a=[]
     return a
 

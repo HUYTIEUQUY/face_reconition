@@ -6,139 +6,108 @@ from backend.dl_giangvien import magv_ten, tengv_ma
 db=conect_firebase.connect().database()
 
 def tenlop_ma(ma):
-    data=db.child("Lop").get()
+    data=db.child("Lop").order_by_child("MaLop").equal_to(str(ma)).get()
     a=""
     for i in data.each():
-        if(i.val()["MaLop"]==str(ma)):
-            a=(i.val()["TenLop"])
+        a=(i.val()["TenLop"])
     return a
 
 
 
 def tenlop_dd(magv):
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("MaGV").equal_to(str(magv)).get()
     a=[]
-    
+    b=[]
     for i in data.each():
-        if(i.val()["MaGV"] == str(magv)):
-            tenlop=tenlop_ma(i.val()["MaLop"]) 
-            if tenlop not in a:
-                a.append(tenlop)
-    return a
+        if i.val()["MaLop"] not in b:
+            b.append(i.val()["MaLop"])
+            a.append(tenlop_ma(i.val()["MaLop"]))
 
-def malop_khoa(makhoa):
-    data=db.child("Lop").get()
-    a=[]
-    try:
-        for i in data.each():
-            if(i.val()["MaKhoa"]== str(makhoa)):
-                a.append(i.val()["MaLop"])
-    except:a=[]
     return a
 
 
 def malop_ten(tenlop):
-    data=db.child("Lop").get()
+    data=db.child("Lop").order_by_child("TenLop").equal_to(str(tenlop)).get()
     a=""
     try:
         for i in data.each():
-            if(i.val()["TenLop"]== str(tenlop)):
-                a= i.val()["MaLop"]
+            a= i.val()["MaLop"]
     except:a=""
     return a
 
 
 def tenmh_ma(ma):
-    data=db.child("MonHoc").get()
+    data=db.child("MonHoc").order_by_child("MaMH").equal_to(str(ma)).get()
     a=""
     for i in data.each():
-        if(i.val()["MaMH"]==str(ma)):
-            a=(i.val()["TenMH"])
+        a=(i.val()["TenMH"])
     return a
 
 def mamh_ten(ten):
-    data=db.child("MonHoc").get()
+    data=db.child("MonHoc").order_by_child("TenMH").equal_to(str(ten)).get()
     a=""
     for i in data.each():
-        if(i.val()["TenMH"]==str(ten)):
-            a=(i.val()["MaMH"])
+        a=(i.val()["MaMH"])
     return a
 
 def monhoc_dd(magv,malop):
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("MaGV").equal_to(str(magv)).get()
     a=[]
+    b=[]
     try:
         for i in data.each():
             if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop)):
-                tenmh=tenmh_ma(i.val()["MaMH"]) 
-                if tenmh not in a:
+                if i.val()["MaMH"] not in b:
+                    tenmh=tenmh_ma(i.val()["MaMH"])
                     a.append(tenmh)
+                    b.append(i.val()["MaMH"])
     except:a=[]
     return a
 
 def ngay_dd(magv,malop,mamh):
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("MaGV").equal_to(str(magv)).get()
     a=[]
     try:
         for i in data.each():
-            if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh)):
+            if ( i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh)):
                 if i.val()["Ngay"] not in a:
                     a.append(i.val()["Ngay"])
     except:a=[]
     return a
 
 def ca_dd(magv,malop,mamh,ngay):
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
     a=[]
     try:
         for i in data.each():
-            if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ngay"]==str(ngay)):
+            if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh)):
                 if i.val()["Ca"] not in a:
                     a.append(i.val()["Ca"])
     except:a=[]
     return a
 
 def tensv_ma(ma):
-    data=db.child("SinhVien").get()
+    data=db.child("SinhVien").order_by_child("MaSV").equal_to(str(ma)).get()
     a=""
     for i in data.each():
-        if(i.val()["MaSV"]==str(ma)):
-            a=(i.val()["TenSV"])
+        a=(i.val()["TenSV"])
     return a
 
 def thongke(magv,malop,mamh,ngay,ca):
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
     a=[]
     try:
         for i in data.each():
-            if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca)):
-                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
+            if i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ca"]==str(ca):
+                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"], i.val()["GhiChu"]]
                 a.append(e)
+                
     except:a=[]
-    return a
-
-def tengv_all():
-    data=db.child("GiangVien").get()
-    a=[]
-    for i in data.each(): 
-        tengv=(i.val()["TenGV"])
-        if(len(list(magv_ten(tengv)))>=6):
-            if tengv not in a:
-                a.append(tengv)
-    return a
-
-def tenlop_dd1():
-    data=db.child("DiemDanh").get()
-    a=[]
-    for i in data.each():
-        tenlop=tenlop_ma(i.val()["MaLop"]) 
-        if tenlop not in a:
-            a.append(tenlop)
     return a
 
 def tim_tk(magv,malop,mamh,ngay,ca,q):
     a=[]
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
     try:
         for i in data.each():
             if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca)):
@@ -159,10 +128,11 @@ def ds_khoa():
 
 def makhoa_ten(tenkhoa):
     a=''
-    data=db.child("Khoa").get()
+    
     try:
+        data=db.child("Khoa").order_by_child("TenKhoa").equal_to(str(tenkhoa)).get()
+        print(data.val())
         for i in data.each():
-            if i.val()["TenKhoa"]==str(tenkhoa):
                 a=i.val()["MaKhoa"]
     except:a=''
     return a
@@ -175,7 +145,7 @@ def tengv_dd():
     return a
 
 def ds_gv(makhoa):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
     a=[]
     b=tengv_dd()
     for i in data.each():

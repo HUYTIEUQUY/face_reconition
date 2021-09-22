@@ -10,7 +10,7 @@ def connect():
         'storageBucket': "nckh-d5994.appspot.com",
         'messagingSenderId': "1057994457660",
         'appId': "1:1057994457660:web:e32f6f0652a09fa7c57939",
-        'measurementId': "G-217NY3WN04"
+        'measurementId': "G-217NY3WN04",
         }
     firebase = pyrebase.initialize_app(firebaseConfig)
     return firebase

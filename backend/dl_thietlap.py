@@ -5,9 +5,12 @@ db=conect_firebase.connect().database()
 
 def loadca(soca):
     data=db.child("CaHoc").get()
-    for i in data.each():
-        if(i.val()["TenCa"]==str(soca)):
-            a=i.val()
+    a=""
+    try:
+        for i in data.each():
+            if(i.val()["TenCa"]==str(soca)):
+                a=i.val()
+    except:a=""
     return a
 
 def load_dl_tre(ma):

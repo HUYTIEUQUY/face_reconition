@@ -36,7 +36,6 @@ def main():
         cbgv.config(values=gv)
         cbnam.config(values=namhoc)
         cbnam.current(0)
-        
         khoiphuc()
 
 
@@ -63,6 +62,7 @@ def main():
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get())
+        print(row)
         update(row)
 
     def getrow(event):
@@ -153,7 +153,7 @@ def main():
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
             luong(khoiphuc)
         else:
-            messagebox.showerror("thông báo", "Đã thêm")
+            messagebox.showerror("thông báo", "Thêm thời khoá biểu không thành công")
             
             
     def sua():
@@ -261,7 +261,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Thời khoá biểu")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_chitiettkb.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_admin/btn_dangxuat.png")
@@ -408,8 +408,8 @@ def main():
     btnchonlich.place(x=858,y=155)
 
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-    tv.column(1, width=150,anchor=CENTER)
-    tv.column(2, width=200,anchor=CENTER)
+    tv.column(1, width=150)
+    tv.column(2, width=200)
     tv.column(3, width=50)
     tv.column(4, width=100)
     tv.column(5, width=50,anchor=CENTER)
@@ -421,7 +421,7 @@ def main():
     tv.heading(4,text="Ngày")
     tv.heading(5,text="Ca")
     
-    tv.place(x=380,y=370)
+    tv.place(x=380,y=360)
     tv.bind('<Double 1>', getrow)
    
     luong(loaddl)

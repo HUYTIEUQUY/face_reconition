@@ -52,21 +52,22 @@ def main():
             with open(ten_thiet_bi+".txt","w") as file:
                 file.write(email+"\n")
                 file.write(passw)
-
-            if xacthuc.kt_loaitk(email) == "1":
-                win.destroy()
-                adminlop.main()
-            if xacthuc.kt_loaitk(email) == "2":
-                win.destroy()
-                quantrivien_khoa.main()
+            if xacthuc.xacthuc(email,passw)== True:
+                if xacthuc.kt_loaitk(email) == "1":
+                    win.destroy()
+                    adminlop.main()
+                elif xacthuc.kt_loaitk(email) == "2":
+                    win.destroy()
+                    quantrivien_khoa.main()
+                elif xacthuc.kt_loaitk(email) == "3":
+                    messagebox.showinfo("thông báo","Tài khoản không tồn tại")
+                else:
+                    win.destroy()
+                    diemdanh.main()
             else:
-                win.destroy()
-                diemdanh.main()
-        else: return
-        if xacthuc.xacthuc(email,passw)== True:
-            return
-        else:
-            messagebox.showinfo("thông báo","Đăng nhập thất bại")
+                messagebox.showinfo("thông báo","Đăng nhập thất bại")
+        
+        
         
 
     win=Tk()
@@ -78,7 +79,7 @@ def main():
 
     img_btn=ImageTk.PhotoImage(file=f"img/buttonDN.png")
 
-    img_btnhien=ImageTk.PhotoImage(file="img/img_btnhien.png")
+    img_btnhien=ImageTk.PhotoImage(file="img/img_btnhienmk.png")
     img_lb_doimatkhau=ImageTk.PhotoImage(file="img/lb_doimatkhau.png")
 
     bg=Canvas(win,width=600,height=600,bg="green")
@@ -87,21 +88,21 @@ def main():
 
     anhnen=bg.create_image(300,300,image=img_bg)
     data_e=StringVar()
-    txtEmail=Entry(bg,width=22,font=("Baloo Tamma",12),bd=0,textvariable=data_e)
-    txtEmail.place(x=200,y=248)
+    txtEmail=Entry(bg,width=23,font=("Baloo Tamma",12),bd=0,textvariable=data_e)
+    txtEmail.place(x=234,y=233)
 
     data_p=StringVar()
     txtPass=Entry(bg,width=22,font=("Baloo Tamma",12), bd=0, show="*", textvariable=data_p)
-    txtPass.place(x=200,y=346)
+    txtPass.place(x=240,y=291)
 
     lb_doimatkhau=Button(bg,image=img_lb_doimatkhau,bd=0, highlightthickness=0,activebackground="#BCA8E6",relief=RIDGE,command=doimk)
     lb_doimatkhau.place(x=231,y=440)
 
 
-    btn=Button(bg,image=img_btn,bd=0,borderwidth=0, highlightthickness=0,relief="flat",command=dangnhap)
+    btn=Button(bg,image=img_btn,bd=0,borderwidth=0, highlightthickness=0,activebackground="#BFAAE5",command=dangnhap)
     btn.place(x=231,y=494)
     btnhien=Button(bg,image=img_btnhien,bd=0,highlightthickness=0,command=hien)
-    btnhien.place(x=428,y=345)
+    btnhien.place(x=428,y=290)
     win.mainloop()
 
 if __name__ == '__main__':

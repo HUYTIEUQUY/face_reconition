@@ -133,7 +133,7 @@ def main(gvdd):
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Điểm danh")
     img_bg=ImageTk.PhotoImage(file="img/bg_diemdanhbu.png")
     img_bg1=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
     

@@ -12,6 +12,7 @@ import backend.dl_thietlap as thietlap
 import quantrivien_thongke
 import quantrivien_khoa
 import threading
+from datetime import datetime, timedelta
 
 def main():
     def luong(ham):
@@ -19,18 +20,11 @@ def main():
     def luu():
         tgbd=str(giobd.get())+":"+str(phutbd.get())+":"+str(giaybd.get())
         tgkt=str(giokt.get())+":"+str(phutkt.get())+":"+str(giaykt.get())
-        tgtre=str(giotre.get())+":"+str(phuttre.get())+":"+str(giaytre.get())
         lca=thietlap.luuca(ca.get(),tgbd,tgkt)
-        ltre=thietlap.luutre(tgtre)
-        if lca==True and ltre==True:
+        if lca==True:
             messagebox.showinfo("Thông báo","Đã lưu")
         else:
-            messagebox.showerror("Thông báo","Lỗi")
-    def load_dl_tre():
-        a=thietlap.load_dl_tre().val().replace(':'," ").split()
-        giotre.set(a[0])
-        phuttre.set(a[1])
-        giaytre.set(a[2])
+            messagebox.showerror("Thông báo","Lỗi lưu thời gian")
     
     def capnhatca(event):
         loaddl()
@@ -47,7 +41,11 @@ def main():
         giokt.set(tgkt[0])
         phutkt.set(tgkt[1])
         giaykt.set(tgkt[2])
-        
+        format = '%H:%M:%S'
+        stiet=datetime.strptime(a['TGKT'], format) - datetime.strptime(a['TGBD'], format)
+        stiet=str(stiet).split(':')
+        so=(int(stiet[0])*60+int(stiet[1]))/50
+        sotiet.set(int(so))
     def mang(so):
         a=[]
         for i in range(so):
@@ -55,6 +53,17 @@ def main():
                 i="0"+str(i)
             a.append(i)
         return a
+
+    def capnhattgkt(event):
+        st= int(sotiet.get())*50
+        tgbd=str(giobd.get())+":"+str(phutbd.get())+":"+str(giaybd.get())
+        format = '%H:%M:%S'
+        d =datetime.strptime(tgbd, format)  + timedelta(minutes=int(st))
+        tgkt=d.strftime('%H:%M:%S').split(":")
+        giokt.set(tgkt[0])
+        phutkt.set(tgkt[1])
+        giaykt.set(tgkt[2])
+
     def menuthietlap():
         win.destroy()
         main()
@@ -78,18 +87,13 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Thiết lập")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thietdat.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
     img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke.png")
     img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap1.png")
     img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa.png")
-    img_btnthem=ImageTk.PhotoImage(file="img_qtv/btn_them.png")
-    img_btnsua=ImageTk.PhotoImage(file="img_qtv/btn_sua.png")
-    img_btnxoa=ImageTk.PhotoImage(file="img_qtv/btn_xoa.png")
-    img_btntimkiem=ImageTk.PhotoImage(file="img_qtv/btn_timkiem.png")
-    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_qtv/btn_khoiphuc.png")
     img_btnluu=ImageTk.PhotoImage(file="img_qtv/btn_luuthietdat.png")
 
     
@@ -99,12 +103,9 @@ def main():
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     
-    tenkhoa=StringVar()
-    ndtimkiem=StringVar()
-    makhoa = StringVar()
     tengv=tengv_email(d[0])
-    
     ca=StringVar()
+    sotiet=StringVar()
     giobd=StringVar()
     phutbd=StringVar()
     giaybd=StringVar()
@@ -112,11 +113,9 @@ def main():
     phutkt=StringVar()
     giaykt=StringVar()
 
-    giotre=StringVar()
-    phuttre=StringVar()
-    giaytre=StringVar()
-    vl_ca=[1,2,3,4]
-    gio=mang(24)
+    vl_sotiet=[2,3]
+    vl_ca=[1,2,3,4,5]
+    gio=[7,8,9,10,11,12,13,14,15,16,17]
     phut_giay=mang(60)
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -139,30 +138,33 @@ def main():
     cb_ca=Combobox(bg,textvariable=ca,values=vl_ca,font=("Baloo Tamma",12),width=2)
     cb_ca.current(0)
     cb_ca.bind('<<ComboboxSelected>>', capnhatca)
-    cb_ca.place(x=430,y=135)
+    cb_ca.place(x=430,y=130)
+
+    cb_sotiet=Combobox(bg,textvariable=sotiet,values=vl_sotiet,font=("Baloo Tamma",12),width=2)
+    cb_sotiet.bind('<<ComboboxSelected>>', capnhattgkt)
+    cb_sotiet.current(0)
+    cb_sotiet.place(x=750,y=130)
 
     cb_giobd=Combobox(bg,textvariable=giobd,values=gio,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_giobd.place(x=577,y=165)
+    cb_giobd.place(x=648,y=234)
+    cb_giobd.bind('<<ComboboxSelected>>', capnhattgkt)
     cb_phutbd=Combobox(bg,textvariable=phutbd,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_phutbd.place(x=638,y=165)
+    cb_phutbd.place(x=709,y=234)
+    cb_phutbd.bind('<<ComboboxSelected>>', capnhattgkt)
     cb_giaybd=Combobox(bg,textvariable=giaybd,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_giaybd.place(x=698,y=165)
+    cb_giaybd.place(x=769,y=234)
+    cb_giaybd.bind('<<ComboboxSelected>>', capnhattgkt)
 
 
     cb_giokt=Combobox(bg,textvariable=giokt,values=gio,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_giokt.place(x=577,y=217)
+    cb_giokt.place(x=648,y=319)
+    
     cb_phutkt=Combobox(bg,textvariable=phutkt,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_phutkt.place(x=638,y=217)
+    cb_phutkt.place(x=709,y=319)
+    
     cb_giaykt=Combobox(bg,textvariable=giaykt,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_giaykt.place(x=698,y=217)
-
-
-    cb_giotre=Combobox(bg,textvariable=giotre,values=gio,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_giotre.place(x=577,y=347)
-    cb_phuttre=Combobox(bg,textvariable=phuttre,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_phuttre.place(x=638,y=347)
-    cb_giaytre=Combobox(bg,textvariable=giaytre,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
-    cb_giaytre.place(x=698,y=347)
+    cb_giaykt.place(x=769,y=319)
+   
 
     btnkhoiphuc=Button(bg,image=img_btnluu,bd=0,highlightthickness=0,command=luu,bg="white")
     btnkhoiphuc.place(x=582,y=488)
@@ -170,7 +172,6 @@ def main():
 
 
     luong(loaddl)
-    luong(load_dl_tre)
     win.mainloop()
 
 if __name__ == '__main__':

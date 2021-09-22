@@ -41,7 +41,7 @@ def main():
         if data_lop==[]:
             anhnen=bg.create_image(500,300,image=img_erorr)
         else:
-            tv.place(x=367,y=350)
+            tv.place(x=350,y=350)
             cb_lop.config(values=data_lop)
             chongiatridau(data_lop,cb_lop)
             cb_lop.bind('<<ComboboxSelected>>', chonmh)
@@ -159,7 +159,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img/bg_thongke.png")
     img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
     
@@ -228,17 +228,17 @@ def main():
     cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
     cb_ca.place(x=520,y=190)
  
-    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-    tv.column(1, width=80 )
-    tv.column(2, width=100,anchor=CENTER)
-    tv.column(3, width=80,anchor=CENTER)
-    tv.column(4, width=100,anchor=CENTER)
-    tv.column(5, width=180)
+    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings", selectmode="extended")
+    tv.column(1, width=100 )
+    tv.column(2, width=140)
+    tv.column(3, width=120,anchor=CENTER)
+    tv.column(4, width=240,anchor=CENTER)
+    # tv.column(5, width=200)
     tv.heading(1,text="Mã sinh viên")
     tv.heading(2,text="Tên sinh viên")
     tv.heading(3,text="Thông tin")
     tv.heading(4,text="TG vào - TG ra")
-    tv.heading(5,text="Ghi chú")
+    # tv.heading(5,text="Ghi chú")
 
     Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=635,y=297)
 

@@ -17,7 +17,7 @@ from backend.dl_monhoc import mamh_ten
 from backend.dl_sinhvien import ds_ma_sv, tensv_ma
 import numpy as np
 from tkinter import ttk
-import datetime
+from datetime import datetime 
 import re
 import threading
 from speak import speak
@@ -86,61 +86,61 @@ def main():
         s = re.sub(r'[Đ]', 'D', s)
         s = re.sub(r'[đ]', 'd', s)
         return s
-    # def diemdanhbulai():
-    #     win.destroy()
-    #     diemdanhbu.main()
-    # def diemdanhlai():
-    #     csdl.xoadiemdanh(malop,mamh,ma_gv,ca)
-    #     batdaudiemdanh()
+
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
-    def doigiay(s):
+    def doigiaytre(s):
         i=str(s).replace('.',' ').replace(':'," ").split()
-        h=i[0]
-        p=i[1]
-        s=i[2]
+        p=i[0]
+        s=i[1]
+        giay=int(p)*60+int(s)
+        return giay
+
+    def doigiay(s):
+        h=str(s)[0:1]
+        p=str(s)[2:4]
+        s=str(s)[5:7]
         giay=int(h)*60*60+int(p)*60+int(s)
         return giay
 
     def batdaudiemdanh():
         dd=diemdanh.sv_da_dd_khac_vang(matkb.get())
         messagebox.showwarning("thông báo","Nhấn 'Q' để thoát ")
-        tgbd= datetime.datetime.now()
+        tgbd= diemdanh.tgbd_dd(matkb.get())
+        format = '%H:%M:%S'
         malop=malop_ten(data_lop.get())
         mamh=mamh_ten(data_mon.get())
         magv=ma_gv.get()
-        tg_tre=doigiay(diemdanh.tg_tre())
-
+        tg_tre=doigiaytre(diemdanh.tg_tre(magv))
         a=ds_ma_sv(malop)#------------------lấy id theo lop
-
         lopp=khong_dau(data_lop.get().replace(" ","_"))
-       
         f=open("mahoa/"+lopp+".pkl","rb")
         ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
         f.close()
         f=open("mahoa/"+lopp+"mahoa.pkl","rb")
         embed_dictt=pickle.load(f) #đọc file và luu hình ảnh đã biết được mã hoá  theo id vào biến embed_dictt
         f.close()
-
         known_face_encodings = []  
         known_face_names = []  
-
         for ref_id , embed_list in embed_dictt.items():
             for my_embed in embed_list:
                 known_face_encodings +=[my_embed]
                 known_face_names += [ref_id]
-
-        video_capture  = cv2.VideoCapture(0)
+        try:
+            webcam = cv2.VideoCapture(1)
+            check, frame = webcam.read()
+            cv2.imshow("Capturing", frame)
+        except:webcam = cv2.VideoCapture(0)
         face_locations = []
         face_encodings = []
         face_names     = []
         process_this_frame = True #xử lý khung
-        ret = video_capture.set(cv2.CAP_PROP_FRAME_WIDTH,1000)
-        ret = video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
+        # ret = video_capture.set(cv2.CAP_PROP_FRAME_WIDTH,600)
+        # ret = video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
         while True  :
-            ret, frame = video_capture.read()
+            ret, frame = webcam.read()
             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
             rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
             if process_this_frame:
@@ -149,7 +149,7 @@ def main():
                 face_names = []
                 for face_encoding in face_encodings:
                     # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
-                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.5)
+                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
                     name = "Khongbiet"
                     #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
                     face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
@@ -158,24 +158,23 @@ def main():
                         name = known_face_names[best_match_index]
                         
                     face_names.append(name)
-                    now = datetime.datetime.now()
-                    kq=now-tgbd
+                    now = datetime.now()
+                    now=now.strftime("%X")
+                    kq=datetime.strptime(now, format) - datetime.strptime(tgbd, format) #tính thời gian Trể
                     s=doigiay(kq)
-
-                    if name not in dd and s >= tg_tre and name != "Khongbiet":
+                    if name not in dd and s >= tg_tre and name != "Khongbiet" and int(tg_tre) != 0:
                         tre="Trể "+str(kq)[0:7]
-                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,tre,malop,mamh,magv,ngay,ca,now.strftime("%X"))
+                        threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),name,tre,malop,mamh,magv,ngay,ca,now)).start()
                         dd.append(name)
                         
                     elif name not in dd and name != "Khongbiet":
                         diemdanh.xoasv_dd(matkb.get(),name)
-                        diemdanh.diem_danh_vao_csdl(matkb.get(),name,"có",malop,mamh,magv,ngay,ca,now.strftime("%X"))
+                        threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),name,"Có",malop,mamh,magv,ngay,ca,now)).start()
                         dd.append(name)
-                        tensv = tensv_ma(name)
-                        speak(tensv)
-                        threading.Thread(target=speak, args=[tensv,])
+                        tensv ="Cảm ơn" + tensv_ma(name) +"đã điểm danh"
+                        threading.Thread(target=speak, args=[tensv]).start()
                     else:
-                        diemdanh.capnhat_tgra(matkb.get(),name,now.strftime("%X"))
+                        threading.Thread(target=diemdanh.capnhat_tgra,args=(matkb.get(),name,now)).start()
                         luong(khoiphuc)
                         
             process_this_frame = not process_this_frame
@@ -198,15 +197,15 @@ def main():
             cv2.imshow('Video', frame)
             
             if cv2.waitKey(1) & 0xFF == ord('q'):
+                webcam.release()
+                cv2.destroyAllWindows()
                 break
-        video_capture.release()
-        cv2.destroyAllWindows()
     #     #----------------------------------------------------------------------------
         dd=diemdanh.sv_da_dd(matkb.get())
         now=""
         for i in range(0,len(a)):
             if a[i] not in dd :
-                diemdanh.diem_danh_vao_csdl(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca,now)
+                threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca,now)).start()
         diemdanh.update_TT_diemdanh(matkb.get())
         row=diemdanh.bangdiemdanh(matkb.get())
         update(row)
@@ -287,7 +286,7 @@ def main():
     tengv=StringVar()
     ma_gv=StringVar()
     ca=diemdanh.cahoc()
-    time = datetime.datetime.now()
+    time = datetime.now()
     now = time.strftime("%x")
     ngay=dinh_dang_ngay(now)
     matkb=StringVar()
@@ -319,17 +318,17 @@ def main():
     tl.place(x=948,y=2)
     
    
-    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-    tv.column(1, width=80 )
-    tv.column(2, width=120)
-    tv.column(3, width=80,anchor=CENTER)
-    tv.column(4, width=140,anchor=CENTER)
-    tv.column(5, width=120)
+    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
+    tv.column(1, width=100 )
+    tv.column(2, width=140)
+    tv.column(3, width=100,anchor=CENTER)
+    tv.column(4, width=220,anchor=CENTER)
+    # tv.column(5, width=120)
     tv.heading(1,text="Mã sinh viên")
     tv.heading(2,text="Tên sinh viên")
     tv.heading(3,text="Thông tin")
     tv.heading(4,text="TG vào - TG ra")
-    tv.heading(5,text="Ghi chú")
+    # tv.heading(5,text="Ghi chú")
     tv.place(x=380,y=350)
 
     luong(loaddl)

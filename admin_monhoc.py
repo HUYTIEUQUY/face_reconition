@@ -152,7 +152,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Môn học")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_monhoc.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_admin/btn_dangxuat.png")

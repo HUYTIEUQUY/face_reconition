@@ -41,7 +41,7 @@ def bangkhoa():
     data=db.child("Khoa").get()
     try:
         for i in data.each():
-            e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"]]
+            e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"], i.val()["EmailKhoa"]]
             a.append(e)
             stt=stt+1
     except:a=[]
@@ -57,8 +57,8 @@ def sl_khoa():
     except:a=""
     return a
 
-def themkhoa(makhoa, tenkhoa):
-    data={'MaKhoa':str(makhoa),'TenKhoa':str(tenkhoa)}
+def themkhoa(makhoa, tenkhoa,emailkhoa):
+    data={'MaKhoa':str(makhoa),'TenKhoa':str(tenkhoa),'EmailKhoa':str(emailkhoa)}
     try:
         db.child('Khoa').push(data)
         return True
@@ -66,39 +66,37 @@ def themkhoa(makhoa, tenkhoa):
         return False
 
 def suakhoa(makhoa,tenkhoa):
-    data=db.child("Khoa").get()
+    data=db.child("Khoa").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
     dl={'TenKhoa':tenkhoa}
     for i in data.each():
-        if(i.val()["MaKhoa"]==str(makhoa)):
-            try:
-                db.child("Khoa").child(i.key()).update(dl)
-                return True
-            except:
-                return False
+        try:
+            db.child("Khoa").child(i.key()).update(dl)
+            return True
+        except:
+            return False
 def xoakhoa(makhoa):
-    data=db.child("Khoa").get()
-    for i in data.each():
-        if(i.val()["MaKhoa"]==str(makhoa)):
-            try:
+    try:
+        data=db.child("Khoa").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
+        for i in data.each():
                 db.child("Khoa").child(i.key()).remove()
                 return True
-            except:
-                return False
+    except:
+        return False
 
 def xoakhoa_bgv(magv):
-    data=db.child("GiangVien").get()
-    for i in data.each():
-        if(i.val()["MaGV"]==str(magv)):
-            try:
-                db.child("GiangVien").child(i.key()).remove()
-                return True
-            except:
-                return False
+    try:
+        data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
+        for i in data.each():
+            db.child("GiangVien").child(i.key()).remove()
+            return True
+    except:
+        return False
 def xoa_tk(email):
     cred = credentials.Certificate("nckh.json")
     firebase_admin.initialize_app(cred)
     a=auth.get_user_by_email(str(email))
-    auth.delete_user(a.uid)
+    print(a)
+    # auth.delete_user(a.uid)
 
 def kt_tenkhoa(tenkhoa):
     data=db.child("Khoa").get()
@@ -130,8 +128,8 @@ def timkhoa(q):
     data=db.child("Khoa").get()
     try:
         for i in data.each():
-            e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"]]
-            if str(q) in khong_dau(i.val()["MaKhoa"].lower()) or str(khong_dau(q)) in khong_dau(i.val()["TenKhoa"].lower()):
+            e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"],i.val()["EmailKhoa"]]
+            if str(q) in khong_dau(i.val()["MaKhoa"].lower()) or str(khong_dau(q)) in khong_dau(i.val()["TenKhoa"].lower()) or str(khong_dau(q)) in khong_dau(i.val()["EmailKhoa"].lower()):
                 a.append(e)
             stt=stt+1
     except:a=[]

@@ -36,7 +36,7 @@ def main():
         gvdd=gv_dd(magv.get(),ngay)
 
         if lichgiang == []:
-            data_lichgiang.set("Hôm nay, bạn không có tiết giảng")
+            data_lichgiang.set("Hôm nay, không có tiết giảng")
         else:
             data_lichgiang.set("Hôm nay, có lịch giảng !")
             btnthongbao=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=lambda: chuyentrang_lichgiang(lichgiang))
@@ -83,7 +83,7 @@ def main():
         return
     def chuyentrang_lichgiang(lichgiang):
         win.destroy()
-        taikhoan_thongbao.main(lichgiang)
+        taikhoan_thongbao.main(lichgiang, tengv.get())
 
     def btndoimatkhau():
         win.destroy()
@@ -112,7 +112,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Thông tin người dùng")
     img_bg=ImageTk.PhotoImage(file="img/bgtaikhoan.png")
     img_bg1=ImageTk.PhotoImage(file="img/bgtaikhoan1.png")
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl1.png")

@@ -2,7 +2,7 @@ import conect_firebase
 from backend.dl_giangvien import tengv_ma
 from backend.dl_monhoc import tenmh_ma
 import re
-
+import datetime
 db=conect_firebase.connect().database()
 
 def khong_dau(s):
@@ -23,31 +23,30 @@ def khong_dau(s):
     return s
 
 def lop_khoa(ma):
-    data=db.child("Lop").get()
+    data=db.child("Lop").order_by_child("MaKhoa").equal_to(str(ma)).get()
     a=[]
     for i in data.each():
-        if(i.val()["MaKhoa"]==str(ma)):
             a.append(i.val()["TenLop"])
     return a
 
 def gv_khoa(ma):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("MaKhoa").equal_to(str(ma)).get()
     a=[]
     for i in data.each():
-        if(i.val()["MaKhoa"]==str(ma) and i.val()["LoaiTK"]=="0"):
+        if i.val()["LoaiTK"]=="0":
             a.append(i.val()["TenGV"])
     return a
 
 def mh_khoa(ma):
-    data=db.child("MonHoc").get()
+    data=db.child("MonHoc").order_by_child("MaKhoa").equal_to(str(ma)).get()
     a=[]
     for i in data.each():
-        if(i.val()["MaKhoa"]==str(ma)):
-            a.append(i.val()["TenMH"])
+        a.append(i.val()["TenMH"])
+    pass
     return a
 
 def manh_ten(ten):
-    data=db.child("NamHoc").get()
+    data=db.child("NamHoc").order_by_child("TenNH").equal_to(str(ten)).get()
     a=""
     for i in data.each():
         if(i.val()["TenNH"]==str(ten)):
@@ -68,7 +67,7 @@ def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
 
 def bang_tkb(malop,namhoc,hocky):
     a=[]
-    data=db.child("ThoiKhoaBieu").get()
+    data=db.child("ThoiKhoaBieu").order_by_child("Ngay").get()
     try:
         for i in data.each():
             if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky)):
@@ -164,7 +163,7 @@ def ngaya_nhohon_ngayb(a,b):
 
 def gv_dd(magv,ngay):
     a=[]
-    data=db.child("ThoiKhoaBieu").get()
+    data=db.child("ThoiKhoaBieu").order_by_child("TrangThaiDD").equal_to("0").get()
     try:
         for i in data.each():
             if(i.val()["MaGV"]==str(magv) and ngaya_nhohon_ngayb(i.val()["Ngay"] , str(ngay)) and i.val()["TrangThaiDD"] =='0' ):
@@ -184,11 +183,10 @@ def namhoc():
     return a
 
 def matkb():
-    a=""
-    data = db.child("ThoiKhoaBieu").get()
     try:
+        data = db.child("ThoiKhoaBieu").get()
         for i in data.each():
             e=[i.val()["MaTKB"]]
             a=str(int(max(e))+1)
-    except:a=""
+    except:a=0
     return a

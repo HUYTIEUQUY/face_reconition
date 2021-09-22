@@ -161,14 +161,11 @@ def main(masv):
                         break
                     
                 elif key == ord('q'):
-                    print("Turning off camera.")
                     webcam.release()
-                    print("Camera off.")
-                    print("Program ended.")
                     cv2.destroyAllWindows() # thoát khỏi camera
                     break
 
-        sv.suaanh(anh,id)
+        # sv.suaanh(anh,id)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()

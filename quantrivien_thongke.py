@@ -45,9 +45,6 @@ def main():
         luong(khoiphuc)
 
     def chongv(event):
-        # lb_khoa=Label(bg,text=cb_khoa.get(),font=("Baloo Tamma",12),bg="white")
-        # lb_khoa.place(x=468,y=100)
-        # cb_khoa.destroy()
         makhoa.set(tk.makhoa_ten(cb_khoa.get()))
         data_gv = tk.ds_gv(makhoa.get())
         cb_gv.config(values=data_gv)
@@ -197,7 +194,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thongke.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
@@ -264,17 +261,17 @@ def main():
     
 
 
-    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-    tv.column(1, width=80 )
-    tv.column(2, width=100,anchor=CENTER)
-    tv.column(3, width=80,anchor=CENTER)
-    tv.column(4, width=100,anchor=CENTER)
-    tv.column(5, width=180)
+    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
+    tv.column(1, width=100 )
+    tv.column(2, width=120)
+    tv.column(3, width=100,anchor=CENTER)
+    tv.column(4, width=240,anchor=CENTER)
+    # tv.column(5, width=180)
     tv.heading(1,text="Mã sinh viên")
     tv.heading(2,text="Tên sinh viên")
     tv.heading(3,text="Thông tin")
     tv.heading(4,text="TG vào - TG ra")
-    tv.heading(5,text="Ghi chú")
+    # tv.heading(5,text="Ghi chú")
     tv.place(x=367,y=350)
 
     Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=635,y=297)

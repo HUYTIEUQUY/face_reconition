@@ -65,7 +65,6 @@ def main():
         ghichu=data_ghichu.get()
         tenemail=kt.xoa_khoangcach(kt.khong_dau(ten)).lower().replace(" ","")
         emailgv=tenemail+ma+"@mku.edu.vn"
-        print(gv.kt_ma(ma))
         if ma =="" or ten == "" or sdt=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
         elif len(ma) < 6 or ma.isnumeric()== False:
@@ -141,7 +140,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Giảng viên")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_giangvien.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_admin/btn_dangxuat.png")
@@ -223,7 +222,7 @@ def main():
     tv.column(1, width=30,anchor=CENTER)
     tv.column(2, width=50,anchor=CENTER)
     tv.column(3, width=140)
-    tv.column(4, width=160)
+    tv.column(4, width=230)
     tv.column(5, width=80,anchor=CENTER)
     tv.column(6, width=100)
 
@@ -233,7 +232,7 @@ def main():
     tv.heading(4,text="Email")
     tv.heading(5,text="Số điện thoại")
     tv.heading(6,text="Ghi chú")
-    tv.place(x=370,y=340)
+    tv.place(x=340,y=340)
     tv.bind('<Double 1>', getrow)
     
     luong(loaddl)

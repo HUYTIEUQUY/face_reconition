@@ -5,17 +5,11 @@ from PIL import ImageTk
 from tkinter import messagebox
 import dangnhap
 import socket
-import pickle
-import cv2
-import face_recognition
 import sinhvien
 import thongke
 import taikhoan
-import backend.dl_diemdanh as diemdanh
-from backend.dl_giangvien import tengv_email,makhoa_email,magv_email
-from backend.dl_adminlop import malop_ten
-from backend.dl_monhoc import mamh_ten
-from backend.dl_sinhvien import ds_ma_sv, tensv_ma
+import diemdanh
+from backend.dl_giangvien import tengv_email,magv_email
 import threading
 import backend.dl_thietlap as thietlap
 
@@ -100,8 +94,8 @@ def main():
     menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
     menuthem.place(x=46,y=129)
 
-    menudiemdanh=Button(bg,image=ing_menudiemdanh,bd=0,activebackground='#857EBD',highlightthickness=0)
-    menudiemdanh.place(x=46,y=248)
+    menudd=Button(bg,image=ing_menudiemdanh,bd=0,activebackground='#857EBD',highlightthickness=0)
+    menudd.place(x=46,y=248)
 
     menuthongke=Button(bg,image=ing_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD', command=menuthongke)
     menuthongke.place(x=46,y=366)

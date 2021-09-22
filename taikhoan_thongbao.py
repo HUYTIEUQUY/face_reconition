@@ -9,7 +9,8 @@ import thongke
 import taikhoan
 
 
-def main(lichgiang):
+
+def main(lichgiang,tengv):
     
     def quaylai():
         win.destroy()
@@ -39,26 +40,22 @@ def main(lichgiang):
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Lịch giảng")
     img_bg1=ImageTk.PhotoImage(file="img/bgtaikhoan1.png")
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl1.png")
     ing_menudiemdanh=ImageTk.PhotoImage(file="img/menudiemdanh.png")
     ing_menutaikhoan=ImageTk.PhotoImage(file="img/menutaikhoan1.png")
     ing_menuthongke=ImageTk.PhotoImage(file="img/menuthongke.png")
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
-    ing_btnquaylai=ImageTk.PhotoImage(file="img/btnquaylai.png")
+    ing_btntrolai=ImageTk.PhotoImage(file="img/btn_trolai.png")
 #------------------------------------------------------------------------------
-    ten_thiet_bi = socket.gethostname()
-    d=[]
-    with open(ten_thiet_bi+".txt","r") as file:
-        d=file.read().split()
-    email=d[0]
-  
-
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg1)
+
+    lbgv=Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=38)
 
     menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
     menuthem.place(x=46,y=129)
@@ -78,6 +75,8 @@ def main(lichgiang):
     bglichgiang=Frame(bg,width=450,height=140,bg="#A672BB")
     bglichgiang.place(x=410,y=155)
 
+
+
     Label(bglichgiang,text="Lớp",width=22,bg="#5F1965",fg="white").grid(row=0,column=0,pady=10,padx=5)
     Label(bglichgiang,text="Môn học",width=22,bg="#5F1965",fg="white").grid(row=0,column=1,pady=10,padx=5)
     Label(bglichgiang,text="Ca học",width=22,bg="#5F1965",fg="white").grid(row=0,column=2,pady=10,padx=5)
@@ -85,8 +84,9 @@ def main(lichgiang):
         for j in range(len(lichgiang[i])):
             Label(bglichgiang,text=lichgiang[i][j],width=22).grid(row=i+1,column=j,pady=10,padx=5)
     
-    btnquaylai=Button(bg,image=ing_btnquaylai,bd=0,highlightthickness=0,command=quaylai)
-    btnquaylai.place(x=836,y=537)
+    btntrolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=quaylai)
+    btntrolai.place(x=948,y=2)
+
 
     win.mainloop()
 
