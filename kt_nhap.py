@@ -17,6 +17,9 @@ def xoa_khoangcach(s):
         a=a+i+" "
     return a
 
+def kt_dau_khoangcach_email(s):
+    a=str(s).find(" ")
+    return a
 
 def khong_dau(s):
         s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
@@ -34,3 +37,4 @@ def khong_dau(s):
         s = re.sub(r'[Đ]', 'D', s)
         s = re.sub(r'[đ]', 'd', s)
         return s
+

@@ -56,14 +56,14 @@ def main():
                 if xacthuc.kt_loaitk(email) == "1":
                     win.destroy()
                     adminlop.main()
-                elif xacthuc.kt_loaitk(email) == "2":
+                elif xacthuc.kt_loaitk(email) == "0":
                     win.destroy()
-                    quantrivien_khoa.main()
+                    diemdanh.main()
                 elif xacthuc.kt_loaitk(email) == "3":
                     messagebox.showinfo("thông báo","Tài khoản không tồn tại")
                 else:
                     win.destroy()
-                    diemdanh.main()
+                    quantrivien_khoa.main()
             else:
                 messagebox.showinfo("thông báo","Đăng nhập thất bại")
         

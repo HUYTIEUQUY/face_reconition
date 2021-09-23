@@ -102,12 +102,14 @@ def main(masv):
         win.destroy()
         sinhvien.main()
     def dangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
    
    
@@ -136,9 +138,6 @@ def main(masv):
             
                 check, frame = webcam.read()
                 cv2.imshow("Capturing", frame)
-                # Thay đổi kích thước trong opencv
-                #frame: màn hình là hình ảnh đầu vào
-                #(0, 0), fx=0.25, fy=0.25 : kích thước mong muốn cho hình ảnh đầu
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
                 rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
         

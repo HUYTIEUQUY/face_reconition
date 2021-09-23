@@ -2,25 +2,10 @@ import conect_firebase
 from backend.dl_giangvien import tengv_ma
 from backend.dl_monhoc import tenmh_ma
 import re
+from kt_nhap import khong_dau
 import datetime
 db=conect_firebase.connect().database()
 
-def khong_dau(s):
-    s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
-    s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
-    s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
-    s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
-    s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
-    s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
-    s = re.sub(r'[ìíịỉĩ]', 'i', s)
-    s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
-    s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
-    s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
-    s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
-    s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
-    s = re.sub(r'[Đ]', 'D', s)
-    s = re.sub(r'[đ]', 'd', s)
-    return s
 
 def lop_khoa(ma):
     data=db.child("Lop").order_by_child("MaKhoa").equal_to(str(ma)).get()
@@ -67,8 +52,8 @@ def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
 
 def bang_tkb(malop,namhoc,hocky):
     a=[]
-    data=db.child("ThoiKhoaBieu").order_by_child("Ngay").get()
     try:
+        data=db.child("ThoiKhoaBieu").order_by_child("Ngay").get()
         for i in data.each():
             if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky)):
                 gv=tengv_ma(i.val()["MaGV"])
@@ -176,12 +161,34 @@ def gv_dd(magv,ngay):
     return a
 
 def namhoc():
-    data=db.child("NamHoc").get()
     a=""
-    for i in data.each():
-        a=(i.val()["TenNH"])
+    try:
+        data=db.child("NamHoc").get()
+        for i in data.each():
+            a=(i.val()["TenNH"])
+    except:a=""
     return a
 
+def capnhat_namhoc():
+    nam=datetime.datetime.now()
+    nam=nam.strftime("%Y")
+    nam2=int(nam)+1
+    namhoc=str(nam)+"-"+str(nam2)
+    a=[]
+    dl={'TenNH':namhoc, 'MaNH':str(nam)}
+    try:
+        data=db.child("NamHoc").get()
+        for i in data.each():
+            if (i.val()['TenNH'] == str(namhoc)):
+                a.append(i.val()['TenNH'])
+    except:a=[]
+    if a ==[]:
+        db.child("NamHoc").push(dl)
+    else: return
+
+
+    
+capnhat_namhoc()
 def matkb():
     try:
         data = db.child("ThoiKhoaBieu").get()
@@ -190,3 +197,4 @@ def matkb():
             a=str(int(max(e))+1)
     except:a=0
     return a
+

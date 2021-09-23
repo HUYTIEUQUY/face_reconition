@@ -183,12 +183,14 @@ def main():
         main()
 
     def menudangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
     win=Tk()
     win.geometry("1000x600+300+120")

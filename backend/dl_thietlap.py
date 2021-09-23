@@ -4,13 +4,14 @@ import conect_firebase
 db=conect_firebase.connect().database()
 
 def loadca(soca):
-    data=db.child("CaHoc").get()
-    a=""
+    a={'TGBD':"00:00:00",'TGKT':"00:00:00"}
     try:
+        data=db.child("CaHoc").order_by_child("TenCa").equal_to(str(soca)).get()
         for i in data.each():
             if(i.val()["TenCa"]==str(soca)):
                 a=i.val()
-    except:a=""
+
+    except:a={'TGBD':"00:00:00",'TGKT':"00:00:00"}
     return a
 
 def load_dl_tre(ma):
@@ -31,11 +32,16 @@ def luutre(ma,tg):
 
 def luuca(ca,tgbd,tgkt):
     data=db.child("CaHoc").get()
-    dl={'TGBD':str(tgbd),'TGKT':str(tgkt)}
-    for i in data.each():
-        if(i.val()["TenCa"]==str(ca)):
-            try:
-                db.child("CaHoc").child(i.key()).update(dl)
+    dl={'TenCa':str(ca),'TGBD':str(tgbd),'TGKT':str(tgkt)}
+    try:
+        for i in data.each():
+            if(i.val()["TenCa"]==str(ca)):
+                    db.child("CaHoc").child(i.key()).update(dl)
+                    return True
+            else:
+                db.child("CaHoc").push(dl)
                 return True
-            except:
-                return False
+    except:
+        if db.child("CaHoc").push(dl):
+            return True
+        else:return False

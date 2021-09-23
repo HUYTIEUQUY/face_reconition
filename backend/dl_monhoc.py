@@ -54,12 +54,14 @@ def themmh(mamh,tenmh,lt,th,makhoa):
 def bangmh(makhoa):
     a=[]
     stt=1
-    data=db.child("MonHoc").get()
-    for i in data.each():
-        if(i.val()["MaKhoa"]==str(makhoa)):
-            e=[str(stt),i.val()["MaMH"],i.val()["TenMH"],i.val()["SoTietLyThuyet"],i.val()["SoTietThucHanh"]]
-            a.append(e)
-            stt=stt+1
+    try:
+        data=db.child("MonHoc").get()
+        for i in data.each():
+            if(i.val()["MaKhoa"]==str(makhoa)):
+                e=[str(stt),i.val()["MaMH"],i.val()["TenMH"],i.val()["SoTietLyThuyet"],i.val()["SoTietThucHanh"]]
+                a.append(e)
+                stt=stt+1
+    except:a=[]
     return a
 
 def suamh(mamh,tenmh,lt,th):

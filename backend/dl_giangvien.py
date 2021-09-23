@@ -1,27 +1,12 @@
 import conect_firebase
 import re
+import firebase_admin
 from firebase_admin import auth
 from firebase_admin import credentials
-import firebase_admin
-
+from kt_nhap import khong_dau
 db=conect_firebase.connect().database()
 
-def khong_dau(s):
-    s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
-    s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
-    s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
-    s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
-    s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
-    s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
-    s = re.sub(r'[ìíịỉĩ]', 'i', s)
-    s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
-    s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
-    s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
-    s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
-    s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
-    s = re.sub(r'[Đ]', 'D', s)
-    s = re.sub(r'[đ]', 'd', s)
-    return s
+
 
 def magv_all():
     data=db.child("GiangVien").get()
@@ -33,6 +18,7 @@ def magv_all():
     return a
 
 def tengv_email(email):
+    a=""
     data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
     for i in data.each():
         a=i.val()["TenGV"]
@@ -47,6 +33,7 @@ def sdt_email(email):
     return a
 
 def makhoa_email(email):
+    ma=""
     data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
     for i in data.each():
         ma=i.val()["MaKhoa"]

@@ -131,17 +131,18 @@ def makhoa_ten(tenkhoa):
     
     try:
         data=db.child("Khoa").order_by_child("TenKhoa").equal_to(str(tenkhoa)).get()
-        print(data.val())
         for i in data.each():
                 a=i.val()["MaKhoa"]
     except:a=''
     return a
 
 def tengv_dd():
-    data=db.child("DiemDanh").get()
     a=[]
-    for i in data.each():
-        a.append(i.val()['MaGV'])
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            a.append(i.val()['MaGV'])
+    except:a=[]
     return a
 
 def ds_gv(makhoa):

@@ -67,8 +67,8 @@ def main():
         emailgv=tenemail+ma+"@mku.edu.vn"
         if ma =="" or ten == "" or sdt=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
-        elif len(ma) < 6 or ma.isnumeric()== False:
-            messagebox.showwarning("thông báo","Mã giảng viên phải ít nhất 6 kí tự và là số")
+        elif len(ma) != 8 or ma.isnumeric()== False:
+            messagebox.showwarning("thông báo","Mã giảng viên phải 8 kí tự và là số")
         elif len(sdt) !=10 or sdt.isnumeric()== False:
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
         elif kt.kt_dau_khoangcach(ten)==False or kt.kt_kitudacbiet(ten) != "":
@@ -79,7 +79,7 @@ def main():
                 messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
                 khoiphuc()
             else:
-                messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách danh sách")
+                messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách")
                 
     def sua():
         if data_ma.get() != data_magv.get():
@@ -130,12 +130,14 @@ def main():
         win.destroy()
         admin_monhoc.main()
     def menudangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)

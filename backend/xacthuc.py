@@ -12,6 +12,7 @@ def xacthuc(email,matkhau):
 
 
 def kt_loaitk(email):
+    a=3
     try:
         data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
         for i in data.each():

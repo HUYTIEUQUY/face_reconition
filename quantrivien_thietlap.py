@@ -20,18 +20,23 @@ def main():
     def luu():
         tgbd=str(giobd.get())+":"+str(phutbd.get())+":"+str(giaybd.get())
         tgkt=str(giokt.get())+":"+str(phutkt.get())+":"+str(giaykt.get())
-        lca=thietlap.luuca(ca.get(),tgbd,tgkt)
-        if lca==True:
-            messagebox.showinfo("Thông báo","Đã lưu")
+        
+        if str(giobd.get()) =="00" or str(giokt.get()) == "00" or str(giobd.get()) == str(giokt.get()):
+            messagebox.showwarning("thông báo","Thời gian ca chưa họp lý")
         else:
-            messagebox.showerror("Thông báo","Lỗi lưu thời gian")
+            lca=thietlap.luuca(ca.get(),tgbd,tgkt)
+            if lca==True:
+                messagebox.showinfo("Thông báo","Đã lưu")
+            else:
+                messagebox.showerror("Thông báo","Lỗi lưu thời gian")
+
     
     def capnhatca(event):
         loaddl()
 
     def loaddl():
         a=thietlap.loadca(ca.get())
-        
+        print(a)
         tgbd=str(a['TGBD']).replace(':'," ").split()
         giobd.set(tgbd[0])
         phutbd.set(tgbd[1])
@@ -76,12 +81,14 @@ def main():
         quantrivien_thongke.main()
 
     def menudangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -115,7 +122,7 @@ def main():
 
     vl_sotiet=[2,3]
     vl_ca=[1,2,3,4,5]
-    gio=[7,8,9,10,11,12,13,14,15,16,17]
+    gio=["07",'08','09','10','11','12','13','14','15','16','17']
     phut_giay=mang(60)
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -156,13 +163,13 @@ def main():
     cb_giaybd.bind('<<ComboboxSelected>>', capnhattgkt)
 
 
-    cb_giokt=Combobox(bg,textvariable=giokt,values=gio,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_giokt=Combobox(bg,textvariable=giokt,font=("Baloo Tamma",12),state='readonly',width=2)
     cb_giokt.place(x=648,y=319)
     
-    cb_phutkt=Combobox(bg,textvariable=phutkt,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_phutkt=Combobox(bg,textvariable=phutkt,font=("Baloo Tamma",12),state='readonly',width=2)
     cb_phutkt.place(x=709,y=319)
     
-    cb_giaykt=Combobox(bg,textvariable=giaykt,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_giaykt=Combobox(bg,textvariable=giaykt,font=("Baloo Tamma",12),state='readonly',width=2)
     cb_giaykt.place(x=769,y=319)
    
 

@@ -8,6 +8,8 @@ import firebase_admin
 
 
 db=conect_firebase.connect().database()
+cred = credentials.Certificate("facerecognition.json")
+firebase_admin.initialize_app(cred)
 
 def khong_dau(s):
     s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
@@ -48,13 +50,13 @@ def bangkhoa():
     return a
 
 def sl_khoa():
-    a=""
+    a="1"
     data = db.child("Khoa").get()
     try:
         for i in data.each():
             e=[i.val()["MaKhoa"]]
             a=str(int(max(e))+1)
-    except:a=""
+    except:a="1"
     return a
 
 def themkhoa(makhoa, tenkhoa,emailkhoa):
@@ -84,26 +86,28 @@ def xoakhoa(makhoa):
         return False
 
 def xoakhoa_bgv(magv):
+    data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
     try:
-        data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
         for i in data.each():
-            db.child("GiangVien").child(i.key()).remove()
-            return True
+            if i.val()["MaGV"] == str(magv):
+                db.child("GiangVien").child(i.key()).remove()
+                return True
     except:
         return False
+
+
 def xoa_tk(email):
-    cred = credentials.Certificate("nckh.json")
-    firebase_admin.initialize_app(cred)
     a=auth.get_user_by_email(str(email))
-    print(a)
-    # auth.delete_user(a.uid)
+    auth.delete_user(a.uid)
 
 def kt_tenkhoa(tenkhoa):
     data=db.child("Khoa").get()
     a=[]
-    for i in data.each():
-        if(i.val()["TenKhoa"]==str(tenkhoa)):
-            a.append(i.val())
+    try:
+        for i in data.each():
+            if(i.val()["TenKhoa"]==str(tenkhoa)):
+                a.append(i.val())
+    except:a=[]
     return a
 
 def makhoa_ten(tenkhoa):
@@ -157,10 +161,12 @@ def them_tk_khoa(tengv,email,makhoa):
 
 def kt_lop_in_khoa(makhoa):
     a=[]
-    data=db.child("Lop").get()
-    for i in data.each():
-        if(i.val()["MaKhoa"]==str(makhoa)):
-            a.append(i.val()["MaKhoa"])
+    try:
+        data=db.child("Lop").get()
+        for i in data.each():
+            if(i.val()["MaKhoa"]==str(makhoa)):
+                a.append(i.val()["MaKhoa"])
+    except:a=[]
     if a != []:
         return True
     else:

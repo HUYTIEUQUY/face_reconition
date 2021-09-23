@@ -59,7 +59,7 @@ def main():
         elif len(str(ma)) != 6 or ma.isnumeric()== False :
             messagebox.showerror("thông báo","Mã môn học phải 6 kí tự và là số")
             return False
-        elif kt.kt_dau_khoangcach(ten)==False or kt.kt_kitudacbiet(ten) != "":
+        elif kt.kt_dau_khoangcach(ten)==False :
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
             return False
         elif lt.isnumeric()== False or th.isnumeric()== False:
@@ -142,12 +142,14 @@ def main():
         win.destroy()
         admin_tkb.main()
     def menudangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)

@@ -22,6 +22,7 @@ import re
 import threading
 from speak import speak
 import thietlap
+from kt_nhap import khong_dau
 
 
 def main():
@@ -70,7 +71,6 @@ def main():
         return ngay
 
 
-    def khong_dau(s):
         s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
         s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
         s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
@@ -232,12 +232,14 @@ def main():
         sinhvien.main()
 
     def dangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
     win=Tk()
     win.geometry("1000x600+300+120")

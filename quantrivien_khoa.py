@@ -13,6 +13,7 @@ import backend.dl_khoa as khoa
 import quantrivien_thongke
 import quantrivien_thietlap
 import threading
+import kt_nhap as kt
 
 
 def main():
@@ -27,9 +28,6 @@ def main():
         for i in row:
             tv.insert('','end',values=i)
 
-    def kt_dau_khoangcach(s):
-        return bool(s and s.strip())
-
     def kt_email(email):
         if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
             return True
@@ -39,13 +37,15 @@ def main():
     def them():
         makhoa=khoa.sl_khoa()
         e=email.get()
-        ten=tenkhoa.get()
+        ten=kt.xoa_khoangcach(tenkhoa.get())
+        em=e.strip()
+        tenemail= str(em)[0:em.index("@")]
 
         if ten=="" or e=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
-        elif kt_dau_khoangcach(ten) == False or kt_dau_khoangcach(e)== False:
+        elif kt.kt_dau_khoangcach(ten) == False or kt.kt_dau_khoangcach(e)== False or kt.kt_kitudacbiet(ten) !="" or kt.kt_kitudacbiet(tenemail) !="":
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
-        elif kt_email(email.get()) == False:
+        elif kt_email(email.get()) == False or kt.kt_dau_khoangcach(e)== False or kt.kt_dau_khoangcach_email(e) != -1 :
             messagebox.showwarning("thông báo","email không hợp lệ\n\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn'")
         elif khoa.kt_tenkhoa(ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
@@ -66,7 +66,7 @@ def main():
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             if khoa.kt_lop_in_khoa(ma) == False:
-                if khoa.xoakhoa(ma)==True or khoa.xoakhoa_bgv(ma)==True:
+                if khoa.xoakhoa(ma)==True and khoa.xoakhoa_bgv(ma)==True:
                     khoa.xoa_tk(email.get())
                     messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
                     khoiphuc()
@@ -88,7 +88,7 @@ def main():
             messagebox.showwarning("thông báo","Không thể đổi tài khoản")
         elif kt_email(email.get())==False:
             messagebox.showwarning("thông báo","Email không hợp lệ\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn' ")
-        elif kt_dau_khoangcach(tenmoi)== False:
+        elif kt.kt_dau_khoangcach(tenmoi)== False or kt.kt_kitudacbiet(tenmoi) != "":
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
         elif khoa.kt_tenkhoa(tenmoi)!= []:
             messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
@@ -129,12 +129,14 @@ def main():
         quantrivien_thongke.main()
 
     def menudangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -192,8 +194,6 @@ def main():
     btntimkiem.place(x=881,y=292)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
     btnkhoiphuc.place(x=920,y=292)
-
- 
     
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
@@ -210,7 +210,7 @@ def main():
     tv.column(1, width=80,anchor=CENTER)
     tv.column(2, width=80,anchor=CENTER)
     tv.column(3, width=200)
-    tv.column(3, width=250)
+    tv.column(4, width=250)
 
     tv.heading(1,text="Số thứ tự")
     tv.heading(2,text="Mã khoa")
@@ -220,6 +220,7 @@ def main():
     tv.bind('<Double 1>', getrow)
     
     threading.Thread(target=loaddl).start()
+
     win.mainloop()
 
 if __name__ == '__main__':

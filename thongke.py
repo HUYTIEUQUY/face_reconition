@@ -41,7 +41,16 @@ def main():
         if data_lop==[]:
             anhnen=bg.create_image(500,300,image=img_erorr)
         else:
+            txttim.place(x=635,y=297)
+            btnkhoiphuc.place(x=905,y=295)
+            btntimkiem.place(x=862,y=295)
+            cb_lop.place(x=520,y=100)
+            btnexcelxuat.place(x=948,y=2)
+            cb_mh.place(x=520,y=130)
+            cb_ngay.place(x=520,y=160)
+            cb_ca.place(x=520,y=190)
             tv.place(x=350,y=350)
+            
             cb_lop.config(values=data_lop)
             chongiatridau(data_lop,cb_lop)
             cb_lop.bind('<<ComboboxSelected>>', chonmh)
@@ -104,7 +113,6 @@ def main():
 
             fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
           
-
             out_workbook = xlsxwriter.Workbook(fln+".xlsx")
             outsheet = out_workbook.add_worksheet()
             tenlop=tk.tenlop_ma(malop.get())
@@ -148,12 +156,14 @@ def main():
         win.destroy()
         sinhvien.main()
     def dangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -192,9 +202,9 @@ def main():
     btndangxuat.place(x=248,y=44)
 
     btntimkiem=Button(bg,image=ing_timkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=862,y=295)
+    
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
-    btnkhoiphuc.place(x=905,y=295)
+    
 
     ten_thiet_bi = socket.gethostname()
     d=[]
@@ -217,16 +227,16 @@ def main():
 
 
     btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
-    btnexcelxuat.place(x=948,y=2)
+    
 
     cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_lop.place(x=520,y=100)
+    
     cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_mh.place(x=520,y=130)
+    
     cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_ngay.place(x=520,y=160)
+    
     cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_ca.place(x=520,y=190)
+    
  
     tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings", selectmode="extended")
     tv.column(1, width=100 )
@@ -240,7 +250,7 @@ def main():
     tv.heading(4,text="TG vào - TG ra")
     # tv.heading(5,text="Ghi chú")
 
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=635,y=297)
+    txttim=Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0)
 
     luong(loaddl)
     win.mainloop()

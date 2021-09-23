@@ -41,8 +41,19 @@ def main():
 
         if data_gv==[]:
             anhnen=bg.create_image(500,300,image=img_erorr)
+            
+
         else:
+            cb_gv.place(x=550,y=70)
+            cb_lop.place(x=550,y=100)
+            cb_mh.place(x=550,y=130)
+            cb_ngay.place(x=550,y=160)
+            cb_ca.place(x=550,y=190)
             tv.place(x=367,y=350)
+            txttim.place(x=635,y=297)
+            btnkhoiphuc.place(x=905,y=295)
+            btntimkiem.place(x=862,y=295)
+            btnexcelxuat.place(x=948,y=2)
             cb_gv.config(values=data_gv)
             chongiatridau(data_gv,cb_gv)
             cb_gv.bind('<<ComboboxSelected>>', chonlop)
@@ -164,12 +175,14 @@ def main():
         win.destroy()
         admin_monhoc.main()
     def dangxuat():
-        ten_thiet_bi = socket.gethostname()
-        file=open(ten_thiet_bi+".txt","w")
-        file.write("")
-        file.close()
-        win.destroy()
-        dangnhap.main()
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -208,9 +221,9 @@ def main():
 
 
     btntimkiem=Button(bg,image=ing_timkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=862,y=295)
+    
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
-    btnkhoiphuc.place(x=905,y=295)
+    
 
     ten_thiet_bi = socket.gethostname()
     d=[]
@@ -233,18 +246,18 @@ def main():
 
 
     btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
-    btnexcelxuat.place(x=948,y=2)
+    
 
     cb_gv=Combobox(bg,textvariable=tengv,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_gv.place(x=550,y=70)
+    
     cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_lop.place(x=550,y=100)
+    
     cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_mh.place(x=550,y=130)
+
     cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_ngay.place(x=550,y=160)
+    
     cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
-    cb_ca.place(x=550,y=190)
+    
  
     tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
     tv.column(1, width=100 )
@@ -258,7 +271,7 @@ def main():
     tv.heading(4,text="TG vào - TG ra")
     # tv.heading(5,text="Ghi chú")
 
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=635,y=297)
+    txttim=Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0)
 
     luong(loaddl)
     win.mainloop()

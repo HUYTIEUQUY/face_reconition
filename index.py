@@ -21,10 +21,10 @@ def main():
     if data[0] != "":
         if xacthuc.kt_loaitk(data[0]) == "1":
             adminlop.main()
-        elif xacthuc.kt_loaitk(data[0]) == "2":
-            quantrivien_khoa.main()
-        else:
+        elif xacthuc.kt_loaitk(data[0]) == "0":
             diemdanh.main()
+        else:
+            quantrivien_khoa.main()
     else:
         dangnhap.main()
 

@@ -3,14 +3,15 @@ import pyrebase
 
 def connect():
     firebaseConfig = {
-        'apiKey': "AIzaSyB6UhHmYJRkA4r6HCZwqVEW40kSQ3WhvqY",
-        'authDomain': "nckh-d5994.firebaseapp.com",
-        'databaseURL': "https://nckh-d5994-default-rtdb.firebaseio.com",
-        'projectId': "nckh-d5994",
-        'storageBucket': "nckh-d5994.appspot.com",
-        'messagingSenderId': "1057994457660",
-        'appId': "1:1057994457660:web:e32f6f0652a09fa7c57939",
-        'measurementId': "G-217NY3WN04",
+        "apiKey": "AIzaSyC18JzwOtmxacPea2wH6V7epsMTCS1R7G0",
+        "authDomain": "facerecognition-30da4.firebaseapp.com",
+        "databaseURL": "https://facerecognition-30da4-default-rtdb.firebaseio.com",
+        "projectId": "facerecognition-30da4",
+        "storageBucket": "facerecognition-30da4.appspot.com",
+        "messagingSenderId": "207559290047",
+        "appId": "1:207559290047:web:577197cfe03736a9a86a0a",
+        "measurementId": "G-LREFTPNQ1E"
+        
         }
     firebase = pyrebase.initialize_app(firebaseConfig)
     return firebase

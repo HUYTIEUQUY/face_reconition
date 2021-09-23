@@ -65,11 +65,13 @@ def xoalop(malop):
 
 
 def kt_tenlop(tenlop):
-    data=db.child("Lop").get()
     a=[]
-    for i in data.each():
-        if(i.val()["TenLop"]==str(tenlop)):
-            a.append(i.val())
+    try:
+        data=db.child("Lop").get()
+        for i in data.each():
+            if(i.val()["TenLop"]==str(tenlop)):
+                a.append(i.val())
+    except: a=[]
     return a
 
 
@@ -105,29 +107,35 @@ def timlop(makhoa,q):
 
 
 def kt_lop_tontai_diemdanh(malop):
-    data=db.child("DiemDanh").get()
+    
     a=[]
-    for i in data.each():
-        if(i.val()["MaLop"]==str(malop)):
-            a.append(i.val()['MaLop'])
+    try:
+        data=db.child("DiemDanh").order_by_child('MaLop').equal_to('str(malop)').get()
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop)):
+                a.append(i.val()['MaLop'])
+    except:a=[]
     return a
 
 def kt_lop_tontai_tkb(malop):
-    data=db.child("ThoiKhoaBieu").get()
+    
     a=[]
-    for i in data.each():
-        if(i.val()["MaLop"]==str(malop)):
-            a.append(i.val()['MaLop'])
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child('MaLop').equal_to('str(malop)').get()
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop)):
+                a.append(i.val()['MaLop'])
+    except:a=[]
     return a
 
 def malop():
-    a=""
+    a="1"
     data = db.child("Lop").get()
     try:
         for i in data.each():
             e=[i.val()["MaLop"]]
             a=str(int(max(e))+1)
-    except:a=""
+    except:a="1"
     return a
 
 
