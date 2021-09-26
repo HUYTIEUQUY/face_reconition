@@ -14,7 +14,7 @@ import backend.dl_diemdanh as diemdanh
 from backend.dl_giangvien import tengv_email,makhoa_email,magv_email
 from backend.dl_adminlop import malop_ten
 from backend.dl_monhoc import mamh_ten
-from backend.dl_sinhvien import ds_ma_sv, tensv_ma
+from backend.dl_sinhvien import ds_ma_sv, lop_khoa, tensv_ma
 import numpy as np
 from tkinter import ttk
 from datetime import datetime 
@@ -23,7 +23,7 @@ import threading
 from speak import speak
 import thietlap
 from kt_nhap import khong_dau
-
+from uploadfile import download_filemahoa
 
 def main():
     def timkiem():
@@ -39,7 +39,8 @@ def main():
     def loaddl():
         tengv.set(tengv_email(d[0]))
         ma_gv.set(magv_email(d[0]))
-
+        makhoa.set(makhoa_email(d[0]))
+        
         thongtin=diemdanh.thong_tin_theo_tkb(ma_gv.get(),ngay,ca)
         if thongtin == []:
             data_lop.set("Bạn không có tiết giảng !")
@@ -54,6 +55,12 @@ def main():
         lblop.config(text=data_lop.get())
         lbmon.config(text=data_mon.get())
         luong(khoiphuc)
+        
+    def taifilemahoa(makhoa):
+        lop=lop_khoa(makhoa)
+        for i in lop:
+            tenlop=khong_dau(i)
+            download_filemahoa(tenlop)
         
   
     def dinh_dang_ngay(ngay):
@@ -295,6 +302,7 @@ def main():
     data_lop=StringVar()
     data_mon=StringVar()
     ndtimkiem=StringVar()
+    makhoa.set(makhoa_email(d[0]))
 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
@@ -334,6 +342,8 @@ def main():
     tv.place(x=380,y=350)
 
     luong(loaddl)
+    threading.Thread(target=taifilemahoa, args=(makhoa.get())).start()
+    
     win.mainloop()
 
 if __name__ == '__main__':

@@ -148,14 +148,15 @@ def capnhat_tgra(matkb,masv,tgra):
     
 
 def xoasv_dd(matkb,masv):
-    data=db.child("DiemDanh").get()
-    for i in data.each():
-        if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
-            try:
-                db.child("DiemDanh").child(i.key()).remove()
-                return True
-            except:
-                return False
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
+                
+                    db.child("DiemDanh").child(i.key()).remove()
+                    return True
+    except:
+        return False
 
 def diemdanhbangexcel(matkb,masv,thongtin,malop,mamh,magv,ngay,ca,tgvao,tgra):
     data={'Ma':str(matkb),'MaSV':str(masv),'ThongTin':str(thongtin),'MaLop':str(malop),'MaMH':str(mamh),'MaGV':str(magv),'Ngay':str(ngay),'Ca':str(ca),'TG_Vao':str(tgvao),'TG_Ra':str(tgra),'GhiChu':''}

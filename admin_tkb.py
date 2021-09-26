@@ -130,6 +130,7 @@ def main():
     def them():
         malop=malop_ten(data_lop.get())
         magv=magv_ten(data_gv.get())
+        print(magv)
         mamh =mamh_ten(data_mon.get())
         ngay=data_ngay.get()
         namhoc=tkb.manh_ten(data_namhoc.get())
@@ -410,15 +411,15 @@ def main():
 
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
     tv.column(1, width=150)
-    tv.column(2, width=200)
-    tv.column(3, width=50)
+    tv.column(2, width=190)
+    tv.column(3, width=60)
     tv.column(4, width=100)
     tv.column(5, width=50,anchor=CENTER)
 
 
     tv.heading(1,text="Giảng Viên")
     tv.heading(2,text="Môn học")
-    tv.heading(3,text="PP Giảng")
+    tv.heading(3,text="LT-TH")
     tv.heading(4,text="Ngày")
     tv.heading(5,text="Ca")
     

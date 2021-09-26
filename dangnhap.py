@@ -74,7 +74,7 @@ def main():
     win.geometry("600x600+400+100")
     win.resizable(False,False)
     win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Phần mềm điểm danh sinh viên bằng phương pháp nhận diện khuôn mặt")
     img_bg=ImageTk.PhotoImage(file="img/bg_dagnhap.png")
 
     img_btn=ImageTk.PhotoImage(file=f"img/buttonDN.png")

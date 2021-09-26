@@ -222,11 +222,11 @@ def main():
 
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5,6), show="headings")
     tv.column(1, width=30,anchor=CENTER)
-    tv.column(2, width=50,anchor=CENTER)
+    tv.column(2, width=80,anchor=CENTER)
     tv.column(3, width=140)
     tv.column(4, width=230)
     tv.column(5, width=80,anchor=CENTER)
-    tv.column(6, width=100)
+    tv.column(6, width=80)
 
     tv.heading(1,text="STT")
     tv.heading(2,text="Mã GV")

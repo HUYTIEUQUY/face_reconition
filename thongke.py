@@ -249,7 +249,6 @@ def main():
     tv.heading(3,text="Thông tin")
     tv.heading(4,text="TG vào - TG ra")
     # tv.heading(5,text="Ghi chú")
-
     txttim=Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0)
 
     luong(loaddl)

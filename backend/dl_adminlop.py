@@ -84,11 +84,18 @@ def malop_ten(tenlop):
     return a
 
 def tenlop_ma(ma):
-    data=db.child("Lop").get()
+    data=db.child("Lop").order_by_child("MaLop").equal_to(str(ma)).get()
     a=""
     for i in data.each():
         if(i.val()["MaLop"]==str(ma)):
             a=(i.val()["TenLop"])
+    return a
+def malop_masv(ma):
+    data=db.child("SinhVien").order_by_child("MaSV").equal_to(str(ma)).get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaSV"]==str(ma)):
+            a=(i.val()["MaLop"])
     return a
 
 def timlop(makhoa,q):

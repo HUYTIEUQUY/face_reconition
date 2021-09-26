@@ -16,10 +16,11 @@ import face_recognition
 import thongke
 import taikhoan
 import re
-from backend.dl_adminlop import tenlop_ma
-from backend.dl_giangvien import tengv_email
+from backend.dl_adminlop import tenlop_ma,malop_masv
+from backend.dl_giangvien import tengv_email,makhoa_email
 import backend.dl_sinhvien as sv
-
+from uploadfile import upload_anh,load,upload_filemahoa
+import threading
 
 
 
@@ -57,34 +58,37 @@ def main(masv):
     #     lb.image=img
     #     btn.config(command=lambda:sua_anh(lb,i,btn) )
 
+    def gananh(manganh,i):
+        try:
+            img=Image.open(load(manganh[i]))
+        except:img=Image.open("img_anhsv/aa.jpg")
+        # img = Image.open(load())
+        img.thumbnail((200,200))
+        # img = img.resize ((50, 50), Image.ANTIALIAS)
+        img=ImageTk.PhotoImage(img)
+    
+        if(i==0):
+            lb1.config(image=img)
+            lb1.image=img
+        if(i==1):
+            lb2.config(image=img)
+            lb2.image=img
+        if(i==2):
+            lb3.config(image=img)
+            lb3.image=img
+        if(i==3):
+            lb4.config(image=img)
+            lb4.image=img
+        if(i==4):
+            lb5.config(image=img)
+            lb5.image=img
+
     def loadanh(anh):
         manganh=anh.split()
         
         for i in range(5):
-            img=Image.open("img_anhsv/"+manganh[i])
-            img.thumbnail((200,200))
-            # img = img.resize ((50, 50), Image.ANTIALIAS)
-            img=ImageTk.PhotoImage(img)
-            
-            if(i==0):
-                lb1.config(image=img)
-                lb1.image=img
-            if(i==1):
-                lb2.config(image=img)
-                lb2.image=img
-            if(i==2):
-                lb3.config(image=img)
-                lb3.image=img
-            if(i==3):
-                lb4.config(image=img)
-                lb4.image=img
-            if(i==4):
-                lb5.config(image=img)
-                lb5.image=img
+            threading.Thread(target=gananh,args=(manganh,i)).start()
          
-        
-        
-
     def menusinhvien():
         win.destroy()
         sinhvien.main()
@@ -97,7 +101,6 @@ def main(masv):
     def menudiemdanh():
         win.destroy()
         diemdanh.main()
-    
     def trolai():
         win.destroy()
         sinhvien.main()
@@ -110,48 +113,60 @@ def main(masv):
             win.destroy()
             dangnhap.main()
         else: return
-
-   
    
     def capnhat():
-        
+
         anh=""
         id=masv
-        tenlop=tenlop_ma(masv)
+        malop=malop_masv(masv)
+        tenlop=tenlop_ma(malop)
+
         #thêm id , name vào co sở dữ liệu
         lop=tenlop.replace(" ","_")
         lop=khong_dau(lop)
-       
+        
         try:
             f=open("mahoa/"+lop+"mahoa.pkl","rb")
             embed_dictt=pickle.load(f)
-            embed_dictt.pop(masv)
             f.close()
         except:
             embed_dictt={}
 
+        try:
+            embed_dictt.pop(masv)
+        except:print("không có mã trong facefrint")
 
         for i in range(5):
             key = cv2. waitKey(1)
-            webcam = cv2.VideoCapture(0)
+            try:
+                webcam = cv2.VideoCapture(1)
+                check, frame = webcam.read()
+                cv2.imshow("Capturing", frame)
+                
+            except:
+                webcam = cv2.VideoCapture(0)
+                check, frame = webcam.read()
+                cv2.imshow("Capturing", frame)
+                
             while True:
-            
                 check, frame = webcam.read()
                 cv2.imshow("Capturing", frame)
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
                 rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
-        
+
                 key = cv2.waitKey(1)
                 if key == ord('s') : 
                     face_locations = face_recognition.face_locations(rgb_small_frame)
                     if face_locations != []: #nếu có khuôn mặt
                         cv2.imwrite('img_anhsv/'+str(id)+str(i+1)+'.png',frame)
-                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                        anh=anh+' '+str(id)+str(i+1)+'.png'
-                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                            embed_dictt[id]+=[face_encoding]
-                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                            embed_dictt[id]=[face_encoding]
+                        try:
+                            face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+                            anh=anh+' '+str(id)+str(i+1)+'.png'
+                            if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+                                embed_dictt[id]+=[face_encoding]
+                            else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+                                embed_dictt[id]=[face_encoding]
+                        except: return
                         if(i==4):
                             messagebox.showinfo("thông báo", "Đã lưu mã hoá khuôn mặt")
                         webcam.release()
@@ -164,14 +179,17 @@ def main(masv):
                     cv2.destroyAllWindows() # thoát khỏi camera
                     break
 
-        # sv.suaanh(anh,id)
+        sv.suaanh(anh,id)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()
 
         anh=sv.anh(masv)
-    
-        loadanh(anh)
+        upload_anh(masv)
+        threading.Thread(target=loadanh,args=(anh,)).start()
+        threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+"mahoa.pkl",)).start()
+        threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+".pkl",)).start()
+
        
 
     win=Tk()
@@ -229,32 +247,42 @@ def main(masv):
     f5=Frame(bg,bg="white",width=100,height=120)
     f5.place(x=630,y=300)
 
-    lb1=Label(f1,bg="white")
-    lb1.pack()
-    lb2=Label(f2,bg="white")
-    lb2.pack()
-    lb3=Label(f3,bg="white")
-    lb3.pack()
-    lb4=Label(f4,bg="white")
-    lb4.pack()
-    lb5=Label(f5,bg="white")
-    lb5.pack()
 
+    img=Image.open("img_anhsv/aa.jpg")
+    img.thumbnail((200,200))
+    img=ImageTk.PhotoImage(img)
+    lb1=Label(f1,image=img,bg="white")
+    lb1.pack()
+    lb1.image=img
+
+    lb2=Label(f2,image=img,bg="white")
+    lb2.pack()
+    lb2.image=img
+
+    lb3=Label(f3,image=img,bg="white")
+    lb3.pack()
+    lb3.image=img
+
+    lb4=Label(f4,image=img,bg="white")
+    lb4.pack()
+    lb4.image=img
+
+    lb5=Label(f5,image=img,bg="white")
+    lb5.pack()
+    lb5.image=img
     
     anh=sv.anh(masv)
    
     if anh=="":
         anh='aa.jpg aa.jpg aa.jpg aa.jpg aa.jpg'
         
-    loadanh(anh)
+    
     btn_capnhat=Button(bg,image=ing_btncapnhat,bd=0,highlightthickness=0,command=capnhat)
     btn_capnhat.place(x=618,y=518)
     btn_trolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trolai)
     btn_trolai.place(x=948,y=2)
-
-
-
-
+    
+    threading.Thread(target=loadanh,args=(anh,)).start()
     win.mainloop()
 if __name__ == '__main__':
     main()

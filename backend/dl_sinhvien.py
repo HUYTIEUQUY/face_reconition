@@ -100,6 +100,16 @@ def suasv(masv,tensv):
                 return True
             except:
                 return False
+def suaanh(anh,id):
+    data=db.child("SinhVien").get()
+    dl={'Anh':str(anh)}
+    for i in data.each():
+        if(i.val()["MaSV"]==str(id)):
+            try:
+                db.child("SinhVien").child(i.key()).update(dl)
+                return True
+            except:
+                return False
 
 def timsv(malop,q):
     a=[]

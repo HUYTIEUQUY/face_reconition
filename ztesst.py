@@ -17,7 +17,7 @@ fieldbackground="white"
 
 # Thay đổi màu đã chọn
 style.map("Treeview", 
-background=[('selected','#5F1965')]
+background=[('selected','#9894C1')]
 )
 
 
@@ -80,7 +80,7 @@ data=[
 ]
 
 tree.tag_configure("ollrow" ,background="white")
-tree.tag_configure("evenrow" ,background="#FEF7F3")
+tree.tag_configure("evenrow" ,background="#ECECEC")
 
 
 global dem

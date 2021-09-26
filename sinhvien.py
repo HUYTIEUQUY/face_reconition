@@ -24,6 +24,7 @@ from backend.dl_adminlop import malop_ten, tenlop_ma
 import backend.dl_sinhvien as sv
 import threading
 import kt_nhap as kt
+from uploadfile import upload_anh, load,deleteanh,upload_filemahoa
 
 
 def main():
@@ -49,11 +50,21 @@ def main():
             masv=df['Mã sinh viên'][i]
             tensv=df['Tên sinh viên'][i]
             if sv.kt_masv_tontai(masv) !=[]:
-               ko_luu.append(masv) 
+               ko_luu.append(masv)
             else:
                 sv.themsv(masv,tensv,malop,"")
+                lop=kt.khong_dau(cb_lop.get())
+                try:
+                    f=open("mahoa/"+lop+".pkl","rb")
+                    ref_dictt=pickle.load(f)
+                    f.close()
+                except:
+                    ref_dictt={}
+                ref_dictt[masv]=tensv
+
         if ko_luu !=[]:
             messagebox.showerror("thông báo","Mã sinh viên đã tồn tại\n"+str(ko_luu))
+        else: messagebox.showinfo("thông báo","Thêm sinh viên thành công")
         row=sv.bangsv(malop)
         update(row)
 
@@ -127,21 +138,17 @@ def main():
 
     def getrow(event):
         rowid=tv.identify_row(event.y)
-        
         item=tv.item(tv.focus())
-
         ten.set(item['values'][2])
         ma.set(item['values'][1])
         macu.set(item['values'][1])
         anh=sv.anh(ma.get()).split()
-
-        
         lb2.config(text=item['values'][1])
         if(anh==[]):
             img=Image.open("img_anhsv/aa.jpg")
         else:
-            img=Image.open("img_anhsv/"+anh[0])
-        img.thumbnail((140,140))
+            img=Image.open(load(anh[0]))
+        img.thumbnail((150,150))
         img=ImageTk.PhotoImage(img)
         lb1.config(image=img)
         lb1.image=img
@@ -190,8 +197,15 @@ def main():
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             sv.xoasv(masv)# xoá sv trên database
             khoiphuc()
-            xoa_sv_matran(masv)#xoá mahoa anh 
-            xoaanh(masv)# xoá anh
+            try:
+                xoa_sv_matran(masv)#xoá mahoa anh 
+                tenlop=kt.khong_dau(lop.get()).replace(" ","_")
+                path ="mahoa/"+tenlop+"mahoa.pkl"
+                pathten ="mahoa/"+tenlop+".pkl"
+                threading.Thread(target=upload_filemahoa,args=(path,)).start()
+                threading.Thread(target=upload_filemahoa,args=(pathten,)).start()
+            except:print("xoá sv thất bại")
+            threading.Thread(target=deleteanh,args=(masv,)).start()
         else: return
         
     def xoa_sv_matran(masv):
@@ -211,9 +225,9 @@ def main():
         pickle.dump(ref_dictt,file)
         file.close()
 
-    def xoaanh(masv):
-        for i in range(5):
-            os.remove("img_anhsv/"+str(masv)+str(i+1)+".png")
+    # def xoaanh(masv):
+    #     for i in range(5):
+    #         os.remove("img_anhsv/"+str(masv)+str(i+1)+".png")
 
     def menutaikhoan():
         win.destroy()
@@ -300,7 +314,10 @@ def main():
                 webcam = cv2.VideoCapture(1)
                 check, frame = webcam.read()
                 cv2.imshow("Capturing", frame)
-            except:webcam = cv2.VideoCapture(0)
+            except:
+                webcam = cv2.VideoCapture(0)
+                check, frame = webcam.read()
+                cv2.imshow("Capturing", frame)
             while True:
             
                 check, frame = webcam.read()
@@ -310,33 +327,43 @@ def main():
                 #(0, 0), fx=0.25, fy=0.25 : kích thước mong muốn cho hình ảnh đầu
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
                 rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
-        
                 key = cv2.waitKey(1)
                 if key == ord('s') : 
-                    face_locations = face_recognition.face_locations(rgb_small_frame)
-                    if face_locations != []: #nếu có khuôn mặt
-                        cv2.imwrite('img_anhsv/'+str(id)+str(i+1)+'.png',frame)
-                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                        anh=anh+' '+str(id)+str(i+1)+'.png'
-                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                            embed_dictt[id]+=[face_encoding]
-                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                            embed_dictt[id]=[face_encoding]
-                        if(i==4):
-                            messagebox.showinfo("thông báo", "Đã lưu")
-                        webcam.release()
-                        cv2.destroyAllWindows()
-                        break
-        if key == ord('q'):
-            webcam.release()
-            cv2.destroyAllWindows() # thoát khỏi camera
+                    try:
+                        face_locations = face_recognition.face_locations(rgb_small_frame)[0]
+                        if face_locations != []: #nếu có khuôn mặt
+                            cv2.imwrite('img_anhsv/'+str(id)+str(i+1)+'.png',frame)
+                            face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+                            anh=anh+' '+str(id)+str(i+1)+'.png'
+                            if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+                                embed_dictt[id]+=[face_encoding]
+                            else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+                                embed_dictt[id]=[face_encoding]
+                            if(i==4):
+                                messagebox.showinfo("thông báo", "Đã lưu")
+                            webcam.release()
+                            cv2.destroyAllWindows()
+                            break
+                        else:
+                            webcam.release()
+                            cv2.destroyAllWindows()
+                            break
+                    except: print("lỗi")
+                    
+            if key == ord('q'):
+                webcam.release()
+                cv2.destroyAllWindows()
+                break
+            # thoát khỏi camera
             
-
+        upload_anh(id)
         sv.themsv(id,name,malop,anh)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()
         khoiphuc()
+        upload_filemahoa("mahoa/"+lop+"mahoa.pkl")
+        upload_filemahoa("mahoa/"+lop+".pkl")
 
     win=Tk()
     win.geometry("1000x600+300+120")
