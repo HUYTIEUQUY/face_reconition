@@ -69,7 +69,7 @@ def themgv(magv,tengv,email,sdt,ghichu,makhoa):
 def banggv(makhoa):
     a=[]
     stt=1
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
     for i in data.each():
         if(i.val()["MaKhoa"]==str(makhoa) and i.val()["LoaiTK"]==str(0)):
             e=[str(stt),i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]

@@ -164,3 +164,15 @@ def ds_masv_lop(malop):
         if(i.val()["MaLop"]==str(malop)):
             a.append(i.val()['MaSV'])
     return a
+
+def kt_sv_diemdanh(masv):
+    a=[]
+    try:
+        data=db.child("DiemDanh").order_by_child("MaSV").equal_to(str(masv)).get()
+        for i in data.each():
+            if(i.val()["MaSV"]==str(masv)):
+                a.append(i.val()['MaSV'])
+    except: print("lỗi")
+    if a ==[]: 
+        return False
+    else: return True

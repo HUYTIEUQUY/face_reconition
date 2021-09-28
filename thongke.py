@@ -15,6 +15,7 @@ import os
 import xlsxwriter
 import threading
 from tkinter import filedialog
+from styletable import style,update
 
 def main():
     def luong(ham):
@@ -41,15 +42,20 @@ def main():
         if data_lop==[]:
             anhnen=bg.create_image(500,300,image=img_erorr)
         else:
-            txttim.place(x=635,y=297)
-            btnkhoiphuc.place(x=905,y=295)
-            btntimkiem.place(x=862,y=295)
-            cb_lop.place(x=520,y=100)
+            lb_lop.place(x=380,y=80)
+            lb_mon.place(x=380,y=110)
+            lb_ngay.place(x=380,y=140)
+            lb_ca.place(x=380,y=170)
+            txttim.place(x=658,y=243)
+            btnkhoiphuc.place(x=925,y=242)
+            btntimkiem.place(x=885,y=242)
+            cb_lop.place(x=520,y=80)
             btnexcelxuat.place(x=948,y=2)
-            cb_mh.place(x=520,y=130)
-            cb_ngay.place(x=520,y=160)
-            cb_ca.place(x=520,y=190)
-            tv.place(x=350,y=350)
+            cb_mh.place(x=520,y=110)
+            cb_ngay.place(x=520,y=140)
+            cb_ca.place(x=520,y=170)
+            
+            tv.pack()
             
             cb_lop.config(values=data_lop)
             chongiatridau(data_lop,cb_lop)
@@ -87,7 +93,7 @@ def main():
 
     def khoiphuc():
         row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
-        update(row)
+        update(tv,row)
 
     def dongluu(row,ma,ten,tt,TG,ghichu):
         for i in row:
@@ -135,10 +141,7 @@ def main():
             write_data_to_file(TG,3)
             write_data_to_file(ghichu,4)
             out_workbook.close()
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
+
     def timkiem():
         row=tk.tim_tk(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
         update(row)
@@ -201,11 +204,10 @@ def main():
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat.place(x=248,y=44)
 
-    btntimkiem=Button(bg,image=ing_timkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem=Button(bg,image=ing_timkiem,bd=0,activebackground='white',highlightthickness=0,command=timkiem)
     
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,activebackground='white',highlightthickness=0,command=khoiphuc,bg="white")
     
-
     ten_thiet_bi = socket.gethostname()
     d=[]
     with open(ten_thiet_bi+".txt","r") as file:
@@ -236,19 +238,44 @@ def main():
     cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',width=30)
     
     cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
+
+    lb_lop=Label(bg,text="1.Lớp học",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
+    lb_mon=Label(bg,text="2.Môn học",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
+    lb_ngay=Label(bg,text="3.Ngày học",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
+    lb_ca=Label(bg,text="4.Ca",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
     
- 
-    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings", selectmode="extended")
-    tv.column(1, width=100 )
-    tv.column(2, width=140)
-    tv.column(3, width=120,anchor=CENTER)
-    tv.column(4, width=240,anchor=CENTER)
-    # tv.column(5, width=200)
-    tv.heading(1,text="Mã sinh viên")
-    tv.heading(2,text="Tên sinh viên")
-    tv.heading(3,text="Thông tin")
-    tv.heading(4,text="TG vào - TG ra")
+
+    
+    
+    # tạo stype cho bảng
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=348,y=300)
+
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
+   
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6),yscrollcommand=tree_scroll.set)
+    tv.column('#0', width=0, stretch='no')
+    tv.column(1, width=50 )
+    tv.column(2, width=100 )
+    tv.column(3, width=160)
+    tv.column(4, width=100,anchor=CENTER)
+    tv.column(5, width=100,anchor=CENTER)
+    tv.column(6, width=100,anchor=CENTER)
+    # tv.column(5, width=120)
+    tv.heading('#0', text="", anchor='center')
+    tv.heading(1,text="STT" )
+    tv.heading(2,text="MÃ SINH VIÊN")
+    tv.heading(3,text="HỌ TÊN")
+    tv.heading(4,text="THÔNG TIN")
+    tv.heading(5,text="TG Vào")
+    tv.heading(6,text="TG Ra")
     # tv.heading(5,text="Ghi chú")
+    tv.tag_configure("ollrow" ,background="white")
+    tv.tag_configure("evenrow" ,background="#ECECEC")
     txttim=Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0)
 
     luong(loaddl)

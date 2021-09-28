@@ -14,19 +14,14 @@ import quantrivien_thongke
 import quantrivien_thietlap
 import threading
 import kt_nhap as kt
-
+from styletable import style, update
 
 def main():
     def loaddl():
         tengv.set(tengv_email(d[0]))
         row=khoa.bangkhoa()
         lbgv.config(text=tengv.get())
-        update(row)
-
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
+        update(tv,row)
 
     def kt_email(email):
         if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
@@ -58,24 +53,48 @@ def main():
             khoiphuc()
         else: return
 
-    def xoa():
-        ten=tenkhoa.get()
-        ma=makhoa.get()
+    # def xoa():
+    #     ten=tenkhoa.get()
+    #     ma=makhoa.get()
         
-        if ten=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
-        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            if khoa.kt_lop_in_khoa(ma) == False:
-                if khoa.xoakhoa(ma)==True and khoa.xoakhoa_bgv(ma)==True:
-                    khoa.xoa_tk(email.get())
-                    messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-                    khoiphuc()
-                else: 
-                    messagebox.showerror("thông báo","Lỗi")
+    #     if ten=="":
+    #         messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
+    #     elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+    #         if khoa.kt_lop_in_khoa(ma) == False:
+    #             if khoa.xoakhoa(ma)==True and khoa.xoakhoa_bgv(ma)==True:
+    #                 khoa.xoa_tk(email.get())
+    #                 messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
+    #                 khoiphuc()
+    #             else: 
+    #                 messagebox.showerror("thông báo","Lỗi")
+    #         else:
+    #             messagebox.showerror("thông báo", "không thể xoá\nCó lớp tồn tại trong khoa")
+    #     else:
+    #         return
+
+    def xoa():
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            x=tv.selection()
+            listma = []
+            ko_xoa=[]
+            for i in x:
+                listma.append(tv.item(i,'values')[1])
+            for i in listma:
+                if khoa.kt_lop_in_khoa(i) == False:
+                    if khoa.xoakhoa(i)==True:
+                        threading.Thread(target=khoa.xoa_tk,args=(i)).start()
+                        threading.Thread(target=khoa.xoakhoa_bgv,args=(i)).start()
+                    else: 
+                        messagebox.showerror("thông báo","Lỗi")
+                else: ko_xoa.append(i)
+
+            
+            if(ko_xoa!=[]):
+                messagebox.showwarning("thông báo","Không thể xoá khoa có mã "+str(ko_xoa))
             else:
-                messagebox.showerror("thông báo", "không thể xoá\nCó lớp tồn tại trong khoa")
-        else:
-            return
+                messagebox.showinfo("thông báo","Đã xoá thành công")
+                khoiphuc()
+        else: return
 
     def sua():
         tenmoi=tenkhoa.get()
@@ -110,11 +129,11 @@ def main():
         tenkhoa.set("")
         email.set("")
         row=khoa.bangkhoa()
-        update(row)
+        update(tv,row)
 
     def timkiem():
         row=khoa.timkhoa(ndtimkiem.get())
-        update(row)
+        update(tv,row)
 
     def menuthietlap():
         win.destroy()
@@ -185,39 +204,50 @@ def main():
     menuthietlap.place(x=30,y=296)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
-    btnthem.place(x=487,y=200)
+    btnthem.place(x=487,y=185)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
-    btnsua.place(x=637,y=200)
+    btnsua.place(x=637,y=185)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
-    btnxoa.place(x=770,y=200)
+    btnxoa.place(x=770,y=185)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=292)
+    btntimkiem.place(x=881,y=245)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
-    btnkhoiphuc.place(x=920,y=292)
+    btnkhoiphuc.place(x=920,y=245)
     
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
 
     
-    Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
+    Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=28)
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=129)
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=email,bd=0,highlightthickness=0).place(x=576,y=163)
-    
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=294)
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=62)
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=email,bd=0,highlightthickness=0).place(x=576,y=96)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=248)
 
-    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
-    tv.column(1, width=80,anchor=CENTER)
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=328,y=300)
+
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4),yscrollcommand=tree_scroll.set)
+    tv.column('#0', width=0, stretch='no')
+    tv.column(1, width=50,anchor=CENTER)
     tv.column(2, width=80,anchor=CENTER)
-    tv.column(3, width=200)
+    tv.column(3, width=250)
     tv.column(4, width=250)
 
-    tv.heading(1,text="Số thứ tự")
-    tv.heading(2,text="Mã khoa")
-    tv.heading(3,text="Tên Khoa")
-    tv.heading(4,text="Email khoa")
-    tv.place(x=350,y=340)
+    tv.heading('#0', text="", anchor='center')
+    tv.heading(1,text="STT")
+    tv.heading(2,text="MÃ KHOA")
+    tv.heading(3,text="TÊN KHOA")
+    tv.heading(4,text="EMAIL KHOA")
+    tv.pack()
     tv.bind('<Double 1>', getrow)
+    tv.tag_configure("ollrow" ,background="white")
+    tv.tag_configure("evenrow" ,background="#ECECEC")
     
     threading.Thread(target=loaddl).start()
 

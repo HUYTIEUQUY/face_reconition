@@ -76,11 +76,11 @@ def load(tenfile_loud):
 # pathten="mahoa/Cong_nghe_thong_tin_K22_.pkl"
 # a=storage.child(pathten).get_url(None)
 # storage.child(pathten).download(pathten,pathten,None)
-# # f = urllib.request.urlopen(a).read()
-f=open("mahoa/Cong_nghe_thong_tin_K19_mahoa.pkl","rb")
-ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
-f.close()
-print(ref_dictt)
+# # # f = urllib.request.urlopen(a).read()
+# f=open("mahoa/Cong_nghe_thong_tin_K19_mahoa.pkl","rb")
+# ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
+# f.close()
+# print(ref_dictt)
 
 
 

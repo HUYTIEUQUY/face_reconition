@@ -14,6 +14,7 @@ from backend.dl_giangvien import tengv_email,makhoa_email
 import backend.dl_monhoc as mh
 import threading
 import kt_nhap as kt
+from styletable import style,update
 
 def main():
     def luong(ham):
@@ -35,12 +36,8 @@ def main():
         data_sotietlt.set("")
         data_sotietth.set("")
         row=mh.bangmh(makhoa.get())
-        update(row)
+        update(tv,row)
 
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
 
     def getrow(event):
         rowid=tv.identify_row(event.y)
@@ -127,7 +124,7 @@ def main():
 
     def timkiem():
         row=mh.tim_mh(makhoa.get(), ndtimkiem.get())
-        update(row)
+        update(tv,row)
 
     def menuthongke():
         win.destroy()
@@ -206,39 +203,51 @@ def main():
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
 
-    Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=72)
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=590,y=107)
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=590,y=142)
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=590,y=177)
-    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=315)
+    Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=20)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=590,y=57)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=590,y=94)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=590,y=133)
+    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=252)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
-    btnthem.place(x=487,y=230)
+    btnthem.place(x=487,y=185)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
-    btnsua.place(x=637,y=230)
+    btnsua.place(x=637,y=185)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
-    btnxoa.place(x=770,y=230)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=315)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    btnkhoiphuc.place(x=920,y=315)
+    btnxoa.place(x=770,y=185)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='white',command=timkiem)
+    btntimkiem.place(x=881,y=251)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc)
+    btnkhoiphuc.place(x=920,y=251)
 
+    # tạo stype cho bảng
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=348,y=300)
 
-    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5),yscrollcommand=tree_scroll.set)
+    tv.column('#0', width=0, stretch='no')
     tv.column(1, width=50,anchor=CENTER)
     tv.column(2, width=80,anchor=CENTER)
     tv.column(3, width=240)
     tv.column(4, width=100,anchor=CENTER)
     tv.column(5, width=100,anchor=CENTER)
 
+    tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
-    tv.heading(2,text="Mã môn")
-    tv.heading(3,text="Tên môn")
-    tv.heading(4,text="Số tiết lý thuyết")
-    tv.heading(5,text="Số tiết thực hành")
-    tv.place(x=368,y=350)
+    tv.heading(2,text="MÃ MÔN")
+    tv.heading(3,text="TÊN MÔN HỌC")
+    tv.heading(4,text="SỐ TIẾT LT")
+    tv.heading(5,text="SỐ TIẾT TH")
+    tv.pack()
 
     tv.bind('<Double 1>', getrow)
+    tv.tag_configure("ollrow" ,background="white")
+    tv.tag_configure("evenrow" ,background="#ECECEC")
 
     luong(loaddl)
 

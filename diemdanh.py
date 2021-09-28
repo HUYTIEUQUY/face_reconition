@@ -24,6 +24,7 @@ from speak import speak
 import thietlap
 from kt_nhap import khong_dau
 from uploadfile import download_filemahoa
+from styletable import style, update
 
 def main():
     def timkiem():
@@ -31,7 +32,7 @@ def main():
         update(row)
     def khoiphuc():
         row=diemdanh.bangdiemdanh(matkb.get())
-        update(row)
+        update(tv,row)
 
     def luong(ham):
         threading.Thread(target=ham).start()
@@ -94,10 +95,6 @@ def main():
         s = re.sub(r'[đ]', 'd', s)
         return s
 
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
     def doigiaytre(s):
         i=str(s).replace('.',' ').replace(':'," ").split()
         p=i[0]
@@ -309,37 +306,53 @@ def main():
     
     #lớp
     lblop=Label(bg,font=("Baloo Tamma",12),bg="white")
-    lblop.place(x=600,y=90)
+    lblop.place(x=600,y=35)
     lbmon=Label(bg,font=("Baloo Tamma",12),bg="white")
-    lbmon.place(x=600,y=125)
+    lbmon.place(x=600,y=70)
 
     #nút điểm diemdanh
     btndiemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=kt)
-    btndiemdanh.place(x=573,y=229)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=883,y=292)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    btnkhoiphuc.place(x=920,y=292)
+    btndiemdanh.place(x=573,y=170)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='white',command=timkiem)
+    btntimkiem.place(x=883,y=253)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc)
+    btnkhoiphuc.place(x=920,y=253)
     txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
-    txt_timkiem.place(x=650,y=295)
+    txt_timkiem.place(x=650,y=254)
     #bang diemdanh
 
     tl=Button(bg,image=ing_btnthetlap,bd=0,highlightthickness=0,command=thietlaptre)
     tl.place(x=948,y=2)
-    
+
+
+    # tạo stype cho bảng
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=368,y=300)
+
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
    
-    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
-    tv.column(1, width=100 )
-    tv.column(2, width=140)
-    tv.column(3, width=100,anchor=CENTER)
-    tv.column(4, width=220,anchor=CENTER)
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6),yscrollcommand=tree_scroll.set)
+    tv.column('#0', width=0, stretch='no')
+    tv.column(1, width=50 )
+    tv.column(2, width=100 )
+    tv.column(3, width=140)
+    tv.column(4, width=100,anchor=CENTER)
+    tv.column(5, width=100,anchor=CENTER)
+    tv.column(6, width=100,anchor=CENTER)
     # tv.column(5, width=120)
-    tv.heading(1,text="Mã sinh viên")
-    tv.heading(2,text="Tên sinh viên")
-    tv.heading(3,text="Thông tin")
-    tv.heading(4,text="TG vào - TG ra")
+    tv.heading('#0', text="", anchor='center')
+    tv.heading(1,text="STT" )
+    tv.heading(2,text="MÃ SINH VIÊN")
+    tv.heading(3,text="HỌ TÊN")
+    tv.heading(4,text="THÔNG TIN")
+    tv.heading(5,text="TG Vào")
+    tv.heading(6,text="TG Ra")
     # tv.heading(5,text="Ghi chú")
-    tv.place(x=380,y=350)
+    tv.pack()
 
     luong(loaddl)
     threading.Thread(target=taifilemahoa, args=(makhoa.get())).start()

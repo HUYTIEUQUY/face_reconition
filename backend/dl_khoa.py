@@ -86,8 +86,8 @@ def xoakhoa(makhoa):
         return False
 
 def xoakhoa_bgv(magv):
-    data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
     try:
+        data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
         for i in data.each():
             if i.val()["MaGV"] == str(magv):
                 db.child("GiangVien").child(i.key()).remove()
@@ -96,7 +96,18 @@ def xoakhoa_bgv(magv):
         return False
 
 
-def xoa_tk(email):
+def email_khoa(makhoa):
+    a=""
+    try:
+        data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(makhoa)).get()
+        for i in data.each():
+            a=i.val()["Email"]
+    except:a=""
+    return a
+
+
+def xoa_tk(i):
+    email=email_khoa(i)
     a=auth.get_user_by_email(str(email))
     auth.delete_user(a.uid)
 

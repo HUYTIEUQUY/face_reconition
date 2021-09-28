@@ -3,6 +3,19 @@ from tkinter import Scrollbar, ttk
 
 from PIL.Image import fromqimage
 
+
+
+
+def removemany():
+    x=tree.selection()
+    listma = []
+    for i in x:
+        listma.append(tree.item(i,'values')[1])
+    for i in x:
+        tree.delete(i)
+    
+    
+
 root = Tk()
 root.geometry("1000x500")
 
@@ -93,5 +106,9 @@ for i in data:
     dem += 1
 
 print(style.theme_names())
+
+Button(f,text="Xoá",command=removemany).pack()
+
+
 root.mainloop()
 

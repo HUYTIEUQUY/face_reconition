@@ -25,9 +25,11 @@ import backend.dl_sinhvien as sv
 import threading
 import kt_nhap as kt
 from uploadfile import upload_anh, load,deleteanh,upload_filemahoa
+from styletable import style
 
 
 def main():
+
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -107,15 +109,19 @@ def main():
         
     def update(row):
         tv.delete(*tv.get_children())
+        global dem
+        dem=0
         for i in row:
-            tv.insert('','end',values=i)
+            if dem%2==0:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
+            else:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
+            dem += 1
 
     def capnhat(event):
         malop=malop_ten(cb_lop.get())
         row=sv.bangsv(malop)
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
+        update(row)
         img=Image.open("img/bg_themdl2.png")
         img.thumbnail((180,180))
         img=ImageTk.PhotoImage(img)
@@ -144,6 +150,9 @@ def main():
         macu.set(item['values'][1])
         anh=sv.anh(ma.get()).split()
         lb2.config(text=item['values'][1])
+        threading.Thread(target=gananh_khi_click,args=(anh,)).start()
+        
+    def gananh_khi_click(anh):
         if(anh==[]):
             img=Image.open("img_anhsv/aa.jpg")
         else:
@@ -152,7 +161,6 @@ def main():
         img=ImageTk.PhotoImage(img)
         lb1.config(image=img)
         lb1.image=img
-
         btn_xemanh.config(image=img_btnxem)
 
     def sua():
@@ -191,23 +199,30 @@ def main():
         f.close()
 
     def xoa():
-        masv=ma.get()
-        if macu.get()=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu để xoá. \nHãy nhấn 2 lần vào dòng dữ liệu muốn xoá và nhấn nút xoá")
-        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            sv.xoasv(masv)# xoá sv trên database
-            khoiphuc()
-            try:
-                xoa_sv_matran(masv)#xoá mahoa anh 
-                tenlop=kt.khong_dau(lop.get()).replace(" ","_")
-                path ="mahoa/"+tenlop+"mahoa.pkl"
-                pathten ="mahoa/"+tenlop+".pkl"
-                threading.Thread(target=upload_filemahoa,args=(path,)).start()
-                threading.Thread(target=upload_filemahoa,args=(pathten,)).start()
-            except:print("xoá sv thất bại")
-            threading.Thread(target=deleteanh,args=(masv,)).start()
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            x=tv.selection()
+            listma = []
+            ko_xoa=[]
+            for i in x:
+                listma.append(tv.item(i,'values')[1])
+            for i in listma:
+                if sv.kt_sv_diemdanh(i)== False:
+                    sv.xoasv(i)
+                    luong(khoiphuc)
+                    try:
+                        xoa_sv_matran(i)#xoá mahoa anh 
+                    except:print("xoá sv ma trận thất bại")
+                else:
+                    ko_xoa.append(i)
+            if(ko_xoa!=[]):
+                messagebox.showwarning("thông báo","Không thể xoá sinh viên có mã "+str(ko_xoa))
+            tenlop=kt.khong_dau(lop.get()).replace(" ","_")
+            path ="mahoa/"+tenlop+"mahoa.pkl"
+            pathten ="mahoa/"+tenlop+".pkl"
+            threading.Thread(target=upload_filemahoa,args=(path,)).start()
+            threading.Thread(target=upload_filemahoa,args=(pathten,)).start()
         else: return
-        
+
     def xoa_sv_matran(masv):
         tenlop=lop.get().replace(" ","_")
         lopmahoa=kt.khong_dau(tenlop)
@@ -410,38 +425,35 @@ def main():
 
     
     cb_lop=Combobox(bg,width=30, font=("Baloo Tamma",12),state='readonly',textvariable=lop)
-    cb_lop.place(x=580,y=102)
+    cb_lop.place(x=580,y=53)
     cb_lop.bind('<<ComboboxSelected>>', capnhat)
-    Frame(bg,width=308,height=5,bg= "white").place(x=570,y=102)
-    Frame(bg,width=308,height=5,bg= "white").place(x=570,y=123)
-    Frame(bg,width=5,height=20,bg= "white").place(x=577,y=102)
+    Frame(bg,width=305,height=5,bg= "white").place(x=570,y=53)
+    Frame(bg,width=305,height=5,bg= "white").place(x=570,y=75)
+    Frame(bg,width=5,height=22,bg= "white").place(x=577,y=53)
 
     
-    txt_masv=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ma,highlightthickness=0)
-    txt_masv.place(x=580,y=140)
+    txt_masv=Entry(bg,width=32,bd=0,font=("Baloo Tamma",12),textvariable=ma,highlightthickness=0)
+    txt_masv.place(x=580,y=90)
     txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
-    txt_timkiem.place(x=660,y=308)
-    txt_hoten=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ten,highlightthickness=0)
-    txt_hoten.place(x=580,y=172)
+    txt_timkiem.place(x=660,y=246)
+    txt_hoten=Entry(bg,width=32,bd=0,font=("Baloo Tamma",12),textvariable=ten,highlightthickness=0)
+    txt_hoten.place(x=580,y=125)
 
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=kt_nhap)
-    btnthem.place(x=487,y=240)
+    btnthem.place(x=487,y=185)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
-    btnsua.place(x=637,y=240)
+    btnsua.place(x=637,y=185)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
-    btnxoa.place(x=770,y=240)
+    btnxoa.place(x=770,y=185)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='#ffffff',command=timkiem)
-    btntimkiem.place(x=891,y=305)
+    btntimkiem.place(x=888,y=241)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='#ffffff',command=khoiphuc)
-    btnkhoiphuc.place(x=928,y=305)
+    btnkhoiphuc.place(x=925,y=241)
     btnexcelnhap=Button(bg,image=img_btnexcel_nhap,bd=0,highlightthickness=0,command=nhap_excel)
     btnexcelnhap.place(x=948,y=2)
     btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
     btnexcelxuat.place(x=898,y=2)
-
-
-
 
     menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD')
     menuthem.place(x=46,y=129)
@@ -458,29 +470,39 @@ def main():
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat.place(x=248,y=44)
 
- 
     lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
     
 
-        
-    
+    # tạo stype cho bảng
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=368,y=300)
 
-    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
+
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3),yscrollcommand=tree_scroll.set)
+    tv.column('#0', width=0, stretch='no')
     tv.column(1, width=50,anchor=CENTER)
     tv.column(2, width=100,anchor=CENTER)
     tv.column(3, width=200)
+
+    tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
-    tv.heading(2,text="Mã sinh viên")
-    tv.heading(3,text="Tên sinh viên")
-    tv.place(x=368,y=350)
+    tv.heading(2,text="MÃ SINH VIÊN")
+    tv.heading(3,text="TÊN SINH VIÊN")
+    tv.pack()
 
     tv.bind('<Double 1>', getrow)
-
+    tv.tag_configure("ollrow" ,background="white")
+    tv.tag_configure("evenrow" ,background="#ECECEC")
     
 
     f1=Frame(bg,bg="white",width=140,height=140)
-    f1.place(x=772,y=380)
+    f1.place(x=782,y=350)
 
     lb1=Label(f1,bg="white")
     lb1.pack()

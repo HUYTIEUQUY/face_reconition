@@ -94,13 +94,15 @@ def tensv_ma(ma):
     return a
 
 def thongke(magv,malop,mamh,ngay,ca):
-    data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
     a=[]
+    stt=1
     try:
+        data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
         for i in data.each():
             if i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ca"]==str(ca):
-                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"], i.val()["GhiChu"]]
+                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
                 a.append(e)
+                stt+=1
                 
     except:a=[]
     return a
@@ -152,6 +154,15 @@ def ds_gv(makhoa):
     for i in data.each():
         if i.val()['MaKhoa'] == str(makhoa) and i.val()['LoaiTK']=="0" and i.val()['MaGV'] in b:
             a.append(i.val()['MaGV']+"-"+i.val()['TenGV'])
+    return a
+
+def kt_dldd():
+    a=[]
+    try:
+        data=db.child("DiemDanh").get()
+        for i in data.each():
+            a.append(i.val()['MaGV'])
+    except:a=[]
     return a
 
 

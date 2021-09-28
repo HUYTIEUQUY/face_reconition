@@ -6,7 +6,6 @@ from kt_nhap import khong_dau
 import datetime
 db=conect_firebase.connect().database()
 
-
 def lop_khoa(ma):
     data=db.child("Lop").order_by_child("MaKhoa").equal_to(str(ma)).get()
     a=[]
@@ -47,29 +46,41 @@ def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
         return True
     except:
         return False
+def sua_tkb(matkb,magv,mamh,loai,ngay,ca,malop,hki,nam):
+    data={'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
+    try:
+        root=db.child('ThoiKhoaBieu').order_by_child("MaTKB").equal_to(str(matkb)).get()
+        for i in root.each():
+            if i.val()["MaTKB"] == str(matkb):
+                db.child('ThoiKhoaBieu').child(i.key()).update(data)
+        return True
+    except:
+        return False
 
 
 
-def bang_tkb(malop,namhoc,hocky):
+def bang_tkb(malop,namhoc,hocky,magv):
     a=[]
+    stt=1
     try:
         data=db.child("ThoiKhoaBieu").order_by_child("Ngay").get()
         for i in data.each():
-            if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky)):
+            if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)) :
                 gv=tengv_ma(i.val()["MaGV"])
                 mh=tenmh_ma(i.val()["MaMH"])
-                e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
+                e=[stt,i.val()["MaTKB"],gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
                 a.append(e)
+                stt +=1
     except:a=[]
     return a
 
-def timkiem_dong_tkb(malop,namhoc,hocky,q):
+def timkiem_dong_tkb(malop,namhoc,hocky,magv,q):
     a=[]
 
     data=db.child("ThoiKhoaBieu").get()
     try:
         for i in data.each():
-            if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky)):
+            if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
                 gv=tengv_ma(i.val()["MaGV"])
                 mh=tenmh_ma(i.val()["MaMH"])
                 e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
@@ -79,23 +90,33 @@ def timkiem_dong_tkb(malop,namhoc,hocky,q):
     return a
 
 
-def kt_lichgiang(magv,ngay,ca):
+def kt_lichgiang(magv,ngay,ca,matkb):
     a=[]
-    data=db.child("ThoiKhoaBieu").get()
+    data=db.child("ThoiKhoaBieu").order_by_child("MaGV").equal_to(str(magv)).get()
     try:
         for i in data.each():
-            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaGV"]==str(magv)):
+            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaGV"]==str(magv) and i.val()["MaTKB"] != str(matkb)):
                 a.append(i.val()["MaGV"])
     except: a=[]
     return a
 
-def kt_lich_tkb(malop,ngay,ca):
+def kt_lich_tkb(malop,ngay,ca,matkb):
     a=[]
-    data=db.child("ThoiKhoaBieu").get()
+    data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
     try:
         for i in data.each():
-            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaLop"]==str(malop)):
+            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaLop"]==str(malop) and i.val()["MaTKB"]!=str(matkb)):
                 a.append(i.val()["MaLop"])
+    except:a=[]
+    return a
+
+def kt_tkb_dd(matkb):
+    a=[]
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
+        for i in data.each():
+            if  i.val()["TrangThaiDD"] == "1":
+                a.append(i.val()["MaTKB"])
     except:a=[]
     return a
 
@@ -156,7 +177,6 @@ def gv_dd(magv,ngay):
                 tenm=tenmh_ma(i.val()['MaMH'])
                 e = [i.val()['MaTKB'],tenl,tenm,i.val()['Ngay'],i.val()['Ca']]
                 a.append(e)
-                
     except: a=[]
     return a
 
@@ -186,8 +206,6 @@ def capnhat_namhoc():
         db.child("NamHoc").push(dl)
     else: return
 
-
-    
 capnhat_namhoc()
 def matkb():
     try:
@@ -197,4 +215,6 @@ def matkb():
             a=str(int(max(e))+1)
     except:a=0
     return a
+
+
 

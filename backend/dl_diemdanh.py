@@ -61,11 +61,12 @@ def update_TT_diemdanh(ma):
 
 def bangdiemdanh(ma):
     a=[]
+    stt=1
     try:
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
-                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 a.append(e)
     except:
         a=[]

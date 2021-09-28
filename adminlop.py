@@ -17,6 +17,7 @@ from backend.dl_khoa import tenkhoa
 import backend.dl_adminlop as lop
 import kt_nhap as kt
 import threading
+from styletable import style, update
 
 def main():
     def loaddl():
@@ -31,10 +32,7 @@ def main():
     def luong(ham):
         threading.Thread(target=ham).start()
 
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
+
 
     def them():
         ma=lop.malop()
@@ -98,11 +96,11 @@ def main():
         ndtimkiem.set("")
         tenlop.set("")
         row=lop.banglop(makhoa.get())
-        update(row)
+        update(tv,row)
 
     def timkiem():
         row=lop.timlop(makhoa.get(),ndtimkiem.get())
-        update(row)
+        update(tv,row)
 
     def menuthongke():
         win.destroy()
@@ -187,10 +185,10 @@ def main():
     btnsua.place(x=637,y=181)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=181)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=292)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
-    btnkhoiphuc.place(x=920,y=292)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='white',command=timkiem)
+    btntimkiem.place(x=881,y=250)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc,bg="white")
+    btnkhoiphuc.place(x=920,y=250)
 
  
     
@@ -198,22 +196,35 @@ def main():
     lbgv.place(x=45,y=40)
     
     lbtk=Label(bg,font=("Baloo Tamma",11),fg="black",bg="white")
-    lbtk.place(x=578,y=90)
+    lbtk.place(x=580,y=62)
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=576,y=129)
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=585,y=100)
     
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=292)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=253)
 
-    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
+    # tạo stype cho bảng
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=368,y=300)
+
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3),yscrollcommand=tree_scroll.set)
+    tv.column('#0', width=0, stretch='no')
     tv.column(1, width=120,anchor=CENTER)
     tv.column(2, width=120,anchor=CENTER)
     tv.column(3, width=300)
 
-    tv.heading(1,text="Số thứ tự")
-    tv.heading(2,text="Mã Lớp")
-    tv.heading(3,text="Tên Lớp")
-    tv.place(x=390,y=340)
+    tv.heading('#0', text="", anchor='center')
+    tv.heading(1,text="SỐ THỨ TỰ")
+    tv.heading(2,text="MÃ lỚP")
+    tv.heading(3,text="TÊN LỚP")
+    tv.pack()
     tv.bind('<Double 1>', getrow)
+    tv.tag_configure("ollrow" ,background="white")
+    tv.tag_configure("evenrow" ,background="#ECECEC")
     
     luong(loaddl)
     
