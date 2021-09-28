@@ -76,14 +76,14 @@ def suamh(mamh,tenmh,lt,th):
                 return False
 
 def xoamh(mamh):
-    data=db.child("MonHoc").get()
-    for i in data.each():
-        if(i.val()["MaMH"]==str(mamh)):
-            try:
+    try:
+        data=db.child("MonHoc").order_by_child("MaMH").equal_to(str(mamh)).get()
+        for i in data.each():
+            if(i.val()["MaMH"]==str(mamh)):
                 db.child("MonHoc").child(i.key()).remove()
                 return True
-            except:
-                return False
+    except:
+        return False
 
 def mamh_ten(ten):
     data=db.child("MonHoc").get()

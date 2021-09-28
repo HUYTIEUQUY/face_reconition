@@ -91,12 +91,33 @@ def main():
             elif mh.kt_monhoc_tontai_tkb(ma)!=[]:
                 messagebox.showerror("thông báo","Không thể xoá môn học này\nMôn học vẫn còn tồn tại trong bảng thời khoá biểu")
             else:
-                mh.xoamh(ma)
-                luong(khoiphuc)
-                messagebox.showinfo("thông báo","Đã xoá")
                 
+                messagebox.showinfo("thông báo","Đã xoá")
         else: 
             return 
+
+    def xoa():
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            x=tv.selection()
+            listma = []
+            ko_xoa=[]
+            for i in x:
+                listma.append(tv.item(i,'values')[1])
+            for i in listma:
+                if  mh.kt_monhoc_tontai_diemdanh(i)==[]  and  mh.kt_monhoc_tontai_tkb(i)==[]:
+                    if mh.xoamh(i) == True:
+                        luong(khoiphuc)
+                    else:
+                        ko_xoa.append(i)
+                else:ko_xoa.append(i)
+                    
+            if(ko_xoa!=[]):
+                messagebox.showwarning("thông báo","Không thể xoá môn có mã "+str(ko_xoa))
+                luong(khoiphuc)
+            else:
+                messagebox.showinfo("thông báo","Đã xoá thành công")
+
+        else: return
 
     def sua():
         ma=data_mamon.get()

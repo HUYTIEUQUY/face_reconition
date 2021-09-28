@@ -111,6 +111,7 @@ def xoa_tk(i):
     a=auth.get_user_by_email(str(email))
     auth.delete_user(a.uid)
 
+
 def kt_tenkhoa(tenkhoa):
     data=db.child("Khoa").get()
     a=[]

@@ -187,27 +187,29 @@ def main():
                     luong(khoiphuc)
                 else: messagebox.showerror("thông báo", "Đã sửa thất bại")
         
-               
-    def xoa():
-        magv=magv_ten(data_gv.get())
-        mamh = mamh_ten(data_mon.get())
-        ngay=data_ngay.get()
-        pp=pp_giangcu.get()
-        data_ca=""
-        for i in range(len(ca)):
-            if ca[i].get() >= 1:
-                data_ca += str(i)
         
-        if messagebox.askyesno("Thông báo","Bạn có thật sự muốn xoá"):
-            if ngay=="":
-                messagebox.showerror("thông báo","Không tìm thấy dữ liệu cần xoá.\n Bạn hãy nhấn 2 lần vào dòng muốn xoá và nhấn nút 'xoá'")
-            elif tkb.xoa_dong_tkb(magv,mamh,ngay,data_ca,pp) == True:
-                messagebox.showinfo("thông báo","Đã xoá khỏi thời khoá biểu")
+    def xoa():
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            x=tv.selection()
+            listma = []
+            ko_xoa=[]
+            for i in x:
+                listma.append(tv.item(i,'values')[1])
+            for i in listma:
+                if tkb.kt_tkb_dd(i)== []:
+                    if  tkb.xoa_dong_tkb(i) == True:
+                        luong(khoiphuc)
+                    else:
+                        ko_xoa.append(i)
+                else:ko_xoa.append(i)
+                    
+            if(ko_xoa!=[]):
+                messagebox.showwarning("thông báo","Không thể xoá dòng thời khoá biểu có mã "+str(ko_xoa))
                 luong(khoiphuc)
             else:
-                messagebox.showerror("thông báo","Không thể xoá")
-        else:
-            return
+                messagebox.showinfo("thông báo","Đã xoá thành công")
+                luong(khoiphuc)
+        else: return
   
     def chonngay(cal,btn):
         data_ngay.set(dinh_dang_ngay(cal.get_date()))

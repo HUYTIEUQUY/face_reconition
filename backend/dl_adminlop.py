@@ -135,6 +135,16 @@ def kt_lop_tontai_tkb(malop):
     except:a=[]
     return a
 
+def kt_sv_tontai_lop(malop):
+    a=[]
+    try:
+        data=db.child("SinhVien").order_by_child('MaLop').equal_to(str(malop)).get()
+        for i in data.each():
+            if(i.val()["MaLop"]==str(malop)):
+                a.append(i.val()['MaLop'])
+    except:a=[]
+    return a
+
 def malop():
     a="1"
     data = db.child("Lop").get()

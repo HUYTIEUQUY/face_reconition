@@ -121,10 +121,10 @@ def kt_tkb_dd(matkb):
     return a
 
 
-def xoa_dong_tkb(magv,mamh,ngay,ca,pp):
-    data=db.child("ThoiKhoaBieu").get()
+def xoa_dong_tkb(matkb):
+    data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
     for i in data.each():
-        if(i.val()["MaGV"]==str(magv) and  i.val()["MaMH"]==str(mamh)and i.val()["Ngay"]==str(ngay)and i.val()["Ca"]==str(ca) and i.val()["PP_Giang"]==str(pp) and i.val()["TrangThaiDD"]=="0"):
+        if i.val()["MaTKB"] == str(matkb) and i.val()["TrangThaiDD"] == "0":
             try:
                 db.child("ThoiKhoaBieu").child(i.key()).remove()
                 return True

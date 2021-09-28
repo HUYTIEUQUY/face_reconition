@@ -4,6 +4,7 @@ import firebase_admin
 from firebase_admin import auth
 from firebase_admin import credentials
 from kt_nhap import khong_dau
+import backend.dl_khoa 
 db=conect_firebase.connect().database()
 
 
@@ -101,13 +102,11 @@ def suagv(magv,tengv,sdt,ghichu):
                 return False
 
 def xoa_tk(email):
-    cred = credentials.Certificate("nckh.json")
-    firebase_admin.initialize_app(cred)
     a=auth.get_user_by_email(str(email))
     auth.delete_user(a.uid)
 
 def xoagv(magv):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
     for i in data.each():
         if(i.val()["MaGV"]==str(magv)):
             try:

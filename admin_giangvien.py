@@ -101,14 +101,33 @@ def main():
             messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
         elif messagebox.askyesno("thông báo","Bạn thực sự muốn xoá"):
             if gv.kt_gv_tontai_tkb(data_ma.get()) ==[] and gv.kt_gv_tontai_diemdanh(data_ma.get())==[]:
-                tenemail=email_ma(data_ma.get())
-                gv.xoa_tk(tenemail)
-                gv.xoagv(data_ma.get())
-                luong(khoiphuc)
+               
                 messagebox.showinfo("thông báo","Đã xoá giảng viên ra khỏi danh sách")
             else:
                 messagebox.showerror("thông báo","Xoá thất bại")
 
+    def xoa():
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            x=tv.selection()
+            listma = []
+            ko_xoa=[]
+            for i in x:
+                listma.append(tv.item(i,'values')[1])
+            for i in listma:
+                if gv.kt_gv_tontai_tkb(i) ==[] and gv.kt_gv_tontai_diemdanh(i)==[]:
+                    tenemail=email_ma(i)
+                    threading.Thread(target=gv.xoa_tk, args=(tenemail,)).start()
+                    threading.Thread(target=gv.xoagv, args=(i,)).start()
+                    luong(khoiphuc)
+                
+                else: ko_xoa.append(i)
+
+            if(ko_xoa!=[]):
+                messagebox.showwarning("thông báo","Không thể xoá giảng viên có mã "+str(ko_xoa))
+            else:
+                messagebox.showinfo("thông báo","Đã xoá thành công")
+                khoiphuc()
+        else: return
     
     def timkiem():
         row=gv.tim_gv(makhoa.get(),ndtimkiem.get())

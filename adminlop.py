@@ -51,23 +51,31 @@ def main():
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
 
-    def xoa():
-        ten=tenlop.get()
-        
-        if ten=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
-        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            if lop.kt_lop_tontai_diemdanh(malop.get()) == [] and lop.kt_lop_tontai_tkb(malop.get())==[]:
-                if lop.xoalop(malop.get())==True:
-                    messagebox.showinfo("thông báo","Đã xoá")
-                    khoiphuc()
-                else:
-                    messagebox.showerror("Lỗi","Xoá thất bại")
-            else:
-                messagebox.showerror("thông báo", "Xoá lớp thất bại")
-        else:
-            return
 
+
+    def xoa():
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            x=tv.selection()
+            listma = []
+            ko_xoa=[]
+            for i in x:
+                listma.append(tv.item(i,'values')[1])
+            for i in listma:
+                if lop.kt_lop_tontai_diemdanh(i) == [] and lop.kt_lop_tontai_tkb(i)==[] and lop.kt_sv_tontai_lop(i)==[]:
+                    if lop.xoalop(i)==True:
+                        luong(khoiphuc)
+                    else:
+                        ko_xoa.append(i)
+
+                else:ko_xoa.append(i)
+                    
+            if(ko_xoa!=[]):
+                messagebox.showwarning("thông báo","Không thể xoá lớp có mã "+str(ko_xoa))
+                luong(khoiphuc)
+            else:
+                messagebox.showinfo("thông báo","Đã xoá thành công")
+                luong(khoiphuc)
+        else: return
 
     def sua():
         tenmoi=tenlop.get()
