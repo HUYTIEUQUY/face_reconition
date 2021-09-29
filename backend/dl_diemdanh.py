@@ -68,6 +68,7 @@ def bangdiemdanh(ma):
             if(i.val()["Ma"]==str(ma)):
                 e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 a.append(e)
+                stt +=1
     except:
         a=[]
     return a
