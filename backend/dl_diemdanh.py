@@ -73,12 +73,23 @@ def bangdiemdanh(ma):
         a=[]
     return a
 
-def sv_da_dd_khac_vang(ma):
+def dd_sv_vao(ma):
     a=[]
     try:
-        data=db.child("DiemDanh").get()
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
-            if i.val()["Ma"]==str(ma) and i.val()["ThongTin"] != "không":
+            if i.val()["Ma"]==str(ma) and i.val()["TG_Vao"] != "":
+                a.append(i.val()["MaSV"])
+                
+    except:
+        a=[]
+    return a
+def dd_sv_ra(ma):
+    a=[]
+    try:
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        for i in data.each():
+            if i.val()["Ma"]==str(ma) and i.val()["TG_Ra"] != "":
                 a.append(i.val()["MaSV"])
     except:
         a=[]
@@ -125,17 +136,18 @@ def khong_dau(s):
 
 def timkiem_dd(ma,q):
     a=[]
+    stt=1
     try:
-        data=db.child("DiemDanh").get()
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
-                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 if khong_dau(str(q)) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"].lower())or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"].lower()):
                     a.append(e)
+                    stt+=1
     except:
         a=[]
     return a
-
 
 def capnhat_tgra(matkb,masv,tgra):
     data=db.child("DiemDanh").get()

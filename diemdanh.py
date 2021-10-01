@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import PhotoImage
-from PIL import ImageTk
+from PIL import Image,ImageTk
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -23,18 +23,28 @@ import threading
 from speak import speak
 import thietlap
 from kt_nhap import khong_dau
-from uploadfile import download_filemahoa
+from uploadfile import download_filemahoa,load
 from styletable import style, update
 import eye
 import dlib
+from time import strftime
+
 
 def main():
     def timkiem():
         row=diemdanh.timkiem_dd(matkb.get(),ndtimkiem.get())
-        update(row)
+        update(tv,row)
     def khoiphuc():
+        ndtimkiem.set("")
         row=diemdanh.bangdiemdanh(matkb.get())
         update(tv,row)
+        
+    def tudong_capnhat():
+        while True:
+            if tudong.get()==str(1):
+                khoiphuc()
+            else: break
+            
 
     def luong(ham):
         threading.Thread(target=ham).start()
@@ -64,6 +74,13 @@ def main():
         for i in lop:
             tenlop=khong_dau(i)
             download_filemahoa(tenlop)
+    
+    def lock():
+        string=strftime("%H:%M:%S %p")
+        dmy=strftime("%d/%m/%Y")
+        l.configure(text=string) 
+        tg.config(text=dmy)
+        l.after(1000,lock)
         
   
     def dinh_dang_ngay(ngay):
@@ -112,9 +129,7 @@ def main():
         return giay
 
     def batdaudiemdanh():
-
-
-        dd=diemdanh.sv_da_dd_khac_vang(matkb.get())
+        dd=diemdanh.dd_sv_vao(matkb.get())
         messagebox.showwarning("thông báo","Nhấn 'Q' để thoát ")
         tgbd= diemdanh.tgbd_dd(matkb.get())
         format = '%H:%M:%S'
@@ -152,94 +167,241 @@ def main():
         #these landmarks are based on the image above 
         left_eye_landmarks  = [36, 37, 38, 39, 40, 41]
         right_eye_landmarks = [42, 43, 44, 45, 46, 47]
-        blink_ratio=0
-        while True  :
-            ret, frame = webcam.read()
-            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        try:
+            while True  :
+                
+                ret, frame = webcam.read()
+                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-            rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
-            gray=cv2.cvtColor(small_frame,cv2.COLOR_BGR2GRAY)
-            faces,_,_ = detector.run(image = gray, upsample_num_times = 0, adjust_threshold = 0.0)
-            
-            if process_this_frame:
-                face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
-                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
-                face_names = []
-                for face_encoding in face_encodings:
-                    # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
-                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
-                    name = "Khongbiet"
-                    #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
-                    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                    best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
-                    if matches[best_match_index]:
-                        name = known_face_names[best_match_index]
-                    for face in faces:
-                        landmarks = predictor(rgb_small_frame, face)
-                        left_eye_ratio  = eye.get_blink_ratio(left_eye_landmarks, landmarks)
-                        right_eye_ratio = eye.get_blink_ratio(right_eye_landmarks, landmarks)
-                        blink_ratio     = (left_eye_ratio + right_eye_ratio) / 2
+                rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
+                gray=cv2.cvtColor(small_frame,cv2.COLOR_BGR2GRAY)
+                faces,_,_ = detector.run(image = gray, upsample_num_times = 0, adjust_threshold = 0.0)
+                
+                if process_this_frame:
+                    face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
+                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
+                    face_names = []
+                    for face_encoding in face_encodings:
+                        # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
+                        matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
+                        name = "Khongbiet"
+                        #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
+                        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                        best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
+                        if matches[best_match_index]:
+                            name = known_face_names[best_match_index]
+                        face_names.append(name)
+                        now = datetime.now()
+                        now=now.strftime("%X")
+                        kq=datetime.strptime(now, format) - datetime.strptime(tgbd, format) #tính thời gian Trể
+                        s=doigiay(kq)
                         
-                    face_names.append(name)
-                    now = datetime.now()
-                    now=now.strftime("%X")
-                    kq=datetime.strptime(now, format) - datetime.strptime(tgbd, format) #tính thời gian Trể
-                    s=doigiay(kq)
-                    if name not in dd and s >= tg_tre and name != "Khongbiet" and int(tg_tre) != 0 and blink_ratio > 5.7:
-                        tre="Trể "+str(kq)[0:7]
-                        threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),name,tre,malop,mamh,magv,ngay,ca,now)).start()
-                        dd.append(name)
-                        
-                    elif name not in dd and name != "Khongbiet" and blink_ratio > 5.7:
-                        diemdanh.xoasv_dd(matkb.get(),name)
-                        threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),name,"Có",malop,mamh,magv,ngay,ca,now)).start()
-                        dd.append(name)
-                        tensv ="Cảm ơn" + tensv_ma(name) +"đã điểm danh"
-                        threading.Thread(target=speak, args=[tensv]).start()
-                    elif blink_ratio > 5.7:
-                        threading.Thread(target=diemdanh.capnhat_tgra,args=(matkb.get(),name,now)).start()
-                        luong(khoiphuc)
-                        
-            process_this_frame = not process_this_frame
-            
-            #Hiển thị kết quả
-            try:
-                for (top_s, right, bottom, left), name in zip(face_locations, face_names):
-                    top_s *= 4
-                    right *= 4
-                    bottom *= 4
-                    left *= 4
-                    cv2.rectangle(frame, (left, top_s), (right, bottom), (255,0, 0), 2)
-                    cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255,0, 0), cv2.FILLED)
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    if name == "Khongbiet":
-                        cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
-                        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0,255), cv2.FILLED)
-                        cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-                    else:
-                        cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.7, (255, 255, 255), 1)
-            except:print("ko name")
-            cv2.imshow('Video', frame)
-            
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                webcam.release()
-                cv2.destroyAllWindows()
-                break
+                        for face in faces:
+                            try:
+                                landmarks = predictor(rgb_small_frame, face)
+                                left_eye_ratio  = eye.get_blink_ratio(left_eye_landmarks, landmarks)
+                                right_eye_ratio = eye.get_blink_ratio(right_eye_landmarks, landmarks)
+                                blink_ratio     = (left_eye_ratio + right_eye_ratio) / 2
+                            except: blink_ratio=0
+                            
+                            if name not in dd and s >= tg_tre and name != "Khongbiet" and int(tg_tre) != 0 and blink_ratio > 4.7:
+                                tre="Trể "+str(kq)[0:7]
+                                threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),name,tre,malop,mamh,magv,ngay,ca,now)).start()
+                                dd.append(name)
+                            elif name not in dd and name != "Khongbiet" and blink_ratio > 4.7:
+                                diemdanh.xoasv_dd(matkb.get(),name)
+                                threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),name,"Có",malop,mamh,magv,ngay,ca,now)).start()
+                                dd.append(name)
+                                tensv ="Cảm ơn" + tensv_ma(name) +"đã điểm danh"
+                                threading.Thread(target=speak, args=[tensv]).start()
+                                
+                process_this_frame = not process_this_frame
+                #Hiển thị kết quả
+                try:
+                    for (top_s, right, bottom, left), name in zip(face_locations, face_names):
+                        top_s *= 4
+                        right *= 4
+                        bottom *= 4
+                        left *= 4
+
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        if name == "Khongbiet":
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
+                            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0,255), cv2.FILLED)
+                            cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+                        elif name in dd:
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (255, 0,0), 2)
+                            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255,0, 0), cv2.FILLED)
+                            cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.7, (255, 255, 255), 1)
+                        else:
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 255,0), 2)
+                            
+                except:print("no name")
+                cv2.imshow('Video', frame)
+                
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    webcam.release()
+                    tudong.set(str(0))
+                    cv2.destroyAllWindows()
+                    break
+        except: print("có lỗi")
     #     #----------------------------------------------------------------------------
         dd=diemdanh.sv_da_dd(matkb.get())
         now=""
         for i in range(0,len(a)):
             if a[i] not in dd :
-                threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),a[i],"không",malop,mamh,magv,ngay,ca,now)).start()
+                threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),a[i],"vắng",malop,mamh,magv,ngay,ca,now)).start()
         diemdanh.update_TT_diemdanh(matkb.get())
-        row=diemdanh.bangdiemdanh(matkb.get())
-        update(tv,row)
+
+    def diemdanhra():
+        dd=diemdanh.dd_sv_ra(matkb.get())
+        messagebox.showwarning("thông báo","Nhấn 'Q' để thoát ")
+        malop=malop_ten(data_lop.get())
+        mamh=mamh_ten(data_mon.get())
+        magv=ma_gv.get()
+        a=ds_ma_sv(malop)
+        lopp=khong_dau(data_lop.get().replace(" ","_"))
+        f=open("mahoa/"+lopp+".pkl","rb")
+        ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
+        f.close()
+        f=open("mahoa/"+lopp+"mahoa.pkl","rb")
+        embed_dictt=pickle.load(f) #đọc file và luu hình ảnh đã biết được mã hoá  theo id vào biến embed_dictt
+        f.close()
+        known_face_encodings = []  
+        known_face_names = []  
+        for ref_id , embed_list in embed_dictt.items():
+            for my_embed in embed_list:
+                known_face_encodings +=[my_embed]
+                known_face_names += [ref_id]
+        try:
+            webcam = cv2.VideoCapture(1)
+            check, frame = webcam.read()
+            cv2.imshow("Capturing", frame)
+        except:webcam = cv2.VideoCapture(0)
+        face_locations = []
+        face_encodings = []
+        face_names     = []
+        process_this_frame = True #xử lý khung
+        # ret = video_capture.set(cv2.CAP_PROP_FRAME_WIDTH,600)
+        # ret = video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
+        detector = dlib.get_frontal_face_detector()
+        predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+        #these landmarks are based on the image above 
+        left_eye_landmarks  = [36, 37, 38, 39, 40, 41]
+        right_eye_landmarks = [42, 43, 44, 45, 46, 47]
+        try:
+            while True  :
+                
+                ret, frame = webcam.read()
+                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+                rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
+                gray=cv2.cvtColor(small_frame,cv2.COLOR_BGR2GRAY)
+                faces,_,_ = detector.run(image = gray, upsample_num_times = 0, adjust_threshold = 0.0)
+                
+                if process_this_frame:
+                    face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
+                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
+                    face_names = []
+                    for face_encoding in face_encodings:
+                        # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
+                        matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
+                        name = "Khongbiet"
+                        #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
+                        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                        best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
+                        if matches[best_match_index]:
+                            name = known_face_names[best_match_index]
+                        face_names.append(name)
+                        now = datetime.now()
+                        now=now.strftime("%X")
+                       
+                        
+                        for face in faces:
+                            try:
+                                landmarks = predictor(rgb_small_frame, face)
+                                left_eye_ratio  = eye.get_blink_ratio(left_eye_landmarks, landmarks)
+                                right_eye_ratio = eye.get_blink_ratio(right_eye_landmarks, landmarks)
+                                blink_ratio     = (left_eye_ratio + right_eye_ratio) / 2
+                            except: blink_ratio=0
+
+                            if blink_ratio > 4.7:
+                                threading.Thread(target=diemdanh.capnhat_tgra,args=(matkb.get(),name,now)).start()
+                                threading.Thread(target=gananh_khi_click,args=(name,now)).start()
+
+                process_this_frame = not process_this_frame
+                #Hiển thị kết quả
+                try:
+                    for (top_s, right, bottom, left), name in zip(face_locations, face_names):
+                        top_s *= 4
+                        right *= 4
+                        bottom *= 4
+                        left *= 4
+
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        if name == "Khongbiet":
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
+                            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0,255), cv2.FILLED)
+                            cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+                        elif name in dd:
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (255, 0,0), 2)
+                            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255,0, 0), cv2.FILLED)
+                            cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.7, (255, 255, 255), 1)
+                        else:
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 255,0), 2)
+                            
+                except:print("no name")
+                cv2.imshow('Video', frame)
+                
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    webcam.release()
+                    tudong.set(str(0))
+                    lb2.config(text="")
+                    lb1.config(img=ing_btntam)
+                    cv2.destroyAllWindows()
+                    break
+        except: print("có lỗi")
+    #     #----------------------------------------------------------------------------
+        dd=diemdanh.sv_da_dd(matkb.get())
+        now=""
+        for i in range(0,len(a)):
+            if a[i] not in dd :
+                threading.Thread(target=diemdanh.diem_danh_vao_csdl,args=(matkb.get(),a[i],"vắng",malop,mamh,magv,ngay,ca,now)).start()
+        diemdanh.update_TT_diemdanh(matkb.get())
+        
     # #-----------------------------------------------------------------------------------------------------------------------
     def kt ():
         if data_lop.get() == "Bạn không có tiết giảng !":
             messagebox.showwarning("thông báo","Bạn không có tiết dạy")
         else:
             luong(batdaudiemdanh)
+            tudong.set(str(1))
+            try:
+                luong(tudong_capnhat)
+            except:return
+    def kt_tgra ():
+        if data_lop.get() == "Bạn không có tiết giảng !":
+            messagebox.showwarning("thông báo","Bạn không có tiết dạy")
+        else:
+            luong(diemdanhra)
+            tudong.set(str(1))
+            try:
+                luong(tudong_capnhat)
+            except:return
+    
+    def gananh_khi_click(masv,tgra):
+        anh=str(masv)+"1.png"
+        if(anh==""):
+            img=Image.open("img_anhsv/aa.jpg")
+        else:
+            img=Image.open(load(anh))
+            img.thumbnail((150,150))
+            img=ImageTk.PhotoImage(img)
+            lb1.config(image=img)
+            lb1.image=img
+            lb2.config(text="Thời gian: "+tgra)
+            
+
     def thietlaptre():
         win.destroy()
         thietlap.main()
@@ -279,7 +441,8 @@ def main():
     ing_menuthongke=ImageTk.PhotoImage(file="img/menuthongke.png")
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
     ing_btndiemdanh=ImageTk.PhotoImage(file="img/btndiemdanh.png")
-    ing_btndiemdanhlai=ImageTk.PhotoImage(file="img/btndiemdanhlai.png")
+    ing_btntgra=ImageTk.PhotoImage(file="img/diemdanhra.png")
+    ing_btntam=ImageTk.PhotoImage(file="img/anhtam.png")
     ing_btnthetlap=ImageTk.PhotoImage(file="img/thietlap.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
@@ -307,6 +470,9 @@ def main():
     #dữ liệu hiện lớp, môn
     ten_thiet_bi = socket.gethostname()
     d=[]
+    # biến tạm để tự đọng cập nhật bảng
+    tudong=StringVar()
+    tudong.set(str(0))
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     makhoa=StringVar()
@@ -322,18 +488,21 @@ def main():
     ndtimkiem=StringVar()
     makhoa.set(makhoa_email(d[0]))
 
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
-    lbgv.place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=38)
     
     #lớp
-    lblop=Label(bg,font=("Baloo Tamma",12),bg="white")
-    lblop.place(x=600,y=35)
-    lbmon=Label(bg,font=("Baloo Tamma",12),bg="white")
-    lbmon.place(x=600,y=70)
+    lblop=Label(bg,font=("Baloo Tamma 2 Medium",10),bg="white",fg="#333333")
+    lblop.place(x=475,y=60)
+    lbmon=Label(bg,font=("Baloo Tamma 2 Medium",10),bg="white",fg="#333333")
+    lbmon.place(x=475,y=94)
 
     #nút điểm diemdanh
     btndiemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=kt)
-    btndiemdanh.place(x=573,y=170)
+    btndiemdanh.place(x=473,y=170)
+    btndiemdanhra=Button(bg,image=ing_btntgra,bd=0,highlightthickness=0,command=kt_tgra)
+    btndiemdanhra.place(x=673,y=170)
+
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='white',command=timkiem)
     btntimkiem.place(x=883,y=253)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc)
@@ -358,27 +527,42 @@ def main():
    
     tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
-    tv.column(1, width=50 )
-    tv.column(2, width=100 )
-    tv.column(3, width=140)
+    tv.column(1, width=50,anchor=CENTER )
+    tv.column(2, width=100,anchor=CENTER )
+    tv.column(3, width=160)
     tv.column(4, width=100,anchor=CENTER)
-    tv.column(5, width=100,anchor=CENTER)
-    tv.column(6, width=100,anchor=CENTER)
+    tv.column(5, width=90,anchor=CENTER)
+    tv.column(6, width=90,anchor=CENTER)
     # tv.column(5, width=120)
     tv.heading('#0', text="", anchor='center')
-    tv.heading(1,text="STT" )
+    tv.heading(1,text="STT")
     tv.heading(2,text="MÃ SINH VIÊN")
     tv.heading(3,text="HỌ TÊN")
     tv.heading(4,text="THÔNG TIN")
-    tv.heading(5,text="TG Vào")
-    tv.heading(6,text="TG Ra")
+    tv.heading(5,text="TG VÀO")
+    tv.heading(6,text="TG RA")
     # tv.heading(5,text="Ghi chú")
     tv.pack()
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
+    tv.tag_configure("ollrow" ,background="white",font=('Baloo Tamma 2 Medium',10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
+
+
+    # đồng hồ
+    l = Label(bg, font=("Digital-7",12),background="white",foreground="black")
+    l.place(x=460,y=2)
+    tg = Label(bg, font=("Digital-7",12),background="white",foreground="black")
+    tg.place(x=365,y=2)
+    lock()
+    f2=Frame(bg,background="#FCE2E9")
+    f2.place(x=838,y=80)
+    lb1=Label(f2,background="#FCE2E9")
+    lb1.pack()
+    lb2=Label(f2,background="#FCE2E9")
+    lb2.pack()
+
     luong(loaddl)
     threading.Thread(target=taifilemahoa, args=(makhoa.get())).start()
-    
+        
     win.mainloop()
 
 if __name__ == '__main__':

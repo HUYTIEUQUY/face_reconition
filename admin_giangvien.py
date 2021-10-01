@@ -52,7 +52,11 @@ def main():
         row=gv.banggv(makhoa.get())
         update(tv,row)
 
-
+    def kt_email(email):
+        if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
+            return True
+        else:
+            return False
 
     def them():
         ma=data_ma.get()
@@ -60,9 +64,8 @@ def main():
         ten=kt.xoa_khoangcach(ten)
         sdt=data_sdt.get()
         ghichu=data_ghichu.get()
-        tenemail=kt.xoa_khoangcach(kt.khong_dau(ten)).lower().replace(" ","")
-        emailgv=tenemail+ma+"@mku.edu.vn"
-        if ma =="" or ten == "" or sdt=="":
+        emailgv=data_email.get()
+        if ma =="" or ten == "" or sdt=="" or emailgv=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
         elif len(ma) != 8 or ma.isnumeric()== False:
             messagebox.showwarning("thông báo","Mã giảng viên phải 8 kí tự và là số")
@@ -70,7 +73,9 @@ def main():
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
         elif kt.kt_dau_khoangcach(ten)==False or kt.kt_kitudacbiet(ten) != "":
             messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
-        else:
+        elif kt_email(emailgv) == False or kt.kt_dau_khoangcach(emailgv)== False or kt.kt_dau_khoangcach_email(emailgv) != -1 :
+            messagebox.showwarning("thông báo","email không hợp lệ\n\nVí dụ email hợp lệ 'nguyenhuuthe@mku.edu.vn'")
+        elif messagebox.askyesno("thông báo","Hãy kiểm tra kỹ email vì không thể sửa đổi khi đã tạo tài khoản."):
             if gv.kt_ma(ma) == []:
                 gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa.get())
                 messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
@@ -211,14 +216,14 @@ def main():
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
 
-    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ma,bd=0,highlightthickness=0).place(x=575,y=20)
-    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=55)
-    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_sdt,bd=0,highlightthickness=0).place(x=575,y=90)
-    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ghichu,bd=0,highlightthickness=0).place(x=575,y=125)
-    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=250)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_ma,bd=0,highlightthickness=0).place(x=575,y=17)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=51)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_sdt,bd=0,highlightthickness=0).place(x=575,y=84)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_email,bd=0,highlightthickness=0).place(x=575,y=119)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=21,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=251)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=185)
@@ -247,23 +252,23 @@ def main():
     tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
     tv.column(1, width=30,anchor=CENTER)
-    tv.column(2, width=100,anchor=CENTER)
+    tv.column(2, width=90,anchor=CENTER)
     tv.column(3, width=140)
-    tv.column(4, width=260)
-    tv.column(5, width=80,anchor=CENTER)
+    tv.column(4, width=240)
+    tv.column(5, width=110,anchor=CENTER)
     # tv.column(6, width=80)
 
     tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
-    tv.heading(2,text="Mã GV")
-    tv.heading(3,text="Tên giảng viên")
-    tv.heading(4,text="Email")
-    tv.heading(5,text="Số điện thoại")
+    tv.heading(2,text="MÃ GV")
+    tv.heading(3,text="TÊN GIẢNG VIÊN")
+    tv.heading(4,text="EMAIL")
+    tv.heading(5,text="SỐ ĐIỆN THOẠI")
     # tv.heading(6,text="Ghi chú")
     tv.pack()
     tv.bind('<Double 1>', getrow)
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
+    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     
     luong(loaddl)
     win.mainloop()

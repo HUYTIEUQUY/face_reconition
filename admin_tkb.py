@@ -18,6 +18,7 @@ from backend.dl_monhoc import mamh_ten
 import threading
 import datetime
 from styletable import style, update
+from time import strftime
 
 def main():
     def luong(ham):
@@ -107,8 +108,14 @@ def main():
             if tkb.kt_lich_tkb(malop,ngay,i,matkb) !=[]:
                 tam.append(i)
         return tam
-
-
+    def lock():
+        string=strftime("%H:%M:%S %p")
+        dmy=strftime("%d/%m/%Y")
+        l.configure(text=string) 
+        tg.config(text=dmy)
+        try:
+            l.after(1000,lock)
+        except: print("kết thúc đông hồ")
 
     def khoiphuc():
         ngaycu.set("")
@@ -302,6 +309,7 @@ def main():
     x= datetime.datetime.now()
     now = dinh_dang_ngay(x.strftime("%x"))
     lich= now.replace("/"," ").split()
+    style()
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -320,65 +328,65 @@ def main():
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
-    lbgv.place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=38)
 
-    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Times new roman",12), width=10,state='readonly')
+    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Baloo Tamma 2 Medium",10),justify="center", width=11,state='readonly')
     cbnam.bind('<<ComboboxSelected>>', capnhatbang)
-    cbnam.place(x=410,y=5)
-    Frame(bg,width=102,height=2,bg="white").place(x=410,y=5)
-    Frame(bg,width=3,height=23,bg="white").place(x=410,y=5)
-    Frame(bg,width=102,height=2,bg="white").place(x=410,y=28)
+    cbnam.place(x=724,y=4)
+    Frame(bg,width=115,height=2,bg="white").place(x=724,y=4)
+    Frame(bg,width=3,height=30,bg="white").place(x=724,y=4)
+    Frame(bg,width=115,height=2,bg="white").place(x=724,y=31)
 
 
-    cbhk =Combobox(bg,textvariable=data_hocky,font=("Times new roman",12), width=8, state='readonly', values=hocky)
+    cbhk =Combobox(bg,textvariable=data_hocky,font=("Baloo Tamma 2 Medium",10),justify="center", width=7, state='readonly', values=hocky)
     cbhk.current(0)
     cbhk.bind('<<ComboboxSelected>>', capnhatbang)
-    cbhk.place(x=583,y=5)
-    Frame(bg,width=87,height=2,bg="white").place(x=582,y=5)
-    Frame(bg,width=3,height=23,bg="white").place(x=582,y=5)
-    Frame(bg,width=87,height=2,bg="white").place(x=582,y=28)
+    cbhk.place(x=916,y=4)
+    Frame(bg,width=82,height=2,bg="white").place(x=916,y=4)
+    Frame(bg,width=3,height=30,bg="white").place(x=916,y=4)
+    Frame(bg,width=82,height=2,bg="white").place(x=916,y=31)
 
-    cbloai =Combobox(bg,textvariable=data_loai,font=("Times new roman",12),state='readonly', width=7,values=loai)
+    cbloai =Combobox(bg,textvariable=data_loai,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=20,values=loai)
     cbloai.current(0)
-    cbloai.place(x=794,y=83)
-    Frame(bg,width=81,height=2,bg="white").place(x=794,y=83)
-    Frame(bg,width=3,height=23,bg="white").place(x=794,y=83)
-    Frame(bg,width=81,height=2,bg="white").place(x=794,y=105)
+    cbloai.place(x=756,y=100)
+    Frame(bg,width=210,height=2,bg="white").place(x=756,y=100)
+    Frame(bg,width=3,height=30,bg="white").place(x=756,y=100)
+    Frame(bg,width=207,height=2,bg="white").place(x=756,y=130)
 
-    cblop =Combobox(bg,textvariable=data_lop,font=("Times new roman",12),state='readonly', width=30)
+    cblop =Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=27)
     cblop.bind('<<ComboboxSelected>>', capnhatbang)
-    cblop.place(x=730,y=5)
-    Frame(bg,width=262,height=2,bg="white").place(x=730,y=5)
-    Frame(bg,width=3,height=23,bg="white").place(x=730,y=5)
-    Frame(bg,width=262,height=2,bg="white").place(x=730,y=28)
+    cblop.place(x=730,y=40)
+    Frame(bg,width=265,height=2,bg="white").place(x=730,y=40)
+    Frame(bg,width=3,height=30,bg="white").place(x=730,y=40)
+    Frame(bg,width=265,height=2,bg="white").place(x=730,y=70)
 
-    Label(bg,font=("Baloo Tamma",11),bg="white",textvariable=data_ngay).place(x=567,y=115)
+    Label(bg,font=("Baloo Tamma 2 Medium",11),bg="white",textvariable=data_ngay).place(x=488,y=142)
 
-    cbgv =Combobox(bg,textvariable=data_gv,font=("Times new roman",11),state='readonly', width=47)
-    cbgv.place(x=407,y=38)
+    cbgv =Combobox(bg,textvariable=data_gv,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=26)
+    cbgv.place(x=407,y=40)
     cbgv.bind('<<ComboboxSelected>>', capnhatbang)
-    Frame(bg,width=353,height=2,bg="white").place(x=407,y=38)
-    Frame(bg,width=3,height=23,bg="white").place(x=407,y=38)
-    Frame(bg,width=353,height=2,bg="white").place(x=407,y=60)
+    Frame(bg,width=257,height=2,bg="white").place(x=407,y=40)
+    Frame(bg,width=3,height=32,bg="white").place(x=407,y=40)
+    Frame(bg,width=257,height=2,bg="white").place(x=407,y=70)
 
-    cbmon =Combobox(bg,textvariable=data_mon,font=("Times new roman",11),state='readonly', width=25)
-    cbmon.place(x=519,y=83)
-    Frame(bg,width=200,height=2,bg="white").place(x=519,y=83)
-    Frame(bg,width=3,height=23,bg="white").place(x=519,y=83)
-    Frame(bg,width=200,height=2,bg="white").place(x=519,y=105)
+    cbmon =Combobox(bg,textvariable=data_mon,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=23)
+    cbmon.place(x=428,y=100)
+    Frame(bg,width=229,height=2,bg="white").place(x=428,y=100)
+    Frame(bg,width=3,height=30,bg="white").place(x=428,y=100)
+    Frame(bg,width=229,height=2,bg="white").place(x=428,y=130)
     ca=[]
     for i in range(5):
         option=IntVar()
         option.set(0)
         ca.append(option)
 
-    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=318)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=271)
 
-    Checkbutton(bg,text="Ca 1",font=("Times new roman",11),variable=ca[1],bg="white").place(x=535,y=147)
-    Checkbutton(bg,text="Ca 2",font=("Times new roman",11),variable=ca[2],bg="white").place(x=615,y=147)
-    Checkbutton(bg,text="Ca 3",font=("Times new roman",11),variable=ca[3],bg="white").place(x=690,y=147)
-    Checkbutton(bg,text="Ca 4",font=("Times new roman",11),variable=ca[4],bg="white").place(x=775,y=147)
+    Checkbutton(bg,text="Ca 1",font=("Baloo Tamma 2 Medium",10),variable=ca[1],bg="white").place(x=760,y=141)
+    Checkbutton(bg,text="Ca 2",font=("Baloo Tamma 2 Medium",10),variable=ca[2],bg="white").place(x=810,y=141)
+    Checkbutton(bg,text="Ca 3",font=("Baloo Tamma 2 Medium",10),variable=ca[3],bg="white").place(x=860,y=141)
+    Checkbutton(bg,text="Ca 4",font=("Baloo Tamma 2 Medium",10),variable=ca[4],bg="white").place(x=910,y=141)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=200)
@@ -392,15 +400,15 @@ def main():
     btnkhoiphuc.place(x=920,y=272)
 
     f=Frame(bg)
-    f.place(x=340,y=80)
+    f.place(x=305,y=80)
     lb=Label(f,bg="#E8DFF1",fg="#E8DFF1")
     lb.pack()
 
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
-    btnchonlich.place(x=858,y=116)
+    btnchonlich.place(x=630,y=143)
 
     # tạo stype cho bảng
-    style()
+    
     # tạo fram cho bảng
     fr_tb = Frame(bg)
     fr_tb.place(x=300,y=319)
@@ -410,16 +418,16 @@ def main():
     tree_scroll.pack(side='right', fill="y")
     tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6,7),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
-    tv.column(1, width=50)
+    tv.column(1, width=50, anchor='center')
     tv.column(2, width=80 ,anchor='center')
     tv.column(3, width=150)
     tv.column(4, width=190)
-    tv.column(5, width=60)
-    tv.column(6, width=100,anchor='center')
+    tv.column(5, width=80)
+    tv.column(6, width=80,anchor='center')
     tv.column(7, width=50,anchor=CENTER)
 
     tv.heading('#0', text="", anchor='center')
-    tv.heading(1,text="STT", anchor='center')
+    tv.heading(1,text="STT")
     tv.heading(2,text="MÃ TKB", anchor='center')
     tv.heading(3,text="GIẢNG VIÊN")
     tv.heading(4,text="MÔN HỌC")
@@ -429,9 +437,15 @@ def main():
     
     tv.pack()
     tv.bind('<Double 1>', getrow)
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
-   
+    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
+
+    l = Label(bg, font=("Digital-7",12),background="white",foreground="black")
+    l.place(x=460,y=2)
+    tg = Label(bg, font=("Digital-7",12),background="white",foreground="black")
+    tg.place(x=365,y=2)
+    
+    lock()
     luong(loaddl)
 
     win.mainloop()

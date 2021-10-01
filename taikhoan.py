@@ -167,20 +167,20 @@ def main():
     btndangxuat.place(x=248,y=44)
 
     
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
-    lbgv.place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=38)
 
-    lb_gv=Label(bg,font=("Baloo Tamma",12),fg="black",bg="white")
-    lb_gv.place(x=570,y=205)
+    lb_gv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="black",bg="white")
+    lb_gv.place(x=570,y=201)
     
-    lbtk=Label(bg,font=("Baloo Tamma",12),fg="black",bg="white")
-    lbtk.place(x=570,y=145)
+    lbtk=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="black",bg="white")
+    lbtk.place(x=570,y=141)
 
-    lbe=Label(bg,text=email,font=("Baloo Tamma",12),fg="black",bg="white")
-    lbe.place(x=570,y=265)
+    lbe=Label(bg,text=email,font=("Baloo Tamma 2 Medium",12),fg="black",bg="white")
+    lbe.place(x=570,y=261)
 
-    lbsdt=Entry(bg,textvariable=sdt,font=("Baloo Tamma",12),fg="black",bg="white",bd=0,highlightthickness=0,)
-    lbsdt.place(x=570,y=325)
+    lbsdt=Entry(bg,textvariable=sdt,font=("Baloo Tamma 2 Medium",12),fg="black",bg="white",bd=0,highlightthickness=0,)
+    lbsdt.place(x=570,y=321)
 
     btn_capnhatsdt=Button(bg,image=ing_capnhatsdt,bd=0,highlightthickness=0,command=capnhat_sdt)
     btn_capnhatsdt.place(x=925,y=310)
@@ -193,11 +193,11 @@ def main():
     btndangxuat1=Button(bg,image=ing_btndangxuat1,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat1.place(x=836,y=537)
 
-    lbcg=Label(bg,textvariable=data_lichgiang,font=("Baloo Tamma",12),fg="black",bg="white")
-    lbcg.place(x=570,y=385)
+    lbcg=Label(bg,textvariable=data_lichgiang,font=("Baloo Tamma 2 Medium",12),fg="black",bg="white")
+    lbcg.place(x=570,y=381)
 
-    lbdd=Label(bg,textvariable=data_dd,font=("Baloo Tamma",12),fg="black",bg="white")
-    lbdd.place(x=570,y=445)
+    lbdd=Label(bg,textvariable=data_dd,font=("Baloo Tamma 2 Medium",12),fg="black",bg="white")
+    lbdd.place(x=570,y=441)
 
     # btnthietlap=Button(bg,image=ing_btnthietlap,bd=0,highlightthickness=0,command=thietlap)
     # btnthietlap.place(x=949,y=2)

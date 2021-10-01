@@ -8,6 +8,7 @@ from PIL.Image import fromqimage
 
 def removemany():
     x=tree.selection()
+    print(x)
     listma = []
     for i in x:
         listma.append(tree.item(i,'values')[1])

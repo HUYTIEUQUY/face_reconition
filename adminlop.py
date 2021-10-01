@@ -200,15 +200,15 @@ def main():
 
  
     
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white",)
     lbgv.place(x=45,y=40)
     
-    lbtk=Label(bg,font=("Baloo Tamma",11),fg="black",bg="white")
-    lbtk.place(x=580,y=62)
+    lbtk=Label(bg,font=("Baloo Tamma 2 Medium",10),width=42,height=1,fg="black",bg="white",justify='center')
+    lbtk.place(x=580,y=61)
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=585,y=100)
+    Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=585,y=98)
     
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=253)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
 
     # tạo stype cho bảng
     style()
@@ -231,8 +231,8 @@ def main():
     tv.heading(3,text="TÊN LỚP")
     tv.pack()
     tv.bind('<Double 1>', getrow)
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
+    tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     
     luong(loaddl)
     

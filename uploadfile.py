@@ -77,7 +77,7 @@ def load(tenfile_loud):
 # a=storage.child(pathten).get_url(None)
 # storage.child(pathten).download(pathten,pathten,None)
 # # # f = urllib.request.urlopen(a).read()
-# f=open("mahoa/Cong_nghe_thong_tin_K19_mahoa.pkl","rb")
+# f=open("mahoa/Cong_nghe_thong_tin_K20_mahoa.pkl","rb")
 # ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
 # f.close()
 # print(ref_dictt)

@@ -221,14 +221,14 @@ def main():
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
 
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
-    lbgv.place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=37)
 
-    Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=20)
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=590,y=57)
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=590,y=94)
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=590,y=133)
-    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=252)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=17)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=590,y=51)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=590,y=92)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=590,y=131)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=250)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=185)
@@ -267,8 +267,8 @@ def main():
     tv.pack()
 
     tv.bind('<Double 1>', getrow)
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
+    tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
     luong(loaddl)
 

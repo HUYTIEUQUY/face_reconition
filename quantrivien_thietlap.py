@@ -36,7 +36,6 @@ def main():
 
     def loaddl():
         a=thietlap.loadca(ca.get())
-        print(a)
         tgbd=str(a['TGBD']).replace(':'," ").split()
         giobd.set(tgbd[0])
         phutbd.set(tgbd[1])
@@ -139,37 +138,37 @@ def main():
     menuthietlap=Button(bg,image=img_menuthietlap,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthietlap)
     menuthietlap.place(x=30,y=296)
 
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    Label(bg,text=tengv,font=("Baloo Tamma 2 Medium",13),fg="#A672BB",bg="white").place(x=45,y=38)
 
     
-    cb_ca=Combobox(bg,textvariable=ca,values=vl_ca,font=("Baloo Tamma",12),width=2)
+    cb_ca=Combobox(bg,textvariable=ca,values=vl_ca,font=("Digital-7",14),width=2)
     cb_ca.current(0)
     cb_ca.bind('<<ComboboxSelected>>', capnhatca)
     cb_ca.place(x=430,y=130)
 
-    cb_sotiet=Combobox(bg,textvariable=sotiet,values=vl_sotiet,font=("Baloo Tamma",12),width=2)
+    cb_sotiet=Combobox(bg,textvariable=sotiet,values=vl_sotiet,font=("Digital-7",14),width=2)
     cb_sotiet.bind('<<ComboboxSelected>>', capnhattgkt)
     cb_sotiet.current(0)
     cb_sotiet.place(x=750,y=130)
 
-    cb_giobd=Combobox(bg,textvariable=giobd,values=gio,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_giobd=Combobox(bg,textvariable=giobd,values=gio,font=("Digital-7",14),state='readonly',width=2)
     cb_giobd.place(x=648,y=234)
     cb_giobd.bind('<<ComboboxSelected>>', capnhattgkt)
-    cb_phutbd=Combobox(bg,textvariable=phutbd,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_phutbd=Combobox(bg,textvariable=phutbd,values=phut_giay,font=("Digital-7",14),state='readonly',width=2)
     cb_phutbd.place(x=709,y=234)
     cb_phutbd.bind('<<ComboboxSelected>>', capnhattgkt)
-    cb_giaybd=Combobox(bg,textvariable=giaybd,values=phut_giay,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_giaybd=Combobox(bg,textvariable=giaybd,values=phut_giay,font=("Digital-7",14),state='readonly',width=2)
     cb_giaybd.place(x=769,y=234)
     cb_giaybd.bind('<<ComboboxSelected>>', capnhattgkt)
 
 
-    cb_giokt=Combobox(bg,textvariable=giokt,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_giokt=Combobox(bg,textvariable=giokt,font=("Digital-7",14),state='readonly',width=2)
     cb_giokt.place(x=648,y=319)
     
-    cb_phutkt=Combobox(bg,textvariable=phutkt,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_phutkt=Combobox(bg,textvariable=phutkt,font=("Digital-7",14),state='readonly',width=2)
     cb_phutkt.place(x=709,y=319)
     
-    cb_giaykt=Combobox(bg,textvariable=giaykt,font=("Baloo Tamma",12),state='readonly',width=2)
+    cb_giaykt=Combobox(bg,textvariable=giaykt,font=("Digital-7",14),state='readonly',width=2)
     cb_giaykt.place(x=769,y=319)
    
 

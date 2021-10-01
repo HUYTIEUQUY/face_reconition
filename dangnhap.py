@@ -88,12 +88,12 @@ def main():
 
     anhnen=bg.create_image(300,300,image=img_bg)
     data_e=StringVar()
-    txtEmail=Entry(bg,width=23,font=("Baloo Tamma",12),bd=0,textvariable=data_e)
-    txtEmail.place(x=234,y=233)
+    txtEmail=Entry(bg,width=23,font=("Baloo Tamma 2 Medium",12),bd=0,textvariable=data_e)
+    txtEmail.place(x=234,y=231)
 
     data_p=StringVar()
-    txtPass=Entry(bg,width=22,font=("Baloo Tamma",12), bd=0, show="*", textvariable=data_p)
-    txtPass.place(x=240,y=291)
+    txtPass=Entry(bg,width=22,font=("Baloo Tamma 2 Medium",12), bd=0, show="*", textvariable=data_p)
+    txtPass.place(x=240,y=289)
 
     lb_doimatkhau=Button(bg,image=img_lb_doimatkhau,bd=0, highlightthickness=0,activebackground="#BCA8E6",relief=RIDGE,command=doimk)
     lb_doimatkhau.place(x=231,y=440)

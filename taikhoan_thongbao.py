@@ -56,7 +56,7 @@ def main(lichgiang,tengv):
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg1)
 
-    lbgv=Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv=Label(bg,text=tengv,font=("Baloo Tamma 2 Medium",13),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=38)
 
     menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
@@ -75,16 +75,16 @@ def main(lichgiang,tengv):
     btndangxuat.place(x=248,y=44)
 
     bglichgiang=Frame(bg,width=450,height=140,bg="#A672BB")
-    bglichgiang.place(x=410,y=155)
+    bglichgiang.place(x=380,y=155)
 
 
 
-    Label(bglichgiang,text="Lớp",width=22,bg="#5F1965",fg="white").grid(row=0,column=0,pady=10,padx=5)
-    Label(bglichgiang,text="Môn học",width=22,bg="#5F1965",fg="white").grid(row=0,column=1,pady=10,padx=5)
-    Label(bglichgiang,text="Ca học",width=22,bg="#5F1965",fg="white").grid(row=0,column=2,pady=10,padx=5)
+    Label(bglichgiang,text="Lớp",width=22,bg="#5F1965",fg="white",font=("Baloo Tamma 2 Medium",10)).grid(row=0,column=0,pady=10,padx=5)
+    Label(bglichgiang,text="Môn học",width=22,bg="#5F1965",fg="white",font=("Baloo Tamma 2 Medium",10)).grid(row=0,column=1,pady=10,padx=5)
+    Label(bglichgiang,text="Ca học",width=22,bg="#5F1965",fg="white",font=("Baloo Tamma 2 Medium",10)).grid(row=0,column=2,pady=10,padx=5)
     for i in range(len(lichgiang)):
         for j in range(len(lichgiang[i])):
-            Label(bglichgiang,text=lichgiang[i][j],width=22).grid(row=i+1,column=j,pady=10,padx=5)
+            Label(bglichgiang,text=lichgiang[i][j],width=22,font=("Baloo Tamma 2 Medium",10)).grid(row=i+1,column=j,pady=10,padx=5)
     
     btntrolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=quaylai)
     btntrolai.place(x=948,y=2)

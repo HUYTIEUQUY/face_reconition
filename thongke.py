@@ -46,7 +46,7 @@ def main():
             lb_mon.place(x=380,y=110)
             lb_ngay.place(x=380,y=140)
             lb_ca.place(x=380,y=170)
-            txttim.place(x=658,y=243)
+            txttim.place(x=658,y=241)
             btnkhoiphuc.place(x=925,y=242)
             btntimkiem.place(x=885,y=242)
             cb_lop.place(x=520,y=80)
@@ -144,7 +144,7 @@ def main():
 
     def timkiem():
         row=tk.tim_tk(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
-        update(row)
+        update(tv,row)
     
    
     def menutaikhoan():
@@ -224,25 +224,25 @@ def main():
     mh=StringVar()
     ndtimkiem=StringVar()
     row=''
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
-    lbgv.place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=38)
 
 
     btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
     
 
-    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma 2 Medium",11),state='readonly',width=30)
     
-    cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma 2 Medium",11),state='readonly',width=30)
     
-    cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma 2 Medium",11),state='readonly',width=30)
     
-    cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma",12),state='readonly',width=30)
+    cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma 2 Medium",11),state='readonly',width=30)
 
-    lb_lop=Label(bg,text="1.Lớp học",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
-    lb_mon=Label(bg,text="2.Môn học",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
-    lb_ngay=Label(bg,text="3.Ngày học",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
-    lb_ca=Label(bg,text="4.Ca",font=("Baloo Tamma",14),fg="#5F1965",bg="#EBDFF0")
+    lb_lop=Label(bg,text="1.  Lớp học",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
+    lb_mon=Label(bg,text="2.  Môn học",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
+    lb_ngay=Label(bg,text="3.  Ngày học",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
+    lb_ca=Label(bg,text="4.  Ca",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
     
 
     
@@ -267,16 +267,16 @@ def main():
     tv.column(6, width=100,anchor=CENTER)
     # tv.column(5, width=120)
     tv.heading('#0', text="", anchor='center')
-    tv.heading(1,text="STT" )
+    tv.heading(1,text="STT",anchor='center' )
     tv.heading(2,text="MÃ SINH VIÊN")
     tv.heading(3,text="HỌ TÊN")
     tv.heading(4,text="THÔNG TIN")
     tv.heading(5,text="TG Vào")
     tv.heading(6,text="TG Ra")
     # tv.heading(5,text="Ghi chú")
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
-    txttim=Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0)
+    tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
+    txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
 
     luong(loaddl)
     win.mainloop()

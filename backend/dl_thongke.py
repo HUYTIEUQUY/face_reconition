@@ -109,13 +109,15 @@ def thongke(magv,malop,mamh,ngay,ca):
 
 def tim_tk(magv,malop,mamh,ngay,ca,q):
     a=[]
-    data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
+    stt=1
     try:
+        data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
         for i in data.each():
             if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca)):
-                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"]+" - "+i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 if khong_dau(str(q)) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"].lower())or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"].lower()):
                     a.append(e)
+                    stt+=1
     except: a=[]
     return a
 

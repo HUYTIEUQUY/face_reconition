@@ -214,15 +214,15 @@ def main():
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
     btnkhoiphuc.place(x=920,y=245)
     
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
-    lbgv.place(x=45,y=40)
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",13),fg="#A672BB",bg="white")
+    lbgv.place(x=45,y=38)
 
     
-    Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=28)
+    Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma 2 Medium",10),fg="black",bg="white").place(x=578,y=22)
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=62)
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=email,bd=0,highlightthickness=0).place(x=576,y=96)
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=248)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=tenkhoa,bd=0,highlightthickness=0).place(x=576,y=58)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=email,bd=0,highlightthickness=0).place(x=576,y=92)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=246)
 
     style()
     # tạo fram cho bảng

@@ -55,7 +55,7 @@ def main():
                ko_luu.append(masv)
             else:
                 sv.themsv(masv,tensv,malop,"")
-                lop=kt.khong_dau(cb_lop.get())
+                lop=kt.khong_dau(cb_lop.get()).replace(" ","_")
                 try:
                     f=open("mahoa/"+lop+".pkl","rb")
                     ref_dictt=pickle.load(f)
@@ -63,12 +63,19 @@ def main():
                 except:
                     ref_dictt={}
                 ref_dictt[masv]=tensv
+                try:
+                    f=open("mahoa/"+lop+".pkl","wb")
+                    pickle.dump(ref_dictt,f)
+                    f.close()
+                except:
+                    return
+                
 
         if ko_luu !=[]:
             messagebox.showerror("thông báo","Mã sinh viên đã tồn tại\n"+str(ko_luu))
         else: messagebox.showinfo("thông báo","Thêm sinh viên thành công")
-        row=sv.bangsv(malop)
-        update(row)
+        luong(khoiphuc)
+        threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+".pkl",)).start()
 
     def xuat_excel():
         malop=malop_ten(cb_lop.get())
@@ -424,19 +431,19 @@ def main():
     
 
     
-    cb_lop=Combobox(bg,width=30, font=("Baloo Tamma",12),state='readonly',textvariable=lop)
-    cb_lop.place(x=580,y=53)
+    cb_lop=Combobox(bg,width=33, font=("Baloo Tamma 2 Medium",10),state='readonly',textvariable=lop)
+    cb_lop.place(x=580,y=52)
     cb_lop.bind('<<ComboboxSelected>>', capnhat)
-    Frame(bg,width=305,height=5,bg= "white").place(x=570,y=53)
-    Frame(bg,width=305,height=5,bg= "white").place(x=570,y=75)
-    Frame(bg,width=5,height=22,bg= "white").place(x=577,y=53)
+    Frame(bg,width=303,height=5,bg= "white").place(x=570,y=52)
+    Frame(bg,width=303,height=5,bg= "white").place(x=570,y=76)
+    Frame(bg,width=5,height=24,bg= "white").place(x=577,y=52)
 
     
-    txt_masv=Entry(bg,width=32,bd=0,font=("Baloo Tamma",12),textvariable=ma,highlightthickness=0)
+    txt_masv=Entry(bg,width=32,bd=0,font=("Baloo Tamma 2 Medium",10),textvariable=ma,highlightthickness=0)
     txt_masv.place(x=580,y=90)
-    txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
-    txt_timkiem.place(x=660,y=246)
-    txt_hoten=Entry(bg,width=32,bd=0,font=("Baloo Tamma",12),textvariable=ten,highlightthickness=0)
+    txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma 2 Medium",10),textvariable=ndtimkiem,highlightthickness=0)
+    txt_timkiem.place(x=660,y=244)
+    txt_hoten=Entry(bg,width=32,bd=0,font=("Baloo Tamma 2 Medium",10),textvariable=ten,highlightthickness=0)
     txt_hoten.place(x=580,y=125)
 
 
@@ -470,7 +477,7 @@ def main():
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat.place(x=248,y=44)
 
-    lbgv=Label(bg,font=("Baloo Tamma",14),fg="#A672BB",bg="white")
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
     
 
@@ -497,8 +504,8 @@ def main():
     tv.pack()
 
     tv.bind('<Double 1>', getrow)
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
+    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     
 
     f1=Frame(bg,bg="white",width=140,height=140)
@@ -506,7 +513,7 @@ def main():
 
     lb1=Label(f1,bg="white")
     lb1.pack()
-    lb2=Label(f1,bg="white")
+    lb2=Label(f1,bg="white",font=("Baloo Tamma 2 Medium",10))
     lb2.pack()
 
     img=Image.open("img/bg_themdl2.png")
