@@ -116,7 +116,7 @@ def xoagv(magv):
                 return False
 
 def magv_ten(ten):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("TenGV").equal_to(str(ten)).get()
     a=""
     for i in data.each():
         if(i.val()["TenGV"]==str(ten)):
@@ -167,6 +167,17 @@ def update_sdt(magv,sdt):
             except:
                 return False
 
+def luughichu(magv,ghichu):
+    try:
+        data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
+        dl={'GhiChu':str(ghichu)}
+        for i in data.each():
+            if(i.val()["MaGV"]==str(magv)):
+                    db.child("GiangVien").child(i.key()).update(dl)
+                    return True
+    except:
+        return False
+
 def kt_gv_tontai_tkb(magv):
     data=db.child("ThoiKhoaBieu").get()
     a=[]
@@ -186,4 +197,6 @@ def kt_gv_tontai_diemdanh(magv):
                 a.append(i.val()["MaGV"])
     except:a=[]
     return a
+
+
 

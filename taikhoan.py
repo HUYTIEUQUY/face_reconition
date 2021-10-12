@@ -17,6 +17,10 @@ import threading
 import diemdanh_bu
 
 def main():
+    def create_window():
+        window = Toplevel(win)
+
+
     def luong(ham):
         threading.Thread(target=ham).start()
     
@@ -92,8 +96,8 @@ def main():
         thongke.main()
 
     def menudiemdanh():
-        win.destroy()
-        diemdanh.main()
+        # win.destroy()
+        create_window()
 
     def menuthemsv():
         win.destroy()

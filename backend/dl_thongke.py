@@ -1,7 +1,7 @@
 
 import conect_firebase
 from backend.dl_sinhvien import khong_dau, tensv_ma
-from backend.dl_giangvien import magv_ten, tengv_ma
+from backend.dl_giangvien import magv_ten,tengv_ma
 
 db=conect_firebase.connect().database()
 
@@ -12,8 +12,6 @@ def tenlop_ma(ma):
         a=(i.val()["TenLop"])
     return a
 
-
-
 def tenlop_dd(magv):
     data=db.child("DiemDanh").order_by_child("MaGV").equal_to(str(magv)).get()
     a=[]
@@ -22,9 +20,7 @@ def tenlop_dd(magv):
         if i.val()["MaLop"] not in b:
             b.append(i.val()["MaLop"])
             a.append(tenlop_ma(i.val()["MaLop"]))
-
     return a
-
 
 def malop_ten(tenlop):
     data=db.child("Lop").order_by_child("TenLop").equal_to(str(tenlop)).get()
@@ -34,7 +30,6 @@ def malop_ten(tenlop):
             a= i.val()["MaLop"]
     except:a=""
     return a
-
 
 def tenmh_ma(ma):
     data=db.child("MonHoc").order_by_child("MaMH").equal_to(str(ma)).get()
@@ -103,7 +98,19 @@ def thongke(magv,malop,mamh,ngay,ca):
                 e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
                 a.append(e)
                 stt+=1
-                
+    except:a=[]
+    return a
+
+def bangdd_ma(ma):
+    a=[]
+    stt=1
+    try:
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        for i in data.each():
+            if i.val()["Ma"]== str(ma):
+                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
+                a.append(e)
+                stt+=1
     except:a=[]
     return a
 
@@ -132,7 +139,6 @@ def ds_khoa():
 
 def makhoa_ten(tenkhoa):
     a=''
-    
     try:
         data=db.child("Khoa").order_by_child("TenKhoa").equal_to(str(tenkhoa)).get()
         for i in data.each():
@@ -167,6 +173,21 @@ def kt_dldd():
     except:a=[]
     return a
 
-
-
-
+def luughichu(ngay,ca,masv,ghichu):
+    try:
+        data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
+        dl={'GhiChu':str(ghichu)}
+        for i in data.each():
+            if(i.val()["MaSV"]==str(masv) and i.val()["Ngay"] == str(ngay) and i.val()["Ca"] in str(ca)):
+                    db.child("DiemDanh").child(i.key()).update(dl)
+                    return True
+    except: return False
+def luughichu_dd(ma,masv,ghichu):
+    try:
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        dl={'GhiChu':str(ghichu)}
+        for i in data.each():
+            if(i.val()["MaSV"]==str(masv) and i.val()["Ma"] == str(ma)):
+                    db.child("DiemDanh").child(i.key()).update(dl)
+                    return True
+    except: return False

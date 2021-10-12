@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import filedialog
 from tkinter import ttk
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
@@ -8,172 +7,57 @@ from tkinter import messagebox
 import dangnhap
 import socket
 import quantrivien_khoa
-from backend.dl_giangvien import tengv_email
-from backend.dl_adminlop import malop_ten
-from backend.dl_monhoc import mamh_ten
-from backend.dl_khoa import tenkhoa_ma
-import backend.dl_thongke as tk
-import quantrivien_khoa
 import quantrivien_thietlap
-import threading
-import xlsxwriter
+from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten,magv_email
+import backend.dl_thongke as tk
 import os
-from styletable import style,update
+import xlsxwriter
+import threading
+from tkinter import filedialog
+from styletable import style
+import backend.dl_tkb as tkb
+from backend.dl_adminlop import malop_ten
 
 def main():
-    
-    def luong(ham):
-        threading.Thread(target=ham).start()
-
-    def chongiatridau(data,cb):
-        if data==[]:
-            cb.set("")
-            cb_lop.config(text="",values=[])
-            cb_mh.config(text="",values=[])
-            cb_ngay.config(text="",values=[])
-            cb_ca.config(text="",values=[])
-            magv.set("")
-        else:
-            cb.current(0)
-
-    def loaddl():
-        tengv.set(tengv_email(d[0]))
-        lbgv.config(text=tengv.get())
-        if tk.kt_dldd() ==[]:
-            anhnen=bg.create_image(500,300,image=img_erorr)
-        else:
-            fr_tb.place(x=348,y=300)
-            lb_khoa.place(x=380,y=45)
-            lb_gv.place(x=380,y=75)
-            lb_lop.place(x=380,y=105)
-            lb_mon.place(x=380,y=135)
-            lb_ngay.place(x=380,y=165)
-            lb_ca.place(x=380,y=195)
-            cb_khoa.place(x=550,y=45)
-            cb_gv.place(x=550,y=75)
-            cb_lop.place(x=550,y=105)
-            cb_mh.place(x=550,y=135)
-            cb_ngay.place(x=550,y=165)
-            cb_ca.place(x=550,y=195)
-            
-            txttim.place(x=658,y=241)
-            btnexcelxuat.place(x=948,y=2)
-            btnkhoiphuc.place(x=925,y=242)
-            btntimkiem.place(x=885,y=242)
-            data_khoa = tk.ds_khoa()
-            cb_khoa.config(values=data_khoa)
-            chongiatridau(data_khoa,cb_khoa)
-            cb_khoa.bind('<<ComboboxSelected>>', chongv)
-            luong(khoiphuc)
-
-    def chongv(event):
-        makhoa.set(tk.makhoa_ten(cb_khoa.get()))
-        data_gv = tk.ds_gv(makhoa.get())
-        cb_gv.config(values=data_gv)
-        chongiatridau(data_gv,cb_gv)
-        if cb_gv.get() !="":
-            tachma=str(cb_gv.get()).replace(" ","").replace("-"," ").split()
-            magv.set(str(tachma[0]))
-        cb_gv.bind('<<ComboboxSelected>>', chonlop)
-        luong(khoiphuc)
-
-    def chonlop(event):
-        # lb_gv=Label(bg,text=cb_gv.get(),font=("Baloo Tamma 2 Medium",12),bg="white")
-        # lb_gv.place(x=468,y=125)
-        
-        tachma=str(cb_gv.get()).replace(" ","").replace("-"," ").split()
-        magv.set(str(tachma[0]))
-        # cb_gv.destroy()
-        data_lop = tk.tenlop_dd(magv.get())
-        cb_lop.config(values=data_lop)
-        cb_lop.current(0)
-        cb_lop.bind('<<ComboboxSelected>>', chonmh)
-        luong(khoiphuc)
-
-    def chonmh(event):
-        # lb_lop=Label(bg,text=cb_lop.get(),font=("Baloo Tamma 2 Medium",12),bg="white")
-        # lb_lop.place(x=468,y=150)
-
-        malop.set(malop_ten(cb_lop.get()))
-        # cb_lop.destroy()
-        data_mh = tk.monhoc_dd(magv.get(),malop.get())
-        cb_mh.config(values=data_mh)
-
-        cb_mh.current(0)
-        cb_mh.bind('<<ComboboxSelected>>', chonngay)
-        luong(khoiphuc)
-
-    def chonngay(event):
-        # lb_mh=Label(bg,text=cb_mh.get(),font=("Baloo Tamma 2 Medium",12),bg="white")
-        # lb_mh.place(x=468,y=175)
-        mamh.set(mamh_ten(cb_mh.get()))
-        # cb_mh.destroy()
-        data_ngay = tk.ngay_dd(magv.get(),malop.get(),mamh.get())
-        cb_ngay.config(values=data_ngay)
-
-        cb_ngay.current(0)
-        cb_ngay.bind('<<ComboboxSelected>>', chonca)
-        luong(khoiphuc)
-
-    def chonca(event):
-        # lb_ngay=Label(bg,text=cb_ngay.get(),font=("Baloo Tamma 2 Medium",12),bg="white")
-        # lb_ngay.place(x=468,y=200)
-        ngay.set(cb_ngay.get())
-        # cb_ngay.destroy()
-        data_ca = tk.ca_dd(magv.get(),malop.get(),mamh.get(),ngay.get())
-        cb_ca.config(values=data_ca)
-
-        cb_ca.current(0)
-        cb_ca.bind('<<ComboboxSelected>>', xem)
-        luong(khoiphuc)
-
-    def xem(event):
-        ca.set(cb_ca.get())
-        luong(khoiphuc)
-
-    def timkiem():
-        row=tk.tim_tk(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get(),ndtimkiem.get())
-        update(tv,row)
-    
-    def dongluu(row,ma,ten,tt,TG,ghichu):
+    def dongluu(row,ma,ten,tt,TG,TGra,ghichu):
         for i in row:
-            ma.append(i[0]) 
-            ten.append(i[1]) 
+            ma.append(i[1]) 
+            ten.append(i[2]) 
             tt.append(i[2]) 
-            TG.append(i[3]) 
-            ghichu.append(i[4])  
-
+            TG.append(i[4]) 
+            TGra.append(i[5]) 
+            ghichu.append(i[6])  
     def xuat_excel():
-        row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
+        row=tk.bangdd_ma(matkb.get())
         ma=[]
         ten=[]
         tt=[]
         TG=[]
+        TGra=[]
         ghichu=[]
-        dongluu(row,ma,ten,tt,TG,ghichu)
+        dongluu(row,ma,ten,tt,TG,TGra,ghichu)
 
-        if len(ma)<1:
+        if len(ma) < 1:
             messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
             return False
         else:
-
-            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-          
-
+            try:
+                fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+            except: print("")
             out_workbook = xlsxwriter.Workbook(fln+".xlsx")
             outsheet = out_workbook.add_worksheet()
-            tenlop=tk.tenlop_ma(malop.get())
-            tenmh=tk.tenmh_ma(mamh.get())
-            outsheet.write("A1","Khoa:"+tenkhoa_ma(makhoa.get()))
-            outsheet.write("B1",tenlop)
-            outsheet.write("C1",tenmh)
-            outsheet.write("D1",ngay.get())
+            tenlop=data_lop.get()
+            mh=tenmh.get()
+            outsheet.write("A1","Tên lớp: "+tenlop)
+            outsheet.write("B1","Môn học: "+mh)
+            outsheet.write("C1","Ngày: "+ngay.get())
 
             outsheet.write("A3","Mã sinh viên")
             outsheet.write("B3","Tên sinh viên")
             outsheet.write("C3","Thông tin")
-            outsheet.write("D3","Thời gian vào-ra")
-            outsheet.write("E3","Ghi chú")
+            outsheet.write("D3","Thời gian vào")
+            outsheet.write("E3","Thời gian ra")
+            outsheet.write("F3","Ghi chú")
             def write_data_to_file(array,x):
                 for i in range(len(array)):
                     outsheet.write(i+3,x,array[i])
@@ -181,13 +65,145 @@ def main():
             write_data_to_file(ten,1)
             write_data_to_file(tt,2)
             write_data_to_file(TG,3)
-            write_data_to_file(ghichu,4)
+            write_data_to_file(TGra,4)
+            write_data_to_file(ghichu,5)
             out_workbook.close()
 
-    def khoiphuc():
-        row=tk.thongke(magv.get(),malop.get(),mamh.get(),ngay.get(),ca.get())
-        update(tv,row)
-    
+    def timkiem():
+        malop = malop_ten(data_lop.get())
+        namhoc = tkb.manh_ten(data_namhoc.get())
+        gv=magv_email(d[0])
+        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        if row == []:
+            messagebox.showwarning("thông báo","Không có dữ liệu")
+            update(tv,row)
+        else:
+            update(tv,row)
+
+    def khoiphuc_dd():
+        row =tk.bangdd_ma(matkb.get())
+        update(tb,row)
+
+    def getrow(event):
+        tb.delete(*tb.get_children())
+        rowid=tv.identify_row(event.y)
+        item=tv.item(tv.focus())
+        matkb.set(item['values'][1])
+        ngay.set(item['values'][5])
+        ca.set(item['values'][6])
+        tenmh.set(item['values'][3])
+        try:
+            f.place(x=330,y=440)
+        except:print("Đã tạo frame rồi")
+        if (str(item['values'][7])=="Chưa điểm danh"):
+            messagebox.showwarning("Thông báo","Chưa điểm danh")
+            try:
+                f.place_forget()
+            except:return
+        else:
+            khoiphuc_dd()
+
+    def update(tv,row):
+        tv.delete(*tv.get_children())
+        global dem
+        dem=0
+        for i in row:
+            if dem%2==0:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
+            else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
+            dem += 1
+
+    def loaddl():
+        tengv.set(tengv_email(d[0]))
+        lbgv.config(text=tengv.get())
+        khoa=tk.ds_khoa()
+        cbkhoa.config(values=khoa)
+        cbkhoa.current(0)
+        makhoa=tk.makhoa_ten(data_khoa.get())
+        lop=tkb.lop_khoa(makhoa)
+        gv=tkb.gv_khoa(makhoa)
+        namhoc=tkb.namhoc()
+        #set cho combobox to
+        cbnam.config(values=namhoc)
+        cbnam.current(0)
+        cblop.config(values=lop)
+        cblop.current(0)
+        cbgv.config(values=gv)
+        cbgv.current(0)
+        threading.Thread(target=loadbang).start()
+        
+    def capnhatbang(event):
+        malop=malop_ten(data_lop.get())
+        namhoc=tkb.manh_ten(data_namhoc.get())
+        gv=magv_ten(data_gv.get())
+        row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
+        if row == []:
+            messagebox.showwarning("thông báo","Không có dữ liệu")
+            update(tv,row)
+        else:
+            update(tv,row)
+        try:
+            f.place_forget()
+        except:return
+
+    def capnhatbangkhoa(event):
+        makhoa=tk.makhoa_ten(data_khoa.get())
+        lop=tkb.lop_khoa(makhoa)
+        gv=tkb.gv_khoa(makhoa)
+        namhoc=tkb.namhoc()
+        #set cho combobox to
+        if lop==[]:
+            data_lop.set("")
+            data_gv.set("")
+        else:
+            cbnam.config(values=namhoc)
+            cbnam.current(0)
+            cblop.config(values=lop)
+            cblop.current(0)
+            cbgv.config(values=gv)
+            cbgv.current(0)
+        threading.Thread(target=loadbang).start()
+    def loadbang():
+        malop=malop_ten(data_lop.get())
+        namhoc=tkb.manh_ten(data_namhoc.get())
+        gv=magv_ten(data_gv.get())
+        row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
+        if row == []:
+            messagebox.showwarning("thông báo","Không có dữ liệu")
+            update(tv,row)
+        else:
+            update(tv,row)
+
+    def chondong(event):
+        rowid=tb.identify_row(event.y)
+        txt_ghichu.delete(1.0,END)
+        item=tb.item(tb.focus())
+        txt_ghichu.insert(END,item['values'][6])
+        data_masv.set(item['values'][1])
+
+    def xem_ghichu():
+        if data_masv.get() != "":
+            fr_tb.place_forget()
+            frame_ghichu.place(x=330,y=110)
+            frame_ghichu.config(bg="white")
+            lb_ghichu.config(text="Ghi chú",background="white")
+            txt_ghichu.pack(padx=20)
+            btn_trolai.pack(side="right",padx=10,pady=10)
+            btn_luu.pack(side="right",padx=10,pady=10)
+        
+    def trolai():
+        frame_ghichu.place_forget()
+        fr_tb.place(x=330,y=110)
+        txt_ghichu.delete(1.0,END)
+
+    def luu_ghichu():
+        if tk.luughichu(ngay.get(),ca.get(),data_masv.get(),txt_ghichu.get("1.0",END)) == True:
+            threading.Thread(target=khoiphuc_dd).start()
+            messagebox.showinfo("thông báo","Đã lưu ghi chú")
+            trolai()
+        else: 
+             messagebox.showerror("thông báo","Lưu không thành công")
+
     def menuthietlap():
         win.destroy()
         quantrivien_thietlap.main()
@@ -199,8 +215,16 @@ def main():
     def menuthongke():
         win.destroy()
         main()
-
-    def menudangxuat():
+    def dangxuat():
+        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
+            ten_thiet_bi = socket.gethostname()
+            file=open(ten_thiet_bi+".txt","w")
+            file.write("")
+            file.close()
+            win.destroy()
+            dangnhap.main()
+        else: return
+    def dangxuat():
         if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
             ten_thiet_bi = socket.gethostname()
             file=open(ten_thiet_bi+".txt","w")
@@ -211,51 +235,30 @@ def main():
         else: return
 
     win=Tk()
-    win.geometry("1000x600+300+120")
+    win.geometry("1200x800+120+10")
     win.resizable(False,False)
     win.config(bg="green")
     win.title("Thống kê")
-    img_bg=ImageTk.PhotoImage(file="img/bg_thongke.png")
+    img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thongke.png")
     img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
-
-    img_menudangxuat=ImageTk.PhotoImage(file="img_qtv/btn_dangxuat.png")
+    
     img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke1.png")
     img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap.png")
     img_menukhoa=ImageTk.PhotoImage(file="img_qtv/menu_khoa.png")
-    img_btntimkiem=ImageTk.PhotoImage(file="img_qtv/btn_timkiem.png")
-    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_qtv/btn_khoiphuc.png")
-    img_btnexcel_xuat=ImageTk.PhotoImage(file="img_qtv/xuat_excel.png")
-    
-#------------------------------------------------------------------------------
-    ten_thiet_bi = socket.gethostname()
-    d=[]
-    with open(ten_thiet_bi+".txt","r") as file:
-        d=file.read().split()
-    
-    ndtimkiem=StringVar()
-    tengv=StringVar()
+    ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
+    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
+    ing_timkiem=ImageTk.PhotoImage(file="img/btn_timkiem.png")
+    img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
+    img_btnghichu = ImageTk.PhotoImage(file="img_admin/btn_ghichu.png")
+    img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
+    img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
+    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
 
-
-    khoa =StringVar()
-    makhoa=StringVar()
-    gv=StringVar()
-    magv=StringVar()
-    lop=StringVar()
-    malop=StringVar()
-    mh=StringVar()
-    mamh=StringVar()
-    ngay=StringVar()
-    ca=StringVar()
-
-
-#-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1200,height=800,bg="green")
     bg.pack(side="left",padx=0)
-    anhnen=bg.create_image(500,300,image=img_bg)
+    anhnen=bg.create_image(600,400,image=img_bg)
 
-    menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
-    menudangxuat.place(x=248,y=44)
-    
+
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=212)
     menukhoa=Button(bg,image=img_menukhoa,bd=0,highlightthickness=0,activebackground='#857EBD',command=menukhoa)
@@ -263,76 +266,163 @@ def main():
     menuthietlap=Button(bg,image=img_menuthietlap,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthietlap)
     menuthietlap.place(x=30,y=296)
 
-    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",14),fg="#A672BB",bg="white")
+    btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
+    btndangxuat.place(x=248,y=44)
+
+    btntimkiem=Button(bg,image=ing_timkiem,bd=0,activebackground='white',highlightthickness=0,command=timkiem)
+    btntimkiem.place(x=1116,y=110)
+    
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,activebackground='white',highlightthickness=0,command=loadbang, bg="white")
+    btnkhoiphuc.place(x=1156,y=110)
+    ten_thiet_bi = socket.gethostname()
+    d=[]
+    with open(ten_thiet_bi+".txt","r") as file:
+        d=file.read().split()
+    tengv=StringVar()
+    magv=StringVar()
+    makhoa=StringVar()
+    data_namhoc=StringVar()
+    data_hocky=StringVar()
+    data_lop=StringVar()
+    data_gv=StringVar()
+    matkb=StringVar()
+    data_masv=StringVar()
+    ngay=StringVar()
+    ca=StringVar()
+    ndtimkiem=StringVar()
+    tenmh=StringVar()
+    data_khoa=StringVar()
+
+    # value cho combobox 
+    hocky=[1,2]
+
+    lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=38)
 
-    cb_khoa=Combobox(bg,textvariable=khoa,font=("Baloo Tamma 2 Medium",12),state='readonly',width=30)
-    
-    cb_gv=Combobox(bg,textvariable=gv,font=("Baloo Tamma 2 Medium",12),state='readonly',width=30)
-    
-    cb_lop=Combobox(bg,textvariable=lop,font=("Baloo Tamma 2 Medium",12),state='readonly',width=30)
-    
-    cb_mh=Combobox(bg,textvariable=mh,font=("Baloo Tamma 2 Medium",12),state='readonly',width=30)
-    
-    cb_ngay=Combobox(bg,textvariable=ngay,font=("Baloo Tamma 2 Medium",12),state='readonly',width=30)
-    
-    cb_ca=Combobox(bg,textvariable=ca,font=("Baloo Tamma 2 Medium",12),state='readonly',width=30)
-    
-    lb_khoa=Label(bg,text="1.  Khoa",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
-    lb_gv=Label(bg,text="2.  Giảng viên",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
-    lb_lop=Label(bg,text="3.  Lớp học",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
-    lb_mon=Label(bg,text="4.  Môn học",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
-    lb_ngay=Label(bg,text="5.  Ngày học",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
-    lb_ca=Label(bg,text="6.  Ca",font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EBDFF0")
-    
+    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Baloo Tamma 2 Medium",10),justify="center", width=13,state='readonly')
+    cbnam.bind('<<ComboboxSelected>>', capnhatbang)
+    cbnam.place(x=523,y=10)
+    Frame(bg,width=125,height=2,bg="white").place(x=523,y=10)
+    Frame(bg,width=3,height=30,bg="white").place(x=523,y=10)
+    Frame(bg,width=125,height=2,bg="white").place(x=523,y=37)
 
+    cbhk =Combobox(bg,textvariable=data_hocky,font=("Baloo Tamma 2 Medium",10),justify="center", width=8, state='readonly', values=hocky)
+    cbhk.current(0)
+    cbhk.bind('<<ComboboxSelected>>', capnhatbang)
+    cbhk.place(x=725,y=10)
+    Frame(bg,width=83,height=2,bg="white").place(x=725,y=10)
+    Frame(bg,width=3,height=30,bg="white").place(x=725,y=10)
+    Frame(bg,width=83,height=2,bg="white").place(x=725,y=37)
 
-# tạo stype cho bảng
+    cbkhoa =Combobox(bg,textvariable=data_khoa,font=("Baloo Tamma 2 Medium",11),state='readonly', width=30)
+    cbkhoa.bind('<<ComboboxSelected>>', capnhatbangkhoa)
+    cbkhoa.place(x=902,y=10)
+    Frame(bg,width=290,height=2,bg="white").place(x=902,y=10)
+    Frame(bg,width=3,height=30,bg="white").place(x=902,y=10)
+    Frame(bg,width=290,height=2,bg="white").place(x=902,y=40)
+
+    cblop =Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=30)
+    cblop.bind('<<ComboboxSelected>>', capnhatbang)
+    cblop.place(x=902,y=60)
+    Frame(bg,width=290,height=2,bg="white").place(x=902,y=60)
+    Frame(bg,width=3,height=30,bg="white").place(x=902,y=60)
+    Frame(bg,width=290,height=2,bg="white").place(x=902,y=90)
+
+    cbgv =Combobox(bg,textvariable=data_gv,font=("Baloo Tamma 2 Medium",11),state='readonly', width=26)
+    cbgv.bind('<<ComboboxSelected>>', capnhatbang)
+    cbgv.place(x=554,y=60)
+    Frame(bg,width=250,height=2,bg="white").place(x=554,y=60)
+    Frame(bg,width=3,height=30,bg="white").place(x=554,y=60)
+    Frame(bg,width=250,height=2,bg="white").place(x=554,y=90)
+
     style()
+
     # tạo fram cho bảng
     fr_tb = Frame(bg)
-    
+    fr_tb.place(x=330,y=150)
 
     #tạo thanh cuộn 
     tree_scroll = Scrollbar(fr_tb)
     tree_scroll.pack(side='right', fill="y")
    
-    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6),yscrollcommand=tree_scroll.set)
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6,7,8),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
-    tv.column(1, width=50 )
-    tv.column(2, width=100 )
-    tv.column(3, width=160)
-    tv.column(4, width=100,anchor=CENTER)
-    tv.column(5, width=100,anchor=CENTER)
-    tv.column(6, width=100,anchor=CENTER)
-    # tv.column(5, width=120)
+    tv.column(1, width=50, anchor='center')
+    tv.column(2, width=80 ,anchor='center')
+    tv.column(3, width=190)
+    tv.column(4, width=190)
+    tv.column(5, width=80)
+    tv.column(6, width=80,anchor='center')
+    tv.column(7, width=50,anchor=CENTER)
+    tv.column(8, width=100,anchor=CENTER)
+
     tv.heading('#0', text="", anchor='center')
-    tv.heading(1,text="STT" )
-    tv.heading(2,text="MÃ SINH VIÊN")
-    tv.heading(3,text="HỌ TÊN")
-    tv.heading(4,text="THÔNG TIN")
-    tv.heading(5,text="TG Vào")
-    tv.heading(6,text="TG Ra")
-    # tv.heading(5,text="Ghi chú")
+    tv.heading(1,text="STT")
+    tv.heading(2,text="MÃ TKB", anchor='center')
+    tv.heading(3,text="Giảng viên")
+    tv.heading(4,text="Môn học")
+    tv.heading(5,text="LT-TH")
+    tv.heading(6,text="Ngày")
+    tv.heading(7,text="ca")
+    tv.heading(8,text="Trang thái")
+    
     tv.pack()
-    tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
+    tv.bind('<Double 1>', getrow)
+    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
-    txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0)
-    
+    f=Frame(bg,background="white")
+    f1=Frame(f,background="white")
+    f1.pack(side="top",anchor='e')
+    btnghichu=Button(f1,image=img_btnghichu,bd=0,highlightthickness=0,activebackground='white',command=xem_ghichu)
+    btnghichu.pack(side="right", anchor='e',padx=20)
+    btnexcelxuat=Button(f1,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
+    btnexcelxuat.pack(side="right", anchor='e')
+    fr_dd=Frame(f)
+    fr_dd.pack(side="bottom")
 
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+        #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_dd)
+    tree_scroll.pack(side='right', fill="y")
+
     
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
-    
-    btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
-    
+ 
+    tb = ttk.Treeview(fr_dd, columns=(1,2,3,4,5,6,7),yscrollcommand=tree_scroll.set)
+    tb.column('#0', width=0, stretch='no')
+    tb.column(1, width=50, anchor='center')
+    tb.column(2, width=100 ,anchor='center')
+    tb.column(3, width=150)
+    tb.column(4, width=150,anchor='center')
+    tb.column(5, width=100)
+    tb.column(6, width=100,anchor='center')
+    tb.column(7, width=150,anchor='center')
 
 
-    luong(loaddl)
+    tb.heading('#0', text="", anchor='center')
+    tb.heading(1,text="STT")
+    tb.heading(2,text="Mã sinh viên", anchor='center')
+    tb.heading(3,text="Tên Sinh viên")
+    tb.heading(4,text="Thông tin")
+    tb.heading(5,text="Thời gian vào")
+    tb.heading(6,text="Thời gian ra")
+    tb.heading(7,text="Ghi chú")
+    tb.bind('<Double 1>', chondong)
+    tb.pack()
+    tb.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tb.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
+
+    frame_ghichu=Frame(bg,background="#E8DFF1")
+    lb_ghichu=Label(frame_ghichu,font=("Baloo Tamma 2 Medium",14),fg="#A672BB")
+    lb_ghichu.pack()
+
+    txt_ghichu=Text(frame_ghichu,width=60,height=6,bd=1,background="#F1F1F1",font=("Baloo Tamma 2 Medium",10))
+    btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
+    btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
+
+    txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
+    txttim.place(x=888,y=110)
+
+    threading.Thread(target=loaddl).start()
     win.mainloop()
-
-    
-
 if __name__ == '__main__':
     main()

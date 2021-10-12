@@ -18,6 +18,49 @@ def cahoc():
             a=i.val()["TenCa"]
     return a
 
+def catkb(matkb):
+    a=0
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
+        for i in data.each():
+            if(i.val()["MaTKB"]==str(matkb)):
+                a=i.val()["Ca"]
+    except:a=0
+    return a
+
+
+def cong_them_gio(now):
+    d1 = datetime.datetime.strptime(now, "%H:%M:%S")
+    d=d1 + datetime.timedelta(hours=11)
+    d=str(d).split()
+    return d[1]
+def tru_gio(now):
+    d1 = datetime.datetime.strptime(now, "%H:%M:%S")
+    d=d1 - datetime.timedelta(hours=10)
+    d=str(d).split()
+    return d[1]
+
+def khoang_tgvao(tenca):
+    time = datetime.datetime.now()
+    now = time.strftime("%H:%M:%S")
+    try:
+        data=db.child("CaHoc").order_by_child("TenCa").equal_to(str(tenca)).get()
+        for i in data.each():
+            if(cong_them_gio(i.val()["TGBD"])>=str(now)):
+                return True
+            else:return False
+    except: return True
+def khoang_tgra(tenca):
+    time = datetime.datetime.now()
+    now = time.strftime("%H:%M:%S")
+    try:
+        data=db.child("CaHoc").order_by_child("TenCa").equal_to(str(tenca)).get()
+        for i in data.each():
+            if(tru_gio(i.val()["TGKT"])<=str(now)):
+                return True
+            else:return False
+    except: return True
+
 
 def thong_tin_theo_tkb(magv,ngay,ca):
     a=[]
@@ -78,7 +121,7 @@ def dd_sv_vao(ma):
     try:
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
-            if i.val()["Ma"]==str(ma) and i.val()["TG_Vao"] != "":
+            if i.val()["Ma"]==str(ma):
                 a.append(i.val()["MaSV"])
                 
     except:
@@ -100,6 +143,17 @@ def sv_da_dd(ma):
         data=db.child("DiemDanh").get()
         for i in data.each():
             if i.val()["Ma"]==str(ma):
+                a.append(i.val()["MaSV"])
+    except:
+        a=[]
+    return a
+
+def sv_da_dd_vao(ma):
+    a=[]
+    try:
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        for i in data.each():
+            if i.val()["Ma"]==str(ma) and i.val()["TG_Vao"] != "":
                 a.append(i.val()["MaSV"])
     except:
         a=[]
@@ -150,8 +204,18 @@ def timkiem_dd(ma,q):
     return a
 
 def capnhat_tgra(matkb,masv,tgra):
-    data=db.child("DiemDanh").get()
+    data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(matkb)).get()
     dl={'TG_Ra':str(tgra)}
+    for i in data.each():
+        if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
+            try:
+                db.child("DiemDanh").child(i.key()).update(dl)
+                return True
+            except:
+                return False
+def capnhat_tgvao(matkb,masv,tgvao,tt):
+    data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(matkb)).get()
+    dl={'TG_Vao':str(tgvao), 'ThongTin':str(tt)}
     for i in data.each():
         if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
             try:
@@ -201,11 +265,15 @@ def tgca(ca,e):
             e.append(i.val()['TGKT'])
 
 def tgbd_dd(matkb):
-    data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
-    for i in data.each():
-        e=i.val()["Ca"]
-    a=e[0]
-    root=db.child("CaHoc").order_by_child("TenCa").equal_to(str(a)).get()
-    for i in root.each():
-        tgbd=i.val()["TGBD"]
-    return tgbd
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
+        for i in data.each():
+            e=i.val()["Ca"]
+        a=e[0]
+        root=db.child("CaHoc").order_by_child("TenCa").equal_to(str(a)).get()
+        for i in root.each():
+            tgbd=i.val()["TGBD"]
+        return tgbd
+    except:
+        print("Error")
+

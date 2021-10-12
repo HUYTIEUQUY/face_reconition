@@ -56,6 +56,16 @@ def main():
             ngay=d[1]+"/"+d[0]+"/20"+d[2]
         return ngay
 
+    def cong_ngay(tg,songay):
+        a=tg.split('/')
+        b=a[0]+"/"+a[1]+"/"+str(a[2])[2:4]
+        d1 = datetime.datetime.strptime(b, "%d/%m/%y")
+        d=d1 + datetime.timedelta(days=songay)
+        d=str(d).split()
+        ngaydinhdang=str(d[0]).split("-")
+        ngay=ngaydinhdang[2]+"/"+ngaydinhdang[1]+"/"+ngaydinhdang[0]
+        return ngay
+
 
 
     def capnhatbang(event):
@@ -135,11 +145,10 @@ def main():
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),magv)
         update(tv,row)
 
-    def them():
+    def them(a,ngay):
         malop=malop_ten(data_lop.get())
         magv=magv_ten(data_gv.get())
         mamh =mamh_ten(data_mon.get())
-        ngay=data_ngay.get()
         namhoc=tkb.manh_ten(data_namhoc.get())
         hki=data_hocky.get()
         pp=data_loai.get()
@@ -153,15 +162,21 @@ def main():
         elif tkb.ngaya_nhohon_ngayb(ngay,now) ==True:
             messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
         elif kt_lich_gv(magv,ngay,data_ca,"") !=[]:
-            messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
+            messagebox.showerror("thông báo","Giảng viên đã có lịch dạy ngày"+ngay+" vào ca "+data_ca+"!")
         elif kt_lich_lop(malop,ngay,data_ca,"") != []:
-            messagebox.showerror("thông báo","Lớp đã có lịch học !")
+            messagebox.showerror("thông báo","Lớp đã có lịch học ngày"+ngay+" vào ca "+data_ca+"!")
         elif tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
             luong(khoiphuc)
+            if a==1:
+                ngay2=cong_ngay(ngay,7)
+                them(2,ngay2)
+            else: return
         else:
             messagebox.showerror("thông báo", "Thêm thời khoá biểu không thành công")
-            
+        
+        
+
             
     def sua():
             malop=malop_ten(data_lop.get())
@@ -388,7 +403,7 @@ def main():
     Checkbutton(bg,text="Ca 3",font=("Baloo Tamma 2 Medium",10),variable=ca[3],bg="white").place(x=860,y=141)
     Checkbutton(bg,text="Ca 4",font=("Baloo Tamma 2 Medium",10),variable=ca[4],bg="white").place(x=910,y=141)
 
-    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
+    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command= lambda:them(1,data_ngay.get()))
     btnthem.place(x=487,y=200)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
     btnsua.place(x=637,y=200)

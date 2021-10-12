@@ -76,7 +76,7 @@ def kt_tenlop(tenlop):
 
 
 def malop_ten(tenlop):
-    data=db.child("Lop").get()
+    data=db.child("Lop").order_by_child('TenLop').equal_to(str(tenlop)).get()
     a=""
     for i in data.each():
         if(i.val()["TenLop"]==str(tenlop)):

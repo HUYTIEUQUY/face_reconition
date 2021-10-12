@@ -1,5 +1,5 @@
 import re
-
+import datetime
 
 def kt_kitudacbiet(s):
     s=xoa_khoangcach(s).replace(" ","")
@@ -37,4 +37,7 @@ def khong_dau(s):
         s = re.sub(r'[Đ]', 'D', s)
         s = re.sub(r'[đ]', 'd', s)
         return s
+
+
+
 

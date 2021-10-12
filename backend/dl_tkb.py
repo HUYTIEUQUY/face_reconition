@@ -68,7 +68,10 @@ def bang_tkb(malop,namhoc,hocky,magv):
             if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)) :
                 gv=tengv_ma(i.val()["MaGV"])
                 mh=tenmh_ma(i.val()["MaMH"])
-                e=[stt,i.val()["MaTKB"],gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
                 a.append(e)
                 stt +=1
     except:a=[]
@@ -76,19 +79,22 @@ def bang_tkb(malop,namhoc,hocky,magv):
 
 def timkiem_dong_tkb(malop,namhoc,hocky,magv,q):
     a=[]
-
-    data=db.child("ThoiKhoaBieu").get()
+    stt=1
     try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
         for i in data.each():
-            if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
                 gv=tengv_ma(i.val()["MaGV"])
                 mh=tenmh_ma(i.val()["MaMH"])
-                e=[gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"]]
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
                 if khong_dau(str(q.lower())) in khong_dau(gv.lower()) or khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
                     a.append(e)
+                    stt+=1
     except:a=[]
     return a
-
 
 def kt_lichgiang(magv,ngay,ca,matkb):
     a=[]

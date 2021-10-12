@@ -17,7 +17,7 @@ from backend.dl_monhoc import mamh_ten
 from backend.dl_sinhvien import ds_masv_lop
 import backend.dl_diemdanh as dd
 from backend.dl_tkb import gv_dd
-
+from styletable import style,update
 import datetime
 import sinhvien
 import diemdanh
@@ -87,7 +87,7 @@ def main(gvdd):
             messagebox.showinfo("thông báo","Đã điểm danh")
             row=gv_dd(magv,ngay)
             if row !=[]:
-                update(row)
+                update(tv,row)
             else:
                 anhnen=bg.create_image(500,300,image=img_bg1)
             
@@ -102,10 +102,7 @@ def main(gvdd):
         datalop.set(item['values'][1])
         datamon.set(item['values'][2])
         dataca.set(item['values'][4])
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
+
     def menuthongke():
         win.destroy()
         thongke.main()
@@ -186,24 +183,33 @@ def main(gvdd):
     btndangxuat.place(x=248,y=44)
 
     
-    Label(bg,textvariable=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=35)
+    Label(bg,textvariable=tengv,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white").place(x=45,y=35)
 
+    # tạo stype cho bảng
+    style()
+    # tạo fram cho bảng
+    fr_tb = Frame(bg)
+    fr_tb.place(x=350,y=160)
+    #tạo thanh cuộn 
+    tree_scroll = Scrollbar(fr_tb)
+    tree_scroll.pack(side='right', fill="y")
 
-
-    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5), show="headings")
     tv.column(1, width=120,anchor=CENTER )
     tv.column(2, width=180)
     tv.column(3, width=180)
     tv.column(4, width=100,anchor=CENTER)
     tv.column(5, width=50)
-    tv.heading(1,text="Mã số")
+    tv.heading(1,text="MaTKB")
     tv.heading(2,text="Lớp")
     tv.heading(3,text="Môn học")
     tv.heading(4,text="Ngày")
     tv.heading(5,text="Ca")
-    tv.place(x=350,y=160)
+    tv.pack()
+    tv.tag_configure("ollrow_ghichu" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow_ghichu" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     tv.bind('<Double 1>', getrow)
-    update(gvdd)
+    update(tv,gvdd)
     
 
 

@@ -14,7 +14,7 @@ import backend.dl_giangvien as gv
 from backend.dl_giangvien import email_ma, tengv_email,makhoa_email
 import threading
 import kt_nhap as kt
-from styletable import style,update
+from styletable import style
 
 def main():
     def luong(ham):
@@ -27,10 +27,23 @@ def main():
         khoiphuc()
 
 
-
+    def update(row):
+        tv.delete(*tv.get_children())
+        global dem
+        dem=0
+        for i in row:
+            if dem%2==0 and str(i[5])!=str("\n"):
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow_ghichu'))
+            elif dem%2!=0 and str(i[5])!=str("\n"):
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow_ghichu'))
+            elif dem%2==0:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
+            else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
+            dem += 1
 
     def getrow(event):
         rowid=tv.identify_row(event.y)
+        txt_ghichu.delete(1.0,END)
         item=tv.item(tv.focus())
         data_ma.set(item['values'][1])
         data_magv.set(item['values'][1])
@@ -38,6 +51,7 @@ def main():
         data_email.set(item['values'][3])
         data_sdt.set(str(item['values'][4]))
         data_ghichu.set(item['values'][5])
+        txt_ghichu.insert(END,item['values'][5])
         sdt=gv.sdt_ma(data_ma.get())
         data_sdt.set(sdt)
 
@@ -50,7 +64,10 @@ def main():
         data_sdt.set("")
         data_ghichu.set("")
         row=gv.banggv(makhoa.get())
-        update(tv,row)
+        update(row)
+        try:
+            trolai()
+        except:return
 
     def kt_email(email):
         if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
@@ -101,15 +118,6 @@ def main():
         else:
             messagebox.showerror("thông báo","Sửa không thành công")
         
-    def xoa():
-        if data_ma.get()=="" or data_ten.get()=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
-        elif messagebox.askyesno("thông báo","Bạn thực sự muốn xoá"):
-            if gv.kt_gv_tontai_tkb(data_ma.get()) ==[] and gv.kt_gv_tontai_diemdanh(data_ma.get())==[]:
-               
-                messagebox.showinfo("thông báo","Đã xoá giảng viên ra khỏi danh sách")
-            else:
-                messagebox.showerror("thông báo","Xoá thất bại")
 
     def xoa():
         if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
@@ -136,8 +144,31 @@ def main():
     
     def timkiem():
         row=gv.tim_gv(makhoa.get(),ndtimkiem.get())
-        update(tv,row)
+        update(row)
 
+    def xem_ghichu():
+        if data_magv.get() != "":
+            frame_ghichu.config(bg="white")
+            lb_ghichu.config(text="Ghi chú",background="white")
+            txt_ghichu.pack(padx=20)
+            btn_trolai.pack(side="right",padx=10,pady=10)
+            btn_luu.pack(side="right",padx=10,pady=10)
+        else: messagebox.showwarning("thông báo","Giảng viên không có ghi chú")
+    
+    def trolai():
+        frame_ghichu.config(bg="#E8DFF1")
+        lb_ghichu.config(text=".",fg="#A672BB",bg="#E8DFF1")
+        txt_ghichu.pack_forget()
+        btn_trolai.pack_forget()
+        btn_luu.pack_forget()
+
+    def luu_ghichu():
+        if gv.luughichu(data_magv.get(),txt_ghichu.get("1.0",END)):
+            luong(khoiphuc)
+            messagebox.showinfo("thông báo","Đã lưu ghi chú")
+
+        else: 
+             messagebox.showerror("thông báo","Lưu không thành công")
     def menuthongke():
         win.destroy()
         admin_thongke.main()
@@ -176,9 +207,10 @@ def main():
     img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
-    img_btnchon=ImageTk.PhotoImage(file="img_admin/btn_chon.png")
-    img_btnchonlich=ImageTk.PhotoImage(file="img_admin/chonlich.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
+    img_btnghichu = ImageTk.PhotoImage(file="img_admin/btn_ghichu.png")
+    img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
+    img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
 
     
 #------------------------------------------------------------------------------
@@ -203,7 +235,7 @@ def main():
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
-    menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
+    menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=xem_ghichu)
     menudangxuat.place(x=248,y=44)
     menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
@@ -235,7 +267,8 @@ def main():
     btntimkiem.place(x=881,y=250)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc)
     btnkhoiphuc.place(x=920,y=250)
-
+    btnghichu=Button(bg,image=img_btnghichu,bd=0,highlightthickness=0,activebackground='white',command=xem_ghichu)
+    btnghichu.place(x=948,y=4)
 
     f=Frame(bg)
     f.place(x=320,y=30)
@@ -249,14 +282,14 @@ def main():
     #tạo thanh cuộn 
     tree_scroll = Scrollbar(fr_tb)
     tree_scroll.pack(side='right', fill="y")
-    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5),yscrollcommand=tree_scroll.set)
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
     tv.column(1, width=30,anchor=CENTER)
     tv.column(2, width=90,anchor=CENTER)
     tv.column(3, width=140)
     tv.column(4, width=240)
     tv.column(5, width=110,anchor=CENTER)
-    # tv.column(6, width=80)
+    tv.column(6, width=0,stretch='no')
 
     tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
@@ -264,16 +297,24 @@ def main():
     tv.heading(3,text="TÊN GIẢNG VIÊN")
     tv.heading(4,text="EMAIL")
     tv.heading(5,text="SỐ ĐIỆN THOẠI")
-    # tv.heading(6,text="Ghi chú")
+    tv.heading(6,text="Ghi chú")
     tv.pack()
     tv.bind('<Double 1>', getrow)
-    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
-    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Regular",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Regular",10))
+    tv.tag_configure("ollrow_ghichu" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow_ghichu" ,background="#ECECEC",foreground="red",font=("Baloo Tamma 2 Medium",10))
+    
+    frame_ghichu=Frame(bg,background="#E8DFF1")
+    frame_ghichu.place(x=357,y=5)
+    lb_ghichu=Label(frame_ghichu,font=("Baloo Tamma 2 Medium",14),fg="#A672BB")
+    lb_ghichu.pack()
+    txt_ghichu=Text(frame_ghichu,width=60,height=6,bd=1,background="#F1F1F1",font=("Baloo Tamma 2 Medium",10))
+    btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
+    btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
     
     luong(loaddl)
     win.mainloop()
-
    
-
 if __name__ == '__main__':
     main()
