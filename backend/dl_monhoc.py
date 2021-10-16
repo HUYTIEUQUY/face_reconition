@@ -95,7 +95,7 @@ def mamh_ten(ten):
 
 
 def tenmh_ma(ma):
-    data=db.child("MonHoc").get()
+    data=db.child("MonHoc").order_by_child('MaMH').equal_to(str(ma)).get()
     a=""
     for i in data.each():
         if(i.val()["MaMH"]==str(ma)):

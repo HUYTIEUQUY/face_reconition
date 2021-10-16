@@ -5,6 +5,7 @@ from tkinter.ttk import Combobox
 from PIL import ImageTk
 # import csdl
 # import csdl_admin
+import admin_tkb1
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -13,20 +14,50 @@ import admin_thongke
 import admin_tkb
 import admin_monhoc
 from backend.dl_giangvien import tengv_email,makhoa_email
-from backend.dl_khoa import tenkhoa
+from backend.dl_khoa import tenkhoa,khoa_co_quyen_all
 import backend.dl_adminlop as lop
 import kt_nhap as kt
 import threading
 from styletable import style, update
 
 def main():
+
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=904,y=4)
+            menudangxuat["state"] = "disabled"
+            btnkhoiphuc["state"] = "disabled"
+            btntimkiem["state"] = "disabled"
+            btnthem["state"] = "disabled"
+            btnsua["state"] = "disabled"
+            btnxoa["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            menudangxuat["state"] = "normal"
+            btnkhoiphuc["state"] = "normal"
+            btntimkiem["state"] = "normal"
+            btnthem["state"] = "normal"
+            btnsua["state"] = "normal"
+            btnxoa["state"] = "normal"
+            
     def loaddl():
         tengv.set(tengv_email(email))
         makhoa.set(makhoa_email(email))
         tenk.set(tenkhoa(makhoa.get()))
         lbgv.config(text=tengv.get())
         lbtk.config(text=tenk.get())
-        luong(khoiphuc())
+        global quyen
+        quyen=khoa_co_quyen_all(makhoa.get())
+        if quyen == str(1):
+            entry_lop.place_forget()
+            btnthem.place_forget()
+            btnsua.place_forget()
+            btnxoa.place_forget()
+            row=lop.alllop()
+            update(tv,row)
+            loadding(0)
+        else:
+            luong(khoiphuc)
         
 
     def luong(ham):
@@ -35,6 +66,7 @@ def main():
 
 
     def them():
+        loadding(1)
         ma=lop.malop()
         ten=tenlop.get()
         ten=kt.xoa_khoangcach(ten)
@@ -50,11 +82,15 @@ def main():
             lop.themlop(ma,ten,makhoa.get())
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
-
+        loadding(0)
 
 
     def xoa():
-        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+        loadding(1)
+        if tenlop.get() == "":
+            messagebox.showerror("Thông báo","Hãy chọn dòng trong bảng phía dưới để xoá")
+            loadding(0)
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             x=tv.selection()
             listma = []
             ko_xoa=[]
@@ -75,16 +111,22 @@ def main():
             else:
                 messagebox.showinfo("thông báo","Đã xoá thành công")
                 luong(khoiphuc)
-        else: return
+        else: loadding(0)
+
+        
 
     def sua():
+        loadding(1)
         tenmoi=tenlop.get()
         tenmoi= kt.xoa_khoangcach(tenmoi)
         malop1=malop.get()
+        
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
         elif malop.get()=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
+            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click vào dòng cần cập nhật")
+        elif len(x) >1:
+            messagebox.showwarning("thông báo","Hãy chọn một dòng để cập nhật")
         elif kt.kt_dau_khoangcach(tenmoi)== False or kt.kt_kitudacbiet(tenmoi)!= "":
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
         elif lop.kt_tenlop(tenmoi)!= []:
@@ -93,8 +135,11 @@ def main():
             lop.sualop(malop1,tenmoi)
             messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
             khoiphuc()
+        loadding(0)
             
     def getrow(event):
+        global x
+        x=tv.selection()
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         tenlop.set(item['values'][2])
@@ -103,19 +148,34 @@ def main():
     def khoiphuc():
         ndtimkiem.set("")
         tenlop.set("")
-        row=lop.banglop(makhoa.get())
+        if quyen == str(1):
+            row=lop.alllop()
+        else:
+            row=lop.banglop(makhoa.get())
+        
         update(tv,row)
+        loadding(0)
 
     def timkiem():
-        row=lop.timlop(makhoa.get(),ndtimkiem.get())
+
+        loadding(1)
+        if quyen == str(1):
+            row=lop.tim_alllop(ndtimkiem.get())
+        else:
+            row=lop.timlop(makhoa.get(),ndtimkiem.get())
         update(tv,row)
+        loadding(0)
 
     def menuthongke():
         win.destroy()
         admin_thongke.main()
     def menutkb():
+        quyen = khoa_co_quyen_all(makhoa.get())
         win.destroy()
-        admin_tkb.main()
+        if quyen== str(1):
+            admin_tkb1.main()
+        else:
+            admin_tkb.main()
     def menugiangvien():
         win.destroy()
         admin_giangvien.main()
@@ -206,7 +266,8 @@ def main():
     lbtk=Label(bg,font=("Baloo Tamma 2 Medium",10),width=42,height=1,fg="black",bg="white",justify='center')
     lbtk.place(x=580,y=61)
     
-    Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=585,y=98)
+    entry_lop=Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,bd=0,highlightthickness=0)
+    entry_lop.place(x=585,y=98)
     
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
 
@@ -219,6 +280,7 @@ def main():
     #tạo thanh cuộn 
     tree_scroll = Scrollbar(fr_tb)
     tree_scroll.pack(side='right', fill="y")
+    
     tv = ttk.Treeview(fr_tb, columns=(1,2,3),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
     tv.column(1, width=120,anchor=CENTER)
@@ -229,13 +291,17 @@ def main():
     tv.heading(1,text="SỐ THỨ TỰ")
     tv.heading(2,text="MÃ lỚP")
     tv.heading(3,text="TÊN LỚP")
+    tree_scroll.config(command=tv.yview)
     tv.pack()
-    tv.bind('<Double 1>', getrow)
+    tv.bind('<ButtonRelease-1>', getrow)
     tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
+
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+
     
     luong(loaddl)
-    
+    loadding(1)
     win.mainloop()
 
 if __name__ == '__main__':

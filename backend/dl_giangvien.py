@@ -117,7 +117,7 @@ def xoagv(magv):
 
 def magv_ten(ten):
     data=db.child("GiangVien").order_by_child("TenGV").equal_to(str(ten)).get()
-    a=""
+    a = ""
     for i in data.each():
         if(i.val()["TenGV"]==str(ten)):
             a=(i.val()["MaGV"])

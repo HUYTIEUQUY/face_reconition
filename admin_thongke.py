@@ -16,11 +16,29 @@ import os
 import xlsxwriter
 import threading
 from tkinter import filedialog
-from styletable import style
+from styletable import style, update
 import backend.dl_tkb as tkb
 from backend.dl_adminlop import malop_ten
+from backend.dl_sinhvien import tensv_ma
+from backend.dl_monhoc import tenmh_ma
+import time as t
+import admin_tkb1
+from backend.dl_khoa import khoa_co_quyen_all
 
 def main():
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=290,y=7)
+            btndangxuat["state"] = "disabled"
+            btnkhoiphuc["state"] = "disabled"
+            btntimkiem["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            btndangxuat["state"] = "normal"
+            btnkhoiphuc["state"] = "normal"
+            btntimkiem["state"] = "normal"
+
+
     def dongluu(row,ma,ten,tt,TG,TGra,ghichu):
         for i in row:
             ma.append(i[1]) 
@@ -28,7 +46,8 @@ def main():
             tt.append(i[2]) 
             TG.append(i[4]) 
             TGra.append(i[5]) 
-            ghichu.append(i[6])  
+            ghichu.append(i[6]) 
+
     def xuat_excel():
         row=tk.bangdd_ma(matkb.get())
         ma=[]
@@ -74,7 +93,7 @@ def main():
     def timkiem():
         malop = malop_ten(data_lop.get())
         namhoc = tkb.manh_ten(data_namhoc.get())
-        gv=magv_email(d[0])
+        gv = magv_ten(data_gv.get())
         row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
@@ -84,36 +103,59 @@ def main():
 
     def khoiphuc_dd():
         row =tk.bangdd_ma(matkb.get())
-        update(tb,row)
+        load_bang_diemdanh(row)
 
     def getrow(event):
+        tam.set(0)
+        t.sleep(1)
         tb.delete(*tb.get_children())
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         matkb.set(item['values'][1])
-        ngay.set(item['values'][5])
-        ca.set(item['values'][6])
-        tenmh.set(item['values'][3])
+        matkb1.set('Mã thời khoá biểu : '+str(item['values'][1]))
+        ngay.set(item['values'][4])
+        ca.set(item['values'][5])
+        tenmh.set(item['values'][2])
         try:
             f.place(x=330,y=440)
         except:print("Đã tạo frame rồi")
-        if (str(item['values'][7])=="Chưa điểm danh"):
+        if (str(item['values'][6])=="Chưa điểm danh"):
             messagebox.showwarning("Thông báo","Chưa điểm danh")
             try:
                 f.place_forget()
             except:return
         else:
-            khoiphuc_dd()
+            threading.Thread(target=khoiphuc_dd).start() 
 
-    def update(tv,row):
+    def load_bang_tkb(row):
         tv.delete(*tv.get_children())
         global dem
-        dem=0
+        dem = 0
+        tam.set(1)
         for i in row:
+            i[2]=tenmh_ma(i[2])
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
             else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
             dem += 1
+            if tam.get() == str(0):
+                break
+        loadding(0)
+
+
+    def load_bang_diemdanh(row):
+        tam.set(1)
+        tb.delete(*tb.get_children())
+        global dem
+        dem = 0
+        for i in row:
+            i[2]=tensv_ma(i[2])
+            if dem%2==0:
+                tb.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
+            else:tb.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
+            dem += 1
+            if tam.get()==str(0):break
+        loadding(0)
 
     def loaddl():
         tengv.set(tengv_email(d[0]))
@@ -132,19 +174,30 @@ def main():
         cbnam.current(0)
         threading.Thread(target=loadbang).start()
         
+        
     def capnhatbang(event):
+        tam.set(0)
+        t.sleep(1)
+        fr_dd.place_forget()
+        loadding(1)
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv=magv_ten(data_gv.get())
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
+        global a
+    
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
-            update(tv,row)
+            a=threading.Thread(target=load_bang_tkb,args=(row,))
+            a.start()
         else:
-            update(tv,row)
+            a=threading.Thread(target=load_bang_tkb,args=(row,))
+            a.start()
         try:
             f.place_forget()
-        except:return
+        except:loadding(0)
+        loadding(0)
+
     def loadbang():
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
@@ -152,9 +205,10 @@ def main():
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
-            update(tv,row)
+            load_bang_diemdanh(row)
         else:
-            update(tv,row)
+            load_bang_tkb(row)
+        loadding(0)
 
     def chondong(event):
         rowid=tb.identify_row(event.y)
@@ -186,29 +240,29 @@ def main():
         else: 
              messagebox.showerror("thông báo","Lưu không thành công")
     def menutkb():
+        quyen = khoa_co_quyen_all(makhoa.get())
         win.destroy()
-        admin_tkb.main()
+        if quyen== str(1):
+            admin_tkb1.main()
+        else:
+            admin_tkb.main()
+
     def menuthongke():
         win.destroy()
         main()
+
     def menulophoc():
         win.destroy()
         adminlop.main()
+
     def menugiangvien():
         win.destroy()
         admin_giangvien.main()
+
     def menumonhoc():
         win.destroy()
         admin_monhoc.main()
-    def dangxuat():
-        if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
-            ten_thiet_bi = socket.gethostname()
-            file=open(ten_thiet_bi+".txt","w")
-            file.write("")
-            file.close()
-            win.destroy()
-            dangnhap.main()
-        else: return
+
     def dangxuat():
         if messagebox.askyesno("Thông báo","Bạn có thực sự muốn đăng xuất ?"):
             ten_thiet_bi = socket.gethostname()
@@ -243,7 +297,6 @@ def main():
     bg=Canvas(win,width=1200,height=800,bg="green")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(600,400,image=img_bg)
-
 
     menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
@@ -281,6 +334,10 @@ def main():
     ca=StringVar()
     ndtimkiem=StringVar()
     tenmh=StringVar()
+    matkb1 = StringVar()
+    tam=StringVar()
+    tam.set(0)
+  
 
     # value cho combobox 
     hocky=[1,2]
@@ -323,41 +380,42 @@ def main():
     fr_tb = Frame(bg)
     fr_tb.place(x=330,y=110)
 
+
     #tạo thanh cuộn 
     tree_scroll = Scrollbar(fr_tb)
     tree_scroll.pack(side='right', fill="y")
    
-    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6,7,8),yscrollcommand=tree_scroll.set)
+    tv = ttk.Treeview(fr_tb, columns=(1,2,3,4,5,6,7),yscrollcommand=tree_scroll.set)
     tv.column('#0', width=0, stretch='no')
     tv.column(1, width=50, anchor='center')
-    tv.column(2, width=80 ,anchor='center')
-    tv.column(3, width=190)
-    tv.column(4, width=190)
-    tv.column(5, width=80)
-    tv.column(6, width=80,anchor='center')
-    tv.column(7, width=50,anchor=CENTER)
-    tv.column(8, width=100,anchor=CENTER)
+    tv.column(2, width=100 ,anchor='center')
+    tv.column(3, width=250)
+    tv.column(4, width=100)
+    tv.column(5, width=100,anchor='center')
+    tv.column(6, width=80,anchor=CENTER)
+    tv.column(7, width=100,anchor=CENTER)
 
     tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
     tv.heading(2,text="MÃ TKB", anchor='center')
-    tv.heading(3,text="Giảng viên")
-    tv.heading(4,text="Môn học")
-    tv.heading(5,text="LT-TH")
-    tv.heading(6,text="Ngày")
-    tv.heading(7,text="ca")
-    tv.heading(8,text="Trang thái")
+    tv.heading(3,text="Môn học")
+    tv.heading(4,text="LT-TH")
+    tv.heading(5,text="Ngày")
+    tv.heading(6,text="ca")
+    tv.heading(7,text="Trạng thái")
     
     tv.pack()
-    tv.bind('<Double 1>', getrow)
+    tree_scroll.config(command=tv.yview)
+    tv.bind('<ButtonRelease-1>', getrow)
     tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
     f=Frame(bg,background="white")
     f1=Frame(f,background="white")
     f1.pack(side="top",anchor='e')
+    Label(f1,textvariable = matkb1, font=("Baloo Tamma 2 Medium",14),bg="white",fg = "#837EBE" ).pack(side='left',anchor='w',padx=280)
     btnghichu=Button(f1,image=img_btnghichu,bd=0,highlightthickness=0,activebackground='white',command=xem_ghichu)
-    btnghichu.pack(side="right", anchor='e',padx=20)
+    btnghichu.pack(side="right", anchor='e',padx=5)
     btnexcelxuat=Button(f1,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
     btnexcelxuat.pack(side="right", anchor='e')
     fr_dd=Frame(f)
@@ -367,8 +425,6 @@ def main():
     tree_scroll = Scrollbar(fr_dd)
     tree_scroll.pack(side='right', fill="y")
 
-    
- 
     tb = ttk.Treeview(fr_dd, columns=(1,2,3,4,5,6,7),yscrollcommand=tree_scroll.set)
     tb.column('#0', width=0, stretch='no')
     tb.column(1, width=50, anchor='center')
@@ -379,7 +435,6 @@ def main():
     tb.column(6, width=100,anchor='center')
     tb.column(7, width=150,anchor='center')
 
-
     tb.heading('#0', text="", anchor='center')
     tb.heading(1,text="STT")
     tb.heading(2,text="Mã sinh viên", anchor='center')
@@ -388,8 +443,9 @@ def main():
     tb.heading(5,text="Thời gian vào")
     tb.heading(6,text="Thời gian ra")
     tb.heading(7,text="Ghi chú")
-    tb.bind('<Double 1>', chondong)
+    tb.bind('<ButtonRelease-1>', chondong)
     tb.pack()
+    tree_scroll.config(command=tb.yview)
     tb.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tb.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
@@ -402,9 +458,13 @@ def main():
     btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
 
     txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
-    txttim.place(x=888,y=64)
+    txttim.place(x=888, y=64)
 
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#E7DFF1",fg="#AD7B98", width=12)
+
+    loadding(1)
     threading.Thread(target=loaddl).start()
     win.mainloop()
 if __name__ == '__main__':
     main()
+    

@@ -5,18 +5,26 @@ from PIL import ImageTk
 from tkinter import messagebox
 import socket
 # import diemdanhsv
-import mysql.connector
 # import admin_lop
 import hashlib
+from backend.dl_sinhvien import lop_khoa
+from uploadfile import download_filemahoa
 import backend.xacthuc as xacthuc
 import adminlop
 import diemdanh
 import quantrivien_khoa
 import doimatkhau
+from kt_nhap import khong_dau
+from backend.dl_giangvien import makhoa_email
 
 
 
 def main():
+    def taifilemahoa(makhoa):
+        lop=lop_khoa(makhoa)
+        for i in lop:
+            tenlop=khong_dau(i)
+            download_filemahoa(tenlop)
 
     def doimk():
         win.destroy()
@@ -58,6 +66,8 @@ def main():
                     adminlop.main()
                 elif xacthuc.kt_loaitk(email) == "0":
                     win.destroy()
+                    makhoa = makhoa_email(email)
+                    taifilemahoa(makhoa)
                     diemdanh.main()
                 elif xacthuc.kt_loaitk(email) == "3":
                     messagebox.showinfo("thông báo","Tài khoản không tồn tại")

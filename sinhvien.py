@@ -29,6 +29,26 @@ from styletable import style
 
 
 def main():
+    def loadding(a):
+        if a==1:# đang load dữ liệu
+            lb_loadding.place(x=1120,y=20)
+            btnexcelxuat['state']='disabled'
+            btnexcelnhap['state']='disabled'
+            btnkhoiphuc['state']='disabled'
+            btntimkiem['state']='disabled'
+            btnthem['state']='disabled'
+            btnsua['state']='disabled'
+            btnxoa['state']='disabled'
+        else:
+            lb_loadding.place_forget()
+            btnexcelxuat['state']= 'normal'
+            btnexcelnhap['state']='normal'
+            btnkhoiphuc['state']='normal'
+            btntimkiem['state']='normal'
+            btnthem['state']='normal'
+            btnsua['state']='normal'
+            btnxoa['state']='normal'
+        
 
     def luong(ham):
         threading.Thread(target=ham).start()
@@ -100,6 +120,7 @@ def main():
             out_workbook.close()
     
     def khoiphuc():
+        loadding(1)
         macu.set("")
         ma.set("")
         ten.set("")
@@ -113,6 +134,7 @@ def main():
         lb1.image=img
         lb2.config(text="")
         btn_xemanh.config(image=img_btnxem2)
+        loadding(0)
         
     def update(row):
         tv.delete(*tv.get_children())
@@ -126,6 +148,7 @@ def main():
             dem += 1
 
     def capnhat(event):
+        loadding(1)
         malop=malop_ten(cb_lop.get())
         row=sv.bangsv(malop)
         update(row)
@@ -136,6 +159,7 @@ def main():
         lb1.image=img
         lb2.config(text="")
         btn_xemanh.config(image=img_btnxem2)
+        loadding(0)
         
     def timkiem():
         malop=malop_ten(lop.get())
@@ -431,7 +455,7 @@ def main():
     
 
     
-    cb_lop=Combobox(bg,width=33, font=("Baloo Tamma 2 Medium",10),state='readonly',textvariable=lop)
+    cb_lop=Combobox(bg,width=34, font=("Baloo Tamma 2 Medium",10),state='readonly',textvariable=lop)
     cb_lop.place(x=580,y=52)
     cb_lop.bind('<<ComboboxSelected>>', capnhat)
     Frame(bg,width=303,height=5,bg= "white").place(x=570,y=52)
@@ -502,8 +526,8 @@ def main():
     tv.heading(2,text="MÃ SINH VIÊN")
     tv.heading(3,text="TÊN SINH VIÊN")
     tv.pack()
-
-    tv.bind('<Double 1>', getrow)
+    tree_scroll.config(command=tv.yview)
+    tv.bind('<ButtonRelease-1>', getrow)
     tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     
@@ -525,9 +549,9 @@ def main():
 
     btn_xemanh=Button(f1,image=img_btnxem2,bd=0,highlightthickness=0,command=xemanh)
     btn_xemanh.pack()
+    lb_loadding=Label(bg,text=" Đang tải . . . " ,font=("Baloo Tamma 2 Medium",12),bg="#FFF4FF",fg="#AD7B98")
 
     luong(loaddl)
-
     win.mainloop()
 
 if __name__ == '__main__':

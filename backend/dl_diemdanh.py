@@ -31,12 +31,12 @@ def catkb(matkb):
 
 def cong_them_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 + datetime.timedelta(hours=11)
+    d=d1 + datetime.timedelta(hours=8)
     d=str(d).split()
     return d[1]
 def tru_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 - datetime.timedelta(hours=10)
+    d=d1 - datetime.timedelta(hours=8)
     d=str(d).split()
     return d[1]
 
@@ -46,6 +46,7 @@ def khoang_tgvao(tenca):
     try:
         data=db.child("CaHoc").order_by_child("TenCa").equal_to(str(tenca)).get()
         for i in data.each():
+            print(cong_them_gio(i.val()["TGBD"]))
             if(cong_them_gio(i.val()["TGBD"])>=str(now)):
                 return True
             else:return False
@@ -109,7 +110,7 @@ def bangdiemdanh(ma):
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
-                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[stt,i.val()["MaSV"],i.val()["MaSV"] ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 a.append(e)
                 stt +=1
     except:

@@ -17,11 +17,24 @@ import kt_nhap as kt
 from styletable import style, update
 
 def main():
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=904,y=4)
+            menudangxuat["state"] = "disabled"
+            btnkhoiphuc["state"] = "disabled"
+            btntimkiem["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            menudangxuat["state"] = "normal"
+            btnkhoiphuc["state"] = "normal"
+            btntimkiem["state"] = "normal"
+
     def loaddl():
         tengv.set(tengv_email(d[0]))
         row=khoa.bangkhoa()
         lbgv.config(text=tengv.get())
         update(tv,row)
+        loadding(0)
 
     def kt_email(email):
         if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
@@ -30,6 +43,8 @@ def main():
             return False
 
     def them():
+        loadding(1)
+        q = option.get()
         makhoa=khoa.sl_khoa()
         e=email.get()
         ten=kt.xoa_khoangcach(tenkhoa.get())
@@ -47,11 +62,12 @@ def main():
         elif messagebox.askyesno("thông báo","Hãy kiểm tra kỹ email vì không thể sửa đổi khi đã tạo tài khoản."):
             e=e.strip()
             tenemail= str(e)[0:e.index("@")]
-            khoa.themkhoa(makhoa,ten,email.get())
+            khoa.themkhoa(makhoa,ten,email.get(),q)
             khoa.them_tk_khoa("admin"+tenemail, email.get(), makhoa)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
-        else: return
+        else: loadding(0)
+        loadding(0)
 
     # def xoa():
     #     ten=tenkhoa.get()
@@ -73,7 +89,10 @@ def main():
     #         return
 
     def xoa():
-        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+        loadding(1)
+        if tenkhoa.get() == "":
+            messagebox.showwarning("thông báo","Hãy chọn dòng trong bảng phía dưới để xoá")
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             x=tv.selection()
             listma = []
             ko_xoa=[]
@@ -94,15 +113,19 @@ def main():
             else:
                 messagebox.showinfo("thông báo","Đã xoá thành công")
                 khoiphuc()
-        else: return
+        else: loadding(0)
+        loadding(0)
 
     def sua():
+        loadding(1)
         tenmoi=tenkhoa.get()
         makhoa1=makhoa.get()
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
-        elif makhoa.get()=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
+        elif makhoa.get() == "":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click vào dòng cần cập nhật")
+        elif len(x) >1:
+            messagebox.showwarning("thông báo","Hãy chọn một dòng để cập nhật")
         elif email.get() != emailcu.get():
             messagebox.showwarning("thông báo","Không thể đổi tài khoản")
         elif kt_email(email.get())==False:
@@ -115,8 +138,11 @@ def main():
             khoa.suakhoa(makhoa1,tenmoi)
             messagebox.showinfo("thông báo","Đã đổi tên khoa thành công")
             khoiphuc()
+        loadding(0)
             
     def getrow(event):
+        global x
+        x=tv.selection()
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         tenkhoa.set(item['values'][2])
@@ -187,6 +213,8 @@ def main():
     tengv=StringVar()
     email=StringVar()
     emailcu=StringVar()
+    option=IntVar()
+    option.set(0)
 
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -217,6 +245,8 @@ def main():
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",13),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=38)
 
+    Checkbutton(bg,text="Có thể giảng dạy tất cả các lớp",font=("Baloo Tamma 2 Medium",12),variable=option,bg="#F4E1EC",fg="#5F1965").place(x=570,y=132)
+
     
     Label(bg,text="Đại Học Cửu Long",font=("Baloo Tamma 2 Medium",10),fg="black",bg="white").place(x=578,y=22)
     
@@ -245,10 +275,12 @@ def main():
     tv.heading(3,text="TÊN KHOA")
     tv.heading(4,text="EMAIL KHOA")
     tv.pack()
-    tv.bind('<Double 1>', getrow)
+    tree_scroll.config(command=tv.yview)
+    tv.bind('<ButtonRelease-1>', getrow)
     tv.tag_configure("ollrow" ,background="white")
     tv.tag_configure("evenrow" ,background="#ECECEC")
-    
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#E7DFF1",fg="#AD7B98", width=12)
+    loadding(1)
     threading.Thread(target=loaddl).start()
 
     win.mainloop()

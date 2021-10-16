@@ -12,6 +12,12 @@ def lop_khoa(ma):
     for i in data.each():
             a.append(i.val()["TenLop"])
     return a
+def all_lop():
+    data=db.child("Lop").get()
+    a=[]
+    for i in data.each():
+            a.append(i.val()["TenLop"])
+    return a
 
 def gv_khoa(ma):
     data=db.child("GiangVien").order_by_child("MaKhoa").equal_to(str(ma)).get()
@@ -46,12 +52,30 @@ def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
         return True
     except:
         return False
+def them_tkb1(ma,magv,mamh,loai,ngay,ca,malop,hki,nam):
+    
+    data={'MaTKB':str(ma),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
+    try:
+        db.child('ThoiKhoaBieu').push(data)
+        return True
+    except:
+        return False
 def sua_tkb(matkb,magv,mamh,loai,ngay,ca,malop,hki,nam):
     data={'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
     try:
         root=db.child('ThoiKhoaBieu').order_by_child("MaTKB").equal_to(str(matkb)).get()
         for i in root.each():
             if i.val()["MaTKB"] == str(matkb):
+                db.child('ThoiKhoaBieu').child(i.key()).update(data)
+        return True
+    except:
+        return False
+def sua_tkb1(matkb,magv,mamh,loai,ngay,ca,malop,hki,nam):
+    data={'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
+    try:
+        root=db.child('ThoiKhoaBieu').order_by_child("MaTKB").equal_to(str(matkb)).get()
+        for i in root.each():
+            if i.val()["MaTKB"] == str(matkb) and i.val()["MaLop"] == str(malop):
                 db.child('ThoiKhoaBieu').child(i.key()).update(data)
         return True
     except:
@@ -66,12 +90,25 @@ def bang_tkb(malop,namhoc,hocky,magv):
         data=db.child("ThoiKhoaBieu").order_by_child("Ngay").get()
         for i in data.each():
             if(i.val()["MaLop"]==str(malop) and i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)) :
-                gv=tengv_ma(i.val()["MaGV"])
-                mh=tenmh_ma(i.val()["MaMH"])
                 if(i.val()["TrangThaiDD"]=="0"):
                     tt="Chưa điểm danh"
                 else: tt="Đã điểm danh"
-                e=[stt,i.val()["MaTKB"],gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                e=[stt,i.val()["MaTKB"],i.val()["MaMH"],i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                a.append(e)
+                stt +=1
+    except:a=[]
+    return a
+def bang_tkb1(namhoc,hocky,magv):
+    a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("Ngay").get()
+        for i in data.each():
+            if( i.val()["NamHoc"]==str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)) :
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],i.val()["MaLop"],i.val()["MaMH"],i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
                 a.append(e)
                 stt +=1
     except:a=[]
@@ -84,25 +121,33 @@ def timkiem_dong_tkb(malop,namhoc,hocky,magv,q):
         data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
         for i in data.each():
             if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
-                gv=tengv_ma(i.val()["MaGV"])
                 mh=tenmh_ma(i.val()["MaMH"])
                 if(i.val()["TrangThaiDD"]=="0"):
                     tt="Chưa điểm danh"
                 else: tt="Đã điểm danh"
-                e=[stt,i.val()["MaTKB"],gv,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
-                if khong_dau(str(q.lower())) in khong_dau(gv.lower()) or khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                if  khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
                     a.append(e)
                     stt+=1
     except:a=[]
     return a
 
-def kt_lichgiang(magv,ngay,ca,matkb):
+def kt_lichgiang_them(magv,ngay,ca,matkb):
     a=[]
     data=db.child("ThoiKhoaBieu").order_by_child("MaGV").equal_to(str(magv)).get()
     try:
         for i in data.each():
             if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaGV"]==str(magv) and i.val()["MaTKB"] != str(matkb)):
-                a.append(i.val()["MaGV"])
+                a.append(i.val()["MaTKB"])
+    except: a=[]
+    return a
+def kt_lichgiang_sua(magv,mamh,ngay,ca,matkb):
+    a=[]
+    data=db.child("ThoiKhoaBieu").order_by_child("MaGV").equal_to(str(magv)).get()
+    try:
+        for i in data.each():
+            if(i.val()["Ngay"]==str(ngay) and str(ca) in i.val()["Ca"] and i.val()["MaGV"]==str(magv) and i.val()["MaTKB"] != str(matkb)) and  i.val()["MaMH"] != str(mamh):
+                a.append(i.val()["MaTKB"])
     except: a=[]
     return a
 
@@ -138,7 +183,7 @@ def xoa_dong_tkb(matkb):
                 return False
 
 def tenlop_ma(ma):
-    data=db.child("Lop").get()
+    data=db.child("Lop").order_by_child("MaLop").equal_to(str(ma)).get()
     a=""
     for i in data.each():
         if(i.val()["MaLop"]==str(ma)):
@@ -220,6 +265,16 @@ def matkb():
             e=[i.val()["MaTKB"]]
             a=str(int(max(e))+1)
     except:a=0
+    return a
+def lop_maTKB(ma):
+    e=""
+    a=[]
+    try:
+        data = db.child("ThoiKhoaBieu").order_by_child('MaTKB').equal_to(str(ma)).get()
+        for i in data.each():
+            e=[i.val()['MaLop']]
+            a.append(str(e))
+    except:a=[]
     return a
 
 

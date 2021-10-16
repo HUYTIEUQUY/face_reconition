@@ -108,7 +108,7 @@ def bangdd_ma(ma):
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if i.val()["Ma"]== str(ma):
-                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
+                e=[stt,i.val()["MaSV"],i.val()["MaSV"], i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
                 a.append(e)
                 stt+=1
     except:a=[]

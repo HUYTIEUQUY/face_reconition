@@ -17,8 +17,22 @@ import threading
 import diemdanh_bu
 
 def main():
-    def create_window():
-        window = Toplevel(win)
+
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=904,y=1)
+            print(a)
+            btn_capnhatsdt["state"] = "disabled"
+            btndangxuat["state"] = "disabled"
+            btndangxuat1["state"] = "disabled"
+            btndoimatkhau["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            btn_capnhatsdt["state"] = "normal"
+            btndangxuat["state"] = "normal"
+            btndangxuat1["state"] = "normal"
+            btndoimatkhau["state"] = "normal"
+
 
 
     def luong(ham):
@@ -56,6 +70,7 @@ def main():
             btnthongbaodd.place(x=920,y=425)
             lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
             lbstb1.place(x=952,y=420)
+        loadding(0)
 
 
 
@@ -96,8 +111,8 @@ def main():
         thongke.main()
 
     def menudiemdanh():
-        # win.destroy()
-        create_window()
+        win.destroy()
+        diemdanh.main()
 
     def menuthemsv():
         win.destroy()
@@ -205,7 +220,10 @@ def main():
 
     # btnthietlap=Button(bg,image=ing_btnthietlap,bd=0,highlightthickness=0,command=thietlap)
     # btnthietlap.place(x=949,y=2)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+
     luong(loaddl)
+    loadding(1)
     win.mainloop()
 
 if __name__ == '__main__':

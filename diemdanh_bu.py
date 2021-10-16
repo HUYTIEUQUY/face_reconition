@@ -206,6 +206,7 @@ def main(gvdd):
     tv.heading(4,text="Ngày")
     tv.heading(5,text="Ca")
     tv.pack()
+    tree_scroll.config(command=tv.yview)
     tv.tag_configure("ollrow_ghichu" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow_ghichu" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     tv.bind('<Double 1>', getrow)
@@ -216,7 +217,7 @@ def main(gvdd):
     btntrolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trolai)
     btntrolai.place(x=948,y=2)
     btn_diemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=diemdanhexcel)
-    btn_diemdanh.place(x=550,y=430)
+    btn_diemdanh.place(x=550,y=480)
     luong(loaddl)
 
     win.mainloop()

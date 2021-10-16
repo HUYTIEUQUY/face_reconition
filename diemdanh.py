@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import PhotoImage
 from PIL import Image,ImageTk
 from tkinter import messagebox
+from tkinter.ttk import Combobox
+from backend.dl_khoa import khoa_co_quyen_all
 import dangnhap
 import socket
 import pickle
@@ -25,7 +27,7 @@ from speak import speak
 import thietlap
 from kt_nhap import khong_dau
 from uploadfile import download_filemahoa,load
-from styletable import style, update
+from styletable import style
 import eye
 import dlib
 from time import strftime
@@ -44,24 +46,33 @@ def main():
 
     def timkiem():
         row=diemdanh.timkiem_dd(matkb.get(),ndtimkiem.get())
-        update(tv,row)
+        update(row)
         loadding(1)
         btnkhoiphuc['state']='normal'
     def khoiphuc():
         loadding(1)
         ndtimkiem.set("")
         row=diemdanh.bangdiemdanh(matkb.get())
-        update(tv,row)
+        update(row)
         loadding(0)
-        
+    
+    def update(row):
+        tv.delete(*tv.get_children())
+        global dem
+        dem=0
+        for i in row:
+            i[2]= tensv_ma(i[2])
+            if dem%2==0:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
+            else:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
+            dem += 1
     def tudong_capnhat():
         while True:
             if tudong.get()==str(3):
                 khoiphuc()
-                t.sleep(0.001)
             else: break
             
-
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -84,7 +95,6 @@ def main():
         mamh=mamh_ten(data_mon.get())
         magv=ma_gv.get()
         sv_da_vao=diemdanh.sv_da_dd_vao(ma)
-        print(sv_da_vao)
         a=ds_ma_sv(malop)
         lopp=khong_dau(data_lop.get().replace(" ","_"))
         f=open("mahoa/"+lopp+".pkl","rb")
@@ -114,7 +124,10 @@ def main():
             luong(loadl_dd)
 
         lbgv.config(text=tengv.get())
-        lblop.config(text=data_lop.get())
+        if quyen== str(1):
+            val_lop=""
+        else:
+            lblop.config(text=data_lop.get())
         lbmon.config(text=data_mon.get())
         luong(khoiphuc())
         
@@ -166,16 +179,20 @@ def main():
             tre="Trể "+str(kq)[0:7]
             sv_da_vao.append(name)
             threading.Thread(target=diemdanh.capnhat_tgvao,args=(ma,name,now,tre)).start()
+            threading.Thread(target=gananh_khi_click,args=(name,now)).start()
         elif name != "Unknow" and name not in sv_da_vao:
             # elif name not in dd and name != "Khongbiet"and '1' in real[name] and '2' in real[name]:
             # diemdanh.xoasv_dd(ma,name)
             threading.Thread(target=diemdanh.capnhat_tgvao,args=(ma,name,now,"có")).start()
             sv_da_vao.append(name)
+            threading.Thread(target=gananh_khi_click,args=(name,now)).start()
+        
 
     def xulyra(ma,name):
         now = datetime.now()
         now=now.strftime("%X")
         threading.Thread(target=diemdanh.capnhat_tgra,args=(ma,name,now)).start()
+        threading.Thread(target=gananh_khi_click,args=(name,now)).start()
 
     def batdaudiemdanh():
         known_face_encodings = []  
@@ -184,78 +201,83 @@ def main():
             for my_embed in embed_list:
                 known_face_encodings +=[my_embed]
                 known_face_names += [ref_id]
-        try:
-            webcam = cv2.VideoCapture(1)
-        except:
-            webcam = cv2.VideoCapture(0)
 
-        face_locations = []
-        face_encodings = []
-        face_names     = []
-        process_this_frame = True #xử lý khung
-        # ret = webcam.set(cv2.CAP_PROP_FRAME_WIDTH,600)
-        # ret = webcam.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
-        # detector = dlib.get_frontal_face_detector()
-        # predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-        # #these landmarks are based on the image above 
-        # left_eye_landmarks  = [36, 37, 38, 39, 40, 41]
-        # right_eye_landmarks = [42, 43, 44, 45, 46, 47]
-        
-        while True  :
-            
-            ret, frame = webcam.read()
-            
-            # small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-            # print(frame)
-            rgb_small_frame = frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
-            # gray=cv2.cvtColor(small_frame,cv2.COLOR_BGR2GRAY)
-            # faces,_,_ = detector.run(image = gray, upsample_num_times = 0, adjust_threshold = 0.0)
-            
-            if process_this_frame:
-                face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
-                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
-                face_names = []
-                for face_encoding in face_encodings:
-                    # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
-                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.5)
-                    name = "Unknow"
-                    #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
-                    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                    best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
-                    if matches[best_match_index]:
-                        name = known_face_names[best_match_index]
-                    face_names.append(name)
-                    
-                            
-            process_this_frame = not process_this_frame
-            #Hiển thị kết quả
-            try:
-                for (top_s, right, bottom, left), name in zip(face_locations, face_names):
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    if name == "Unknow":
+        camera=[]
+        for i in range(0, 2):
+            cap = cv2.VideoCapture(i)
+            test, frame = cap.read()
+            if test==True: 
+                camera.append(i)
+        if camera != []:
+            webcam = cv2.VideoCapture(max(camera))
 
-                        cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
-                        cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-                    else:
-                        cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 255,0), 2)
-                        cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-                        if vao_ra==0:
-                            xulyvao(ma,name)
-                        else: 
-                            xulyra(ma,name)
+            face_locations = []
+            face_encodings = []
+            face_names     = []
+            process_this_frame = True #xử lý khung
+            # ret = webcam.set(cv2.CAP_PROP_FRAME_WIDTH,600)
+            # ret = webcam.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
+            # detector = dlib.get_frontal_face_detector()
+            # predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+            # #these landmarks are based on the image above 
+            # left_eye_landmarks  = [36, 37, 38, 39, 40, 41]
+            # right_eye_landmarks = [42, 43, 44, 45, 46, 47]
+
+            while True  :                
+                ret, frame = webcam.read()
+                
+                # small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+                # print(frame)
+                rgb_small_frame = frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
+                # gray=cv2.cvtColor(small_frame,cv2.COLOR_BGR2GRAY)
+                # faces,_,_ = detector.run(image = gray, upsample_num_times = 0, adjust_threshold = 0.0)
+                
+                if process_this_frame:
+                    face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
+                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
+                    for face_encoding in face_encodings:
+                        # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
+                        matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.5)
+                        name = "Unknow"
+                        #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
+                        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                        best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
+                        if matches[best_match_index]:
+                            name = known_face_names[best_match_index]
+                        face_names.append(name)
                         
-            except:print("no name")
-            cv2.imshow('Video', frame)
-            
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                webcam.release()
-                tudong.set(str(0))
-                loadding(0)
-                cv2.destroyAllWindows()
-                break
+                                
+                process_this_frame = not process_this_frame
+                #Hiển thị kết quả
+                try:
+                    for (top_s, right, bottom, left), name in zip(face_locations, face_names):
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        if name == "Unknow":
 
-    #     #----------------------------------------------------------------------------
-        diemdanh.update_TT_diemdanh(matkb.get())
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
+                            cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+                        else:
+                            cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 255,0), 2)
+                            cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+                            if vao_ra==0:
+                                xulyvao(ma,name)
+                                
+                            else: 
+                                xulyra(ma,name)
+                            
+                except:print("no name")
+                cv2.imshow('Video', frame)
+                
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    webcam.release()
+                    tudong.set(str(0))
+                    loadding(0)
+                    f2.place_forget()
+                    cv2.destroyAllWindows()
+                    break
+        #     #----------------------------------------------------------------------------
+            diemdanh.update_TT_diemdanh(matkb.get())
+        else:messagebox.warning("thông báo","Thiết bị đang sử dụng không có camera")
 
         
     # #-----------------------------------------------------------------------------------------------------------------------
@@ -280,8 +302,9 @@ def main():
 
                 luong(tudong_capnhat)
             except:return
-            messagebox.showinfo("thông báo","Hãy đợi camera trong vài giây ...")
             luong(batdaudiemdanh)
+            messagebox.showinfo("thông báo","Hãy đợi camera trong vài giây ...")
+            
         try:
             lb1.pack()
             lb2.pack()
@@ -301,9 +324,9 @@ def main():
             try:
                 luong(tudong_capnhat)
             except:return
+            luong(batdaudiemdanh)
             messagebox.showinfo("thông báo","Hãy đợi camera trong vài giây ...")
             loadding(1)
-            luong(batdaudiemdanh)
         try:
             lb1.pack()
             lb2.pack()
@@ -344,7 +367,7 @@ def main():
 
     def xem_ghichu():
         if data_masv.get() != "":
-        
+
             frame_ghichu.place(x=330,y=110)
             frame_ghichu.config(bg="white")
             lb_ghichu.config(text="Ghi chú",background="white")
@@ -457,10 +480,18 @@ def main():
 
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=38)
-    
-    #lớp
-    lblop=Label(bg,font=("Baloo Tamma 2 Medium",10),bg="white",fg="#333333")
-    lblop.place(x=475,y=107)
+    quyen=khoa_co_quyen_all(makhoa.get())
+    if quyen == str(1) :
+        cblop = Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=30)
+        # cblop.bind('<<ComboboxSelected>>', chonlop)
+        cblop.place(x=475,y=107)
+        Frame(bg,width=300,height=2,bg="white").place(x=475,y=107)
+        Frame(bg,width=3,height=30,bg="white").place(x=475,y=107)
+        Frame(bg,width=300,height=2,bg="white").place(x=475,y=137)
+    else:
+        lblop=Label(bg,font=("Baloo Tamma 2 Medium",10),bg="white",fg="#333333")
+        lblop.place(x=475,y=107)
+
     lbmon=Label(bg,font=("Baloo Tamma 2 Medium",10),bg="white",fg="#333333")
     lbmon.place(x=475,y=141)
 
@@ -511,6 +542,7 @@ def main():
     tv.heading(7,text="Ghi chú")
     # tv.heading(5,text="Ghi chú")
     tv.pack()
+    tree_scroll.config(command=tv.yview)
     tv.bind('<ButtonRelease-1>', chondong)
     tv.tag_configure("ollrow" ,background="white",font=('Baloo Tamma 2 Medium',10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))

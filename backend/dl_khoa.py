@@ -59,8 +59,8 @@ def sl_khoa():
     except:a="1"
     return a
 
-def themkhoa(makhoa, tenkhoa,emailkhoa):
-    data={'MaKhoa':str(makhoa),'TenKhoa':str(tenkhoa),'EmailKhoa':str(emailkhoa)}
+def themkhoa(makhoa, tenkhoa,emailkhoa,quyen):
+    data={'MaKhoa':str(makhoa),'TenKhoa':str(tenkhoa),'EmailKhoa':str(emailkhoa),'Quyen':str(quyen)}
     try:
         db.child('Khoa').push(data)
         return True
@@ -183,3 +183,11 @@ def kt_lop_in_khoa(makhoa):
         return True
     else:
         return False
+
+def khoa_co_quyen_all(makhoa):
+    try:
+        data=db.child("Khoa").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
+        for i in data.each():
+            if(i.val()["MaKhoa"]==str(makhoa)):
+                return i.val()["Quyen"]
+    except:print("Lỗi khoa_co_quyen_all")

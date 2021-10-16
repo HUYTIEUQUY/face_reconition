@@ -13,7 +13,7 @@ import admin_thongke
 import admin_monhoc
 from backend.dl_giangvien import tengv_email,makhoa_email,magv_ten
 import backend.dl_tkb as tkb
-from backend.dl_adminlop import malop_ten
+from backend.dl_adminlop import malop_ten,tenlop_ma
 from backend.dl_monhoc import mamh_ten,tenmh_ma
 from backend.dl_khoa import khoa_co_quyen_all
 import threading
@@ -24,12 +24,14 @@ from time import strftime,sleep
 
 def main():
     def load_bang_tkb(row):
+
         tv.delete(*tv.get_children())
         gan.set(1)
         global dem
         dem = 0
         for i in row:
-            i[2]=tenmh_ma(i[2])
+            i[2]=tkb.tenlop_ma(i[2])
+            i[3]=tenmh_ma(i[3])
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
             else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
@@ -86,34 +88,45 @@ def main():
         ngay=ngaydinhdang[2]+"/"+ngaydinhdang[1]+"/"+ngaydinhdang[0]
         return ngay
 
+    def chonlop(event):
+
+        if str(data_lop.get()) not in mylistlop:
+            lbox.insert(0,data_lop.get())
+            mylistlop.append(data_lop.get())
+
     def capnhatbang(event):
         gan.set(0)
         sleep(1)
-        malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv=magv_ten(data_gv.get())
-        row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
+        row=tkb.bang_tkb1(namhoc,data_hocky.get(),gv)
         threading.Thread(target=load_bang_tkb,args=(row,)).start()
 
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         try:
-            data_ngay.set(item['values'][4])
-            data_mon.set(item['values'][2])
-            data_ca.set(item['values'][5])
+
+            data_ngay.set(item['values'][5])
+            data_mon.set(item['values'][3])
+            data_ca.set(item['values'][6])
 
             data_matkb.set(item['values'][1])
             ngaycu.set(item['values'][5])
-            moncu.set(item['values'][2])
-            pp_giangcu.set(item['values'][3])
-            cacu.set(item['values'][5])
-            dataca=str(item['values'][5])
+            moncu.set(item['values'][3])
+            pp_giangcu.set(item['values'][4])
+            cacu.set(item['values'][6])
+            dataca=str(item['values'][6])
             for i in range(5):
                 if dataca.find(str(i)) != -1:
                     ca[i].set(1)
                 else:
                     ca[i].set(0)
+
+
+            if str(item['values'][2]) not in mylistlop:
+                lbox.insert(0,item['values'][2])
+                mylistlop.append(str(item['values'][2]))
         except: print('click vùng trống')
 
     def timkiem():
@@ -149,6 +162,9 @@ def main():
         except: print("kết thúc đông hồ")
 
     def khoiphuc():
+
+        lbox.delete(0,END)
+        mylistlop=[]
         ngaycu.set("")
         moncu.set("")
         gvcu.set("")
@@ -160,14 +176,14 @@ def main():
         data_matkb.set("")
         for i in range(5):
             ca[i].set(0)
-        malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         magv= magv_ten(data_gv.get())
-        row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),magv)
-        load_bang_tkb(row)
+        row=tkb.bang_tkb1(namhoc,data_hocky.get(),magv)
+        threading.Thread(target=load_bang_tkb,args=(row,)).start()
+
+
 
     def them(a,ngay):
-        malop=malop_ten(data_lop.get())
         magv=magv_ten(data_gv.get())
         mamh =mamh_ten(data_mon.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
@@ -177,29 +193,31 @@ def main():
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
-        
-        if data_ca=="" or magv=="" or mamh=="" or ngay =="":
+        if data_ca=="" or magv=="" or mamh=="" or ngay ==""or mylistlop==[]:
             messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
         elif tkb.ngaya_nhohon_ngayb(ngay,now) ==True:
             messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
         elif kt_lich_gv(magv,ngay,data_ca,"") !=[]:
             messagebox.showerror("thông báo","Giảng viên đã có lịch dạy ngày"+ngay+" vào ca "+data_ca+"!")
-        elif kt_lich_lop(malop,ngay,data_ca,"") != []:
-            messagebox.showerror("thông báo","Lớp đã có lịch học ngày"+ngay+" vào ca "+data_ca+"!")
-        elif tkb.them_tkb(magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
-            
+
+        
+        else: 
+            matkb = tkb.matkb()
+            for i in mylistlop:
+                malop=malop_ten(i)
+                if kt_lich_lop(malop,ngay,data_ca,matkb) != []:
+                    messagebox.showerror("thông báo","Lớp"+str(i)+ "đã có lịch học ngày"+ngay+" vào ca "+data_ca+"!")
+                else:
+                    threading.Thread(target=tkb.them_tkb1 , args=(matkb,magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)).start()
             if a==1:
                 ngay2=cong_ngay(ngay,7)
                 them(2,ngay2)
-                messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
+                messagebox.showinfo("thông báo", "Đã thêm thành công" )
                 luong(khoiphuc)
             else: return
-        else:
-            messagebox.showerror("thông báo", "Thêm thời khoá biểu không thành công")
-        
+
             
     def sua():
-            malop=malop_ten(data_lop.get())
             magv=magv_ten(data_gv.get())
             mamh = mamh_ten(data_mon.get())
             ngay=data_ngay.get()
@@ -222,12 +240,15 @@ def main():
                     messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
                 elif kt_lich_gv(magv,ngay,data_ca,data_matkb.get()) !=[]:
                     messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
-                elif kt_lich_lop(malop,ngay,data_ca,data_matkb.get()) != []:
-                    messagebox.showerror("thông báo","Lớp đã có lịch học !")
-                elif tkb.sua_tkb(data_matkb.get(),magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
-                    messagebox.showinfo("thông báo", "Đã sửa thành công")
+                else:
+                    for i in mylistlop:
+                        malop=malop_ten(i)
+                        if kt_lich_lop(malop,ngay,data_ca,data_matkb.get()) != []:
+                            messagebox.showerror("thông báo","Lớp đã có lịch học !")
+                        elif tkb.sua_tkb1(data_matkb.get(),magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
+                            messagebox.showinfo("thông báo", "Đã sửa thành công với tên lớp "+str(i))
                     luong(khoiphuc)
-                else: messagebox.showerror("thông báo", "Đã sửa thất bại")
+                
         
         
     def xoa():
@@ -253,6 +274,11 @@ def main():
                 luong(khoiphuc)
         else: return
 
+    def xoads(event):
+        try:
+            mylistlop.remove(str(lbox.get(ANCHOR)))
+            lbox.delete(ANCHOR)
+        except: print('xoá danh sách nhanh quá')
     def chonngay(cal,btn):
         data_ngay.set(dinh_dang_ngay(cal.get_date()))
         cal.destroy()
@@ -295,7 +321,7 @@ def main():
     win.resizable(False,False)
     win.config(bg="green")
     win.title("Thời khoá biểu")
-    img_bg=ImageTk.PhotoImage(file="img_admin/bg_tkb.png")
+    img_bg=ImageTk.PhotoImage(file="img_admin/bg_chitiettkb.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_admin/btn_dangxuat.png")
     img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc.png")
@@ -346,6 +372,7 @@ def main():
     lich= now.replace("/"," ").split()
     style()
     gan=StringVar()
+    global mylistlop
     mylistlop=[]
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1200,height=800,bg="green")
@@ -386,19 +413,19 @@ def main():
 
     cbloai =Combobox(bg,textvariable=data_loai,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=26,values=loai)
     cbloai.current(0)
-    cbloai.place(x=680,y=169)
-    Frame(bg,width=255,height=2,bg="white").place(x=680,y=169)
-    Frame(bg,width=3,height=30,bg="white").place(x=680,y=169)
-    Frame(bg,width=255,height=2,bg="white").place(x=680,y=199)
+    cbloai.place(x=462,y=169)
+    Frame(bg,width=255,height=2,bg="white").place(x=462,y=169)
+    Frame(bg,width=3,height=30,bg="white").place(x=462,y=169)
+    Frame(bg,width=255,height=2,bg="white").place(x=462,y=199)
 
-    cblop = Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=33)
-    cblop.bind('<<ComboboxSelected>>', capnhatbang)
-    cblop.place(x=847,y=45)
-    Frame(bg,width=320,height=2,bg="white").place(x=847,y=45)
-    Frame(bg,width=3,height=30,bg="white").place(x=847,y=45)
-    Frame(bg,width=320,height=2,bg="white").place(x=847,y=75)
+    cblop =Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=33)
+    cblop.bind('<<ComboboxSelected>>', chonlop)
+    cblop.place(x=847,y=126)
+    Frame(bg,width=320,height=2,bg="white").place(x=847,y=126)
+    Frame(bg,width=3,height=30,bg="white").place(x=847,y=126)
+    Frame(bg,width=320,height=2,bg="white").place(x=847,y=156)
 
-    Label(bg,font=("Baloo Tamma 2 Medium",11),bg="white",textvariable=data_ngay).place(x=740,y=212)
+    Label(bg,font=("Baloo Tamma 2 Medium",11),bg="white",textvariable=data_ngay).place(x=515,y=212)
 
     cbgv =Combobox(bg,textvariable=data_gv,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=27)
     cbgv.place(x=420,y=45)
@@ -408,10 +435,10 @@ def main():
     Frame(bg,width=262,height=2,bg="white").place(x=420,y=75)
 
     cbmon =Combobox(bg,textvariable=data_mon,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=26)
-    cbmon.place(x=680,y=125)
-    Frame(bg,width=255,height=2,bg="white").place(x=680,y=125)
-    Frame(bg,width=3,height=30,bg="white").place(x=680,y=125)
-    Frame(bg,width=255,height=2,bg="white").place(x=680,y=155)
+    cbmon.place(x=462,y=125)
+    Frame(bg,width=255,height=2,bg="white").place(x=462,y=125)
+    Frame(bg,width=3,height=30,bg="white").place(x=462,y=125)
+    Frame(bg,width=255,height=2,bg="white").place(x=462,y=155)
     ca=[]
     for i in range(5):
         option=IntVar()
@@ -420,10 +447,10 @@ def main():
 
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=26,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=841,y=418)
 
-    Checkbutton(bg,text="Ca 1",font=("Baloo Tamma 2 Medium",10),variable=ca[1],bg="white").place(x=680,y=257)
-    Checkbutton(bg,text="Ca 2",font=("Baloo Tamma 2 Medium",10),variable=ca[2],bg="white").place(x=730,y=257)
-    Checkbutton(bg,text="Ca 3",font=("Baloo Tamma 2 Medium",10),variable=ca[3],bg="white").place(x=780,y=257)
-    Checkbutton(bg,text="Ca 4",font=("Baloo Tamma 2 Medium",10),variable=ca[4],bg="white").place(x=830,y=257)
+    Checkbutton(bg,text="Ca 1",font=("Baloo Tamma 2 Medium",10),variable=ca[1],bg="white").place(x=464,y=257)
+    Checkbutton(bg,text="Ca 2",font=("Baloo Tamma 2 Medium",10),variable=ca[2],bg="white").place(x=514,y=257)
+    Checkbutton(bg,text="Ca 3",font=("Baloo Tamma 2 Medium",10),variable=ca[3],bg="white").place(x=564,y=257)
+    Checkbutton(bg,text="Ca 4",font=("Baloo Tamma 2 Medium",10),variable=ca[4],bg="white").place(x=614,y=257)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command= lambda:them(1,data_ngay.get()))
     btnthem.place(x=527,y=327)
@@ -442,7 +469,12 @@ def main():
     lb.pack()
 
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
-    btnchonlich.place(x=910,y=219)
+    btnchonlich.place(x=684,y=219)
+
+    #listbox
+    lbox=Listbox(bg,width=60,height=7,highlightthickness=0,bd=0,justify="center",selectmode="MULTIPLE")
+    lbox.place(x=781,y=170)
+    lbox.bind('<<ListboxSelect>>', xoads)
 
 
     # tạo stype cho bảng
@@ -458,20 +490,20 @@ def main():
     tv.column('#0', width=0, stretch='no')
     tv.column(1, width=50, anchor='center')
     tv.column(2, width=80 ,anchor='center')
-    tv.column(3, width=250)
-    tv.column(4, width=100)
+    tv.column(3, width=190)
+    tv.column(4, width=190)
     tv.column(5, width=100,anchor='center')
-    tv.column(6, width=50,anchor=CENTER)
-    tv.column(7, width=100,anchor=CENTER)
+    tv.column(6, width=100,anchor=CENTER)
+    tv.column(7, width=50,anchor=CENTER)
 
     tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
     tv.heading(2,text="Mã TKB", anchor='center')
-    tv.heading(3,text="Môn học")
-    tv.heading(4,text="LT-TH")
-    tv.heading(5,text="Ngày")
-    tv.heading(6,text="ca")
-    tv.heading(7,text="Trang thái")
+    tv.heading(3,text="Lớp")
+    tv.heading(4,text="Môn học")
+    tv.heading(5,text="LT-TH")
+    tv.heading(6,text="Ngày")
+    tv.heading(7,text="ca")
     
     tv.pack()
     tv.bind('<ButtonRelease-1>', getrow)

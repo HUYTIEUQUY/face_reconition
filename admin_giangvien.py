@@ -8,8 +8,10 @@ import dangnhap
 import socket
 import adminlop
 import admin_tkb
+import admin_tkb1
 import admin_thongke
 import admin_monhoc
+from backend.dl_khoa import khoa_co_quyen_all
 import backend.dl_giangvien as gv
 from backend.dl_giangvien import email_ma, tengv_email,makhoa_email
 import threading
@@ -17,6 +19,26 @@ import kt_nhap as kt
 from styletable import style
 
 def main():
+
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=904,y=4)
+            menudangxuat["state"] = "disabled"
+            btnkhoiphuc["state"] = "disabled"
+            btntimkiem["state"] = "disabled"
+            btnthem["state"] = "disabled"
+            btnsua["state"] = "disabled"
+            btnxoa["state"] = "disabled"
+            btnghichu["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            menudangxuat["state"] = "normal"
+            btnkhoiphuc["state"] = "normal"
+            btntimkiem["state"] = "normal"
+            btnthem["state"] = "normal"
+            btnsua["state"] = "normal"
+            btnxoa["state"] = "normal"
+            btnghichu["state"] = "normal"
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -41,21 +63,10 @@ def main():
             else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
             dem += 1
 
-    def getrow(event):
-        rowid=tv.identify_row(event.y)
-        txt_ghichu.delete(1.0,END)
-        item=tv.item(tv.focus())
-        data_ma.set(item['values'][1])
-        data_magv.set(item['values'][1])
-        data_ten.set(item['values'][2])
-        data_email.set(item['values'][3])
-        data_sdt.set(str(item['values'][4]))
-        data_ghichu.set(item['values'][5])
-        txt_ghichu.insert(END,item['values'][5])
-        sdt=gv.sdt_ma(data_ma.get())
-        data_sdt.set(sdt)
+    
 
     def khoiphuc():
+        loadding(1)
         ndtimkiem.set("")
         data_email.set("")
         data_ma.set("")
@@ -68,6 +79,7 @@ def main():
         try:
             trolai()
         except:return
+        loadding(0)
 
     def kt_email(email):
         if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
@@ -76,6 +88,7 @@ def main():
             return False
 
     def them():
+        loadding(1)
         ma=data_ma.get()
         ten=data_ten.get()
         ten=kt.xoa_khoangcach(ten)
@@ -99,13 +112,18 @@ def main():
                 khoiphuc()
             else:
                 messagebox.showerror("thông báo","Mã giảng viên đã tồn tại trong danh sách")
+        loadding(0)
                 
     def sua():
+        loadding(1)
+        
         if data_ma.get() != data_magv.get():
             messagebox.showwarning("thông báo","khổng thể sửa mã")
             data_ma.set(data_magv.get())
         elif data_magv.get()=="":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu sửa. Bạn hãy click 2 lần vào dòng muốn sửa !")
+            messagebox.showwarning("thông báo","Chưa có dữ liệu sửa. Bạn hãy click vào dòng muốn sửa !")
+        elif len(x) > 1:
+            messagebox.showwarning("Thồng báo","Hãy chọn một dòng để cập nhật")
         elif data_ten.get()=="" or data_sdt.get()=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
         elif kt.kt_dau_khoangcach(data_ten.get())==False or kt.kt_kitudacbiet(data_ten.get()) !="":
@@ -117,10 +135,13 @@ def main():
             khoiphuc()
         else:
             messagebox.showerror("thông báo","Sửa không thành công")
-        
+        loadding(0)
 
     def xoa():
-        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+        loadding(1)
+        if data_magv.get()=="":
+            messagebox.showwarning("thông báo","Hãy chọn dòng trong bảng phía dưới để xoá")
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             x=tv.selection()
             listma = []
             ko_xoa=[]
@@ -140,11 +161,30 @@ def main():
             else:
                 messagebox.showinfo("thông báo","Đã xoá thành công")
                 khoiphuc()
-        else: return
+        else: loadding(0)
+        loadding(0)
+
+    def getrow(event):
+        global x
+        x = tv.selection()
+        rowid=tv.identify_row(event.y)
+        txt_ghichu.delete(1.0,END)
+        item=tv.item(tv.focus())
+        data_ma.set(item['values'][1])
+        data_magv.set(item['values'][1])
+        data_ten.set(item['values'][2])
+        data_email.set(item['values'][3])
+        data_sdt.set(str(item['values'][4]))
+        data_ghichu.set(item['values'][5])
+        txt_ghichu.insert(END,item['values'][5])
+        sdt=gv.sdt_ma(data_ma.get())
+        data_sdt.set(sdt)
     
     def timkiem():
+        loadding(1)
         row=gv.tim_gv(makhoa.get(),ndtimkiem.get())
         update(row)
+        loadding(0)
 
     def xem_ghichu():
         if data_magv.get() != "":
@@ -176,8 +216,12 @@ def main():
         win.destroy()
         adminlop.main()
     def menutkb():
+        quyen = khoa_co_quyen_all(makhoa.get())
         win.destroy()
-        admin_tkb.main()
+        if quyen== str(1):
+            admin_tkb1.main()
+        else:
+            admin_tkb.main()
     def menumonhoc():
         win.destroy()
         admin_monhoc.main()
@@ -235,7 +279,7 @@ def main():
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
-    menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=xem_ghichu)
+    menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
     menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,activebackground='#857EBD',command=menulophoc)
     menulophoc.place(x=30,y=128)
@@ -299,7 +343,8 @@ def main():
     tv.heading(5,text="SỐ ĐIỆN THOẠI")
     tv.heading(6,text="Ghi chú")
     tv.pack()
-    tv.bind('<Double 1>', getrow)
+    tree_scroll.config(command=tv.yview)
+    tv.bind('<ButtonRelease-1>', getrow)
     tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Regular",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Regular",10))
     tv.tag_configure("ollrow_ghichu" ,background="white", font=("Baloo Tamma 2 Medium",10))
@@ -313,6 +358,8 @@ def main():
     btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
     btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
     
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+    loadding(1)
     luong(loaddl)
     win.mainloop()
    

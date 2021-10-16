@@ -127,7 +127,7 @@ def timsv(malop,q):
     return a
 
 def tensv_ma(ma):
-    data=db.child("SinhVien").get()
+    data=db.child("SinhVien").order_by_child('MaSV').equal_to(str(ma)).get()
     a=""
     for i in data.each():
         if(i.val()["MaSV"]==str(ma)):

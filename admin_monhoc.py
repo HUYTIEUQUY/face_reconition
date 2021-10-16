@@ -15,8 +15,27 @@ import backend.dl_monhoc as mh
 import threading
 import kt_nhap as kt
 from styletable import style,update
+import admin_tkb1
+from backend.dl_khoa import khoa_co_quyen_all
 
 def main():
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=904,y=4)
+            menudangxuat["state"] = "disabled"
+            btnkhoiphuc["state"] = "disabled"
+            btntimkiem["state"] = "disabled"
+            btnthem["state"] = "disabled"
+            btnsua["state"] = "disabled"
+            btnxoa["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            menudangxuat["state"] = "normal"
+            btnkhoiphuc["state"] = "normal"
+            btntimkiem["state"] = "normal"
+            btnthem["state"] = "normal"
+            btnsua["state"] = "normal"
+            btnxoa["state"] = "normal"
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -28,6 +47,7 @@ def main():
 
 
     def khoiphuc():
+        loadding(1)
         ndtimkiem.set("")
         data_mamon.set("")
         data_mamonsx.set("")
@@ -37,9 +57,12 @@ def main():
         data_sotietth.set("")
         row=mh.bangmh(makhoa.get())
         update(tv,row)
+        loadding(0)
 
 
     def getrow(event):
+        global x
+        x = tv.selection()
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         data_tenmon.set(item['values'][2])
@@ -79,25 +102,12 @@ def main():
             mh.themmh(ma,ten,lt,th,makhoa.get())
             luong(khoiphuc)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
-            
-    def xoa():
-        ma=data_mamon.get()
 
+    def xoa():
+        loadding(1)
         if data_mamonsx.get()== "":
-            messagebox.showwarning("thông báo","Chưa có dữ liệu để xoá\nHãy nhấn 2 lần vào dòng dữ liệu muốn xoá và nhấn nút 'xoá'")
+            messagebox.showwarning("thông báo","Hãy chọn dòng trong bảng phía dưới để xoá")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
-            if mh.kt_monhoc_tontai_diemdanh(ma)!=[] :
-                messagebox.showerror("thông báo","Không thể xoá môn học này\nMôn học vẫn còn tồn tại trong bảng điểm danh")
-            elif mh.kt_monhoc_tontai_tkb(ma)!=[]:
-                messagebox.showerror("thông báo","Không thể xoá môn học này\nMôn học vẫn còn tồn tại trong bảng thời khoá biểu")
-            else:
-                
-                messagebox.showinfo("thông báo","Đã xoá")
-        else: 
-            return 
-
-    def xoa():
-        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             x=tv.selection()
             listma = []
             ko_xoa=[]
@@ -116,8 +126,8 @@ def main():
                 luong(khoiphuc)
             else:
                 messagebox.showinfo("thông báo","Đã xoá thành công")
-
-        else: return
+        else: loadding(0)
+        loadding(0)
 
     def sua():
         ma=data_mamon.get()
@@ -126,7 +136,9 @@ def main():
         th=data_sotietth.get()
         ten=str(ten).replace("  "," ")
         if data_mamonsx.get() == "" :
-            messagebox.showerror("thông báo","Bạn chưa có dữ liệu sửa. Hãy nhấn 2 lần vào dòng muốn sửa, thay đổi tên và nhấn nút 'sửa'")
+            messagebox.showerror("thông báo","Bạn chưa có dữ liệu sửa. Hãy nhấn vào dòng muốn sửa, thay đổi tên và nhấn nút 'sửa'")
+        elif len(x) > 1:
+            messagebox.showwarning("Thồng báo","Hãy chọn một dòng để cập nhật")
         elif ma!=data_mamonsx.get():
             messagebox.showwarning("thông báo","Bạn không thể sửa mã môn học")
             data_mamon.set(data_mamonsx.get())
@@ -144,8 +156,10 @@ def main():
             messagebox.showinfo("thông báo","Sửa thành công")
 
     def timkiem():
+        loadding(1)
         row=mh.tim_mh(makhoa.get(), ndtimkiem.get())
         update(tv,row)
+        loadding(0)
 
     def menuthongke():
         win.destroy()
@@ -154,8 +168,12 @@ def main():
         win.destroy()
         adminlop.main()
     def menugiangvien():
+        quyen = khoa_co_quyen_all(makhoa.get())
         win.destroy()
-        admin_giangvien.main()
+        if quyen== str(1):
+            admin_tkb1.main()
+        else:
+            admin_tkb.main()
     def menutkb():
         win.destroy()
         admin_tkb.main()
@@ -265,11 +283,13 @@ def main():
     tv.heading(4,text="SỐ TIẾT LT")
     tv.heading(5,text="SỐ TIẾT TH")
     tv.pack()
-
-    tv.bind('<Double 1>', getrow)
+    tree_scroll.config(command=tv.yview)
+    tv.bind('<ButtonRelease-1>',getrow)
     tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+    loadding(1)
     luong(loaddl)
 
     win.mainloop()
