@@ -8,14 +8,29 @@ import backend.xacthuc as xacthuc
 from uploadfile import download_filemahoa
 from backend.dl_sinhvien import lop_khoa
 from kt_nhap import khong_dau
+from backend.dl_giangvien import makhoa_email
+from backend.dl_khoa import khoa_co_quyen_all
+from backend.dl_tkb import all_lop
+from backend.dl_diemdanh import tra_dl_diemdanh
+import datetime
+import threading
 
 def main():
     def taifilemahoa(makhoa):
-        lop=lop_khoa(makhoa)
+        quyen = khoa_co_quyen_all(makhoa)
+        if quyen == str(1):
+            lop=all_lop()
+        else:
+            lop=lop_khoa(makhoa)
         for i in lop:
-            tenlop=khong_dau(i)
-            download_filemahoa(tenlop)
-    
+                tenlop=khong_dau(i)
+                threading.Thread(target=download_filemahoa,args=(tenlop,)).start()
+    #Ngày hiện tại
+    day = str(datetime.date.today()).split("-")
+    ngayhientai = str(day[2])+"/"+str(day[1])+"/"+str(day[0])
+    threading.Thread(target=tra_dl_diemdanh,args=(ngayhientai,)).start()
+
+
     ten_thiet_bi = socket.gethostname()
     file=open(ten_thiet_bi+".txt","a")
     file.close()

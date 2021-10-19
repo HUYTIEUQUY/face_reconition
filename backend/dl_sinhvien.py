@@ -29,6 +29,15 @@ def lop_khoa(ma):
             a.append(i.val()["TenLop"])
     return a
 
+def all_lop():
+    try:
+        data=db.child("Lop").get()
+        a=[]
+        for i in data.each():
+                a.append(i.val()["TenLop"])
+    except:a=[]
+    return a
+
 def kt_masv_tontai(ma):
     a=[]
     data=db.child("SinhVien").get()
@@ -164,6 +173,13 @@ def ds_masv_lop(malop):
         if(i.val()["MaLop"]==str(malop)):
             a.append(i.val()['MaSV'])
     return a
+def malop_masv(ma):
+    data=db.child("SinhVien").order_by_child('MaSV').equal_to(str(ma)).get()
+    a=""
+    for i in data.each():
+        if(i.val()["MaSV"] == str(ma)):
+            a=i.val()['MaLop']
+    return a
 
 def kt_sv_diemdanh(masv):
     a=[]
@@ -176,3 +192,4 @@ def kt_sv_diemdanh(masv):
     if a ==[]: 
         return False
     else: return True
+

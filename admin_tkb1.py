@@ -130,9 +130,10 @@ def main():
         except: print('click vùng trống')
 
     def timkiem():
-        malop=malop_ten(data_lop.get())
+        # malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
-        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),ndtimkiem.get())
+        gv= magv_ten(data_gv.get())
+        row=tkb.timkiem_dong_tkb1(namhoc,data_hocky.get(),gv,ndtimkiem.get())
         update(tv,row)
 
     def kt_lich_gv(magv, ngay, ca,matkb):

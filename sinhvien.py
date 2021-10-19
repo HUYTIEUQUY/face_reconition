@@ -26,6 +26,7 @@ import threading
 import kt_nhap as kt
 from uploadfile import upload_anh, load,deleteanh,upload_filemahoa
 from styletable import style
+from backend.dl_khoa import khoa_co_quyen_all
 
 
 def main():
@@ -56,10 +57,16 @@ def main():
     def loaddl():
         tengv.set(tengv_email(d[0]))
         makhoa.set(makhoa_email(d[0]))
-        data_lop=sv.lop_khoa(makhoa.get())
+        global quyen
+        quyen=khoa_co_quyen_all(makhoa.get())
+        if quyen == str(1):
+            data_lop = sv.all_lop()
+        else:
+            data_lop=sv.lop_khoa(makhoa.get())
+        lbgv.config(text=tengv.get())
         cb_lop.config(values=data_lop)
         cb_lop.current(0)
-        lbgv.config(text=tengv.get())
+        
         khoiphuc()
 
     def nhap_excel():
@@ -98,6 +105,7 @@ def main():
         threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+".pkl",)).start()
 
     def xuat_excel():
+        loadding(1)
         malop=malop_ten(cb_lop.get())
         row =sv.bangsv(malop)
         if len(row)<1:
@@ -118,6 +126,7 @@ def main():
             write_data_to_file(a,0)
             write_data_to_file(b,1)
             out_workbook.close()
+            loadding(0)
     
     def khoiphuc():
         loadding(1)

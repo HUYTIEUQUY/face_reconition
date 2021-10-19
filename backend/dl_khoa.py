@@ -43,7 +43,7 @@ def bangkhoa():
     data=db.child("Khoa").get()
     try:
         for i in data.each():
-            e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"], i.val()["EmailKhoa"]]
+            e = [str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"], i.val()["EmailKhoa"],i.val()["Quyen"]]
             a.append(e)
             stt=stt+1
     except:a=[]
@@ -174,15 +174,19 @@ def them_tk_khoa(tengv,email,makhoa):
 def kt_lop_in_khoa(makhoa):
     a=[]
     try:
-        data=db.child("Lop").get()
+        data=db.child("Lop").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
         for i in data.each():
             if(i.val()["MaKhoa"]==str(makhoa)):
                 a.append(i.val()["MaKhoa"])
     except:a=[]
-    if a != []:
-        return True
-    else:
-        return False
+    return a
+def kt_gv_in_khoa(makhoa):
+    a=[]
+    data=db.child("GiangVien").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
+    for i in data.each():
+        if(i.val()["MaKhoa"]==str(makhoa)):
+            a.append(i.val()["MaKhoa"])
+    return a
 
 def khoa_co_quyen_all(makhoa):
     try:

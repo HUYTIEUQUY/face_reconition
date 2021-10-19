@@ -92,9 +92,9 @@ def main():
 
     def timkiem():
         malop = malop_ten(data_lop.get())
-        namhoc = tkb.manh_ten(data_namhoc.get())
-        gv = magv_ten(data_gv.get())
-        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        # namhoc = tkb.manh_ten(data_namhoc.get())
+        # gv = magv_ten(data_gv.get())
+        row=tkb.timkiem_dong_tkb(matkb.get(),malop, ndtimkiem.get())
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
             update(tv,row)
@@ -162,8 +162,13 @@ def main():
         makhoa.set(makhoa_email(d[0]))
         tengv.set(tengv_email(d[0]))
         lbgv.config(text=tengv.get())
-        lop=tkb.lop_khoa(makhoa.get())
-        gv=tkb.gv_khoa(makhoa.get())
+        global quyen
+        quyen = khoa_co_quyen_all(makhoa.get())
+        if quyen == str(1):
+            lop = tkb.all_lop()
+        else:
+            lop = tkb.lop_khoa(makhoa.get())
+        gv = tkb.gv_khoa(makhoa.get())
         namhoc=tkb.namhoc()
         #set cho combobox to
         cblop.config(values=lop)
@@ -173,7 +178,6 @@ def main():
         cbnam.config(values=namhoc)
         cbnam.current(0)
         threading.Thread(target=loadbang).start()
-        
         
     def capnhatbang(event):
         tam.set(0)

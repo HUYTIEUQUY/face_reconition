@@ -83,7 +83,9 @@ def main():
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
             return False
         elif lt.isnumeric()== False or th.isnumeric()== False:
-            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
+            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ ! Số tiết lý thuyết và số tiết thực hành phải là số\nVí dụ : 120,130,140,...")
+        elif int(lt) >= int(150) or int(th) >= int(150):
+            messagebox.showwarning("thông báo","Số tiết lý thuyết, số tiết thực hành tối đa là 150 tiết")
         elif mh.kt_ma_tt(ma) !=[]:
             messagebox.showerror("thông báo","Mã môn học đã tồn tại")
             return False
@@ -144,6 +146,8 @@ def main():
             data_mamon.set(data_mamonsx.get())
         elif ten=="" or lt=="" or th=="" :
             messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
+        elif int(lt) >= int(150) or int(th) >= int(150):
+            messagebox.showwarning("thông báo","Số tiết lý thuyết, số tiết thực hành tối đa là 150 tiết")
         elif kt.kt_dau_khoangcach(ten)==False :
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
         elif lt.isnumeric()== False or th.isnumeric()== False:

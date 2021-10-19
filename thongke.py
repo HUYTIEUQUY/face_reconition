@@ -21,6 +21,7 @@ from styletable import style
 import backend.dl_tkb as tkb
 from backend.dl_adminlop import malop_ten
 import time
+from backend.dl_khoa import khoa_co_quyen_all
 
 
 def main():
@@ -103,35 +104,38 @@ def main():
 
     def khoiphuc_dd():
         loadding(1)
-        row =tk.bangdd_ma(matkb.get())
+        if quyen == str(1):
+            malop=malop_ten(data_lop.get())
+            row =tk.bangdd_ma_tkblop(matkb.get(),malop)
+        else:
+            row =tk.bangdd_ma(matkb.get())
         load_bang_diemdanh(row)
-        tv.bind('<ButtonRelease-1>', getrow)
 
     def getrow(event):
-        
-        tv.pack_forget()
-        tv.pack()
-        loadding(1)
-        tb.delete(*tb.get_children())
-        rowid=tv.identify_row(event.y)
-        item=tv.item(tv.focus())
-        matkb.set(item['values'][1])
-        matkb1.set("Mã thời khoá biểu : "+str(item['values'][1]))
-        ngay.set(item['values'][4])
-        ca.set(item['values'][5])
-        tenmh.set(item['values'][2])
         try:
-            f.place(x=330,y=440)
-        except:print("Đã tạo frame rồi")
-        if (str(item['values'][6])=="Chưa điểm danh"):
-            messagebox.showwarning("Thông báo","Chưa điểm danh")
+            tam.set(0)
+            time.sleep(1)
+            loadding(1)
+            tb.delete(*tb.get_children())
+            rowid=tv.identify_row(event.y)
+            item=tv.item(tv.focus())
+            matkb.set(item['values'][1])
+            matkb1.set("Mã thời khoá biểu : "+str(item['values'][1]))
+            ngay.set(item['values'][4])
+            ca.set(item['values'][5])
+            tenmh.set(item['values'][2])
             try:
-                f.place_forget()
-            except:return
-        else:
-            tv.bind('<ButtonRelease-1>', lambda _ : print(""))
-            threading.Thread(target=khoiphuc_dd).start()
-        loadding(0)
+                f.place(x=330,y=440)
+            except:print("Đã tạo frame rồi")
+            if (str(item['values'][6])=="Chưa điểm danh"):
+                messagebox.showwarning("Thông báo","Chưa điểm danh")
+                try:
+                    f.place_forget()
+                except:return
+            else:
+                threading.Thread(target=khoiphuc_dd).start()
+            loadding(0)
+        except:loadding(0)
 
     def load_bang_tkb(row):
         tv.delete(*tv.get_children())
@@ -146,6 +150,7 @@ def main():
         loadding(0)
 
     def load_bang_diemdanh(row):
+        tam.set(1)
         tb.delete(*tb.get_children())
         global dem
         dem = 0
@@ -155,6 +160,7 @@ def main():
                 tb.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
             else:tb.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
             dem += 1
+            if tam.get() == str(0): break
         loadding(0)
 
     def loaddl():
@@ -163,7 +169,12 @@ def main():
         tengv.set(tengv_email(d[0]))
         magv.set(magv_email(d[0]))
         lbgv.config(text=tengv.get())
-        lop=tkb.lop_khoa(makhoa.get())
+        global quyen
+        quyen = khoa_co_quyen_all(makhoa.get())
+        if quyen == str(1):
+            lop = tkb.all_lop()
+        else:
+            lop = tkb.lop_khoa(makhoa.get())
         namhoc=tkb.namhoc()
         #set cho combobox to
         cblop.config(values=lop)
@@ -172,7 +183,6 @@ def main():
         cbnam.current(0)
         threading.Thread(target=loadbang).start()
         
-
     def capnhatbang(event):
         fr_dd.place_forget()
         event.widget.get()
@@ -315,6 +325,7 @@ def main():
     global nen_dd
     # value cho combobox 
     hocky=[1,2]
+    tam=StringVar()
 
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=38)

@@ -8,6 +8,7 @@ db=conect_firebase.connect().database()
 # https://qastack.vn/programming/2405292/how-to-check-if-text-is-empty-spaces-tabs-newlines-in-python
 # kt chuooix chir cos khoangr troongs
 
+
 def cahoc():
     time = datetime.datetime.now()
     now = time.strftime("%H:%M:%S")
@@ -36,9 +37,17 @@ def cong_them_gio(now):
     return d[1]
 def tru_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 - datetime.timedelta(hours=8)
+    d=d1 - datetime.timedelta(hours=3)
     d=str(d).split()
     return d[1]
+
+def cong_ngay(ngay):
+    d1 = datetime.datetime.strptime(ngay, "%d/%m/%Y")
+    d=d1 + datetime.timedelta(days=180)
+    d=str(d).split()
+    return d[0]
+
+
 
 def khoang_tgvao(tenca):
     time = datetime.datetime.now()
@@ -91,6 +100,51 @@ def diem_danh_vao_csdl(matkb,masv,thongtin,malop,mamh,magv,ngay,ca,tgvao):
         return True
     except:
         return False
+def hen_ngay_xoa_du_lieu(matkb,ngay):
+    ngay=cong_ngay(ngay).split("-")
+    a=str(ngay[2])+"/"+str(ngay[1])+"/"+str(ngay[0])
+    data = {'Ma':str(matkb),'Ngay':str(a)}
+    try:
+        db.child('NgayXoaDL').push(data)
+        return True
+    except:
+        return False
+
+def xoa_dl_diemdanh(ma):
+    try:
+        data=db.child('DiemDanh').order_by_child('Ma').equal_to(str(ma)).get()
+        for i in data.each():
+            if  i.val()["Ma"] == str(ma):
+                db.child('DiemDanh').child(i.key()).remove()
+                return True
+    except:return False
+def xoa_dl_tkb(ma):
+    data=db.child('ThoiKhoaBieu').order_by_child('MaTKB').equal_to(str(ma)).get()
+    for i in data.each():
+        print("xoá in tkb")
+        if  i.val()["MaTKB"] == str(ma):
+            db.child('ThoiKhoaBieu').child(i.key()).remove()
+            return True
+
+
+def tra_dl_diemdanh(ngay):
+    data=db.child('NgayXoaDL').get()
+    for i in data.each():
+        date1 = datetime.datetime.strptime(str(ngay), '%d/%m/%Y')
+        date2 = datetime.datetime.strptime(str(i.val()["Ngay"]), '%d/%m/%Y')
+        if date1 >= date2:
+            if xoa_dl_diemdanh(str(i.val()['Ma'])) ==True and  xoa_dl_tkb(str(i.val()['Ma']))==True:
+                db.child('NgayXoaDL').child(i.key()).remove()
+                return True
+
+def kt_hen_ngay_xoa(matkb):
+    try:
+        data=db.child('NgayXoaDL').order_by_child('Ma').equal_to(str(matkb)).get()
+        for i in data.each():
+            if i.val()['Ma']==str(matkb):
+                return True
+            else:return False
+    except:return False
 
 def update_TT_diemdanh(ma):
     data=db.child("ThoiKhoaBieu").get()
@@ -102,6 +156,24 @@ def update_TT_diemdanh(ma):
                 return True
             except:
                 return False
+# def capnhatthongtin(ma,masv):
+#     data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+#     dl={'ThongTin':'vắng'}
+#     for i in data.each():
+#         if(i.val()["Ma"]==str(ma) and i.val()["MaSV"] == str(masv)):
+#             try:
+#                 db.child("DiemDanh").child(i.key()).update(dl)
+#             except:
+#                 print('Lỗi update của hàm capnhatthongtin trong dl_diemdanh')
+
+def kiemtrathongtin(ma):
+    dl={'ThongTin':'vắng'}
+    try:
+        data = db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        for i in data.each():
+            if i.val()["TG_Vao"]==str("") or i.val()["TG_Ra"]==str(""):
+                db.child("DiemDanh").child(i.key()).update(dl)
+    except:print('Lỗi kiemtrathongtin trong dl_diemdanh')
 
 def bangdiemdanh(ma):
     a=[]
@@ -115,6 +187,19 @@ def bangdiemdanh(ma):
                 stt +=1
     except:
         a=[]
+    return a
+def bangdiemdanh1(ma,malop):
+    a=[]
+    stt=1
+
+    data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+    for i in data.each():
+        if(i.val()["Ma"]==str(ma) and i.val()["MaLop"] ==str(malop)):
+            e=[stt,i.val()["MaSV"],i.val()["MaSV"] ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+            a.append(e)
+            stt +=1
+
+        
     return a
 
 def dd_sv_vao(ma):
@@ -155,6 +240,16 @@ def sv_da_dd_vao(ma):
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if i.val()["Ma"]==str(ma) and i.val()["TG_Vao"] != "":
+                a.append(i.val()["MaSV"])
+    except:
+        a=[]
+    return a
+def sv_da_dd_vao1(ma,malop):
+    a=[]
+    try:
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        for i in data.each():
+            if i.val()["Ma"]==str(ma) and i.val()["TG_Vao"] != "" and i.val()['MaLop']==str(malop):
                 a.append(i.val()["MaSV"])
     except:
         a=[]
@@ -207,13 +302,20 @@ def timkiem_dd(ma,q):
 def capnhat_tgra(matkb,masv,tgra):
     data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(matkb)).get()
     dl={'TG_Ra':str(tgra)}
+    dl1={'TG_Ra':str(tgra),'ThongTin':str('Vắng')}
     for i in data.each():
-        if(i.val()["Ma"]==str(matkb) and i.val()["MaSV"]==str(masv)):
+        if(i.val()["Ma"] == str(matkb) and i.val()["MaSV"] == str(masv) and i.val()["TG_Vao"] == str("")):
+            try:
+                db.child("DiemDanh").child(i.key()).update(dl1)
+            except:
+                print('Lỗi do capnhat_tgra trong dl_diemdanh')
+        elif i.val()["Ma"] == str(matkb) and i.val()["MaSV"] == str(masv):
             try:
                 db.child("DiemDanh").child(i.key()).update(dl)
-                return True
             except:
-                return False
+                print('Lỗi do capnhat_tgra trong dl_diemdanh')
+        
+
 def capnhat_tgvao(matkb,masv,tgvao,tt):
     data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(matkb)).get()
     dl={'TG_Vao':str(tgvao), 'ThongTin':str(tt)}
@@ -225,7 +327,6 @@ def capnhat_tgvao(matkb,masv,tgvao,tt):
             except:
                 return False
     
-
 def xoasv_dd(matkb,masv):
     try:
         data=db.child("DiemDanh").get()

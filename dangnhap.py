@@ -16,15 +16,22 @@ import quantrivien_khoa
 import doimatkhau
 from kt_nhap import khong_dau
 from backend.dl_giangvien import makhoa_email
+from backend.dl_khoa import khoa_co_quyen_all
+from backend.dl_tkb import all_lop
+import threading
 
 
 
 def main():
     def taifilemahoa(makhoa):
-        lop=lop_khoa(makhoa)
+        quyen = khoa_co_quyen_all(makhoa)
+        if quyen == str(1):
+            lop=all_lop()
+        else:
+            lop=lop_khoa(makhoa)
         for i in lop:
-            tenlop=khong_dau(i)
-            download_filemahoa(tenlop)
+                tenlop=khong_dau(i)
+                threading.Thread(target=download_filemahoa,args=(tenlop,)).start()
 
     def doimk():
         win.destroy()

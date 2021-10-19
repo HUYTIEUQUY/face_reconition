@@ -113,6 +113,18 @@ def bangdd_ma(ma):
                 stt+=1
     except:a=[]
     return a
+def bangdd_ma_tkblop(ma,malop):
+    a=[]
+    stt=1
+    try:
+        data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
+        for i in data.each():
+            if i.val()["Ma"]== str(ma) and i.val()["MaLop"]== str(malop):
+                e=[stt,i.val()["MaSV"],i.val()["MaSV"], i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
+                a.append(e)
+                stt+=1
+    except:a=[]
+    return a
 
 def tim_tk(magv,malop,mamh,ngay,ca,q):
     a=[]

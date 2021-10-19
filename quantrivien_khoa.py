@@ -6,9 +6,8 @@ from PIL import ImageTk
 from tkinter import messagebox
 import dangnhap
 import socket
-import quantrivien_khoa
 from backend.dl_giangvien import tengv_email
-from backend.dl_khoa import sl_khoa 
+from backend.dl_khoa import sl_khoa ,khoa_co_quyen_all
 import backend.dl_khoa as khoa
 import quantrivien_thongke
 import quantrivien_thietlap
@@ -90,6 +89,7 @@ def main():
 
     def xoa():
         loadding(1)
+
         if tenkhoa.get() == "":
             messagebox.showwarning("thông báo","Hãy chọn dòng trong bảng phía dưới để xoá")
         elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
@@ -99,10 +99,18 @@ def main():
             for i in x:
                 listma.append(tv.item(i,'values')[1])
             for i in listma:
-                if khoa.kt_lop_in_khoa(i) == False:
+                quyen = khoa_co_quyen_all(makhoa.get())
+
+                if quyen == str(1) and khoa.kt_gv_in_khoa(i) == []:
                     if khoa.xoakhoa(i)==True:
-                        threading.Thread(target=khoa.xoa_tk,args=(i)).start()
-                        threading.Thread(target=khoa.xoakhoa_bgv,args=(i)).start()
+                        threading.Thread(target=khoa.xoa_tk,args=(i,)).start()
+                        threading.Thread(target=khoa.xoakhoa_bgv,args=(i,)).start()
+                    else: 
+                        messagebox.showerror("thông báo","Lỗi")
+                elif quyen != str(1) and (khoa.kt_lop_in_khoa(i) == [] or khoa.kt_gv_in_khoa(i) == []):
+                    if khoa.xoakhoa(i)==True:
+                        threading.Thread(target=khoa.xoa_tk,args=(i,)).start()
+                        threading.Thread(target=khoa.xoakhoa_bgv,args=(i,)).start()
                     else: 
                         messagebox.showerror("thông báo","Lỗi")
                 else: ko_xoa.append(i)
@@ -149,6 +157,10 @@ def main():
         makhoa.set(item['values'][1])
         email.set(item['values'][3])
         emailcu.set(item['values'][3])
+        if str(item['values'][4]) == str(1):
+            option.set(1)
+        else:
+            option.set(0)
 
     def khoiphuc():
         ndtimkiem.set("")

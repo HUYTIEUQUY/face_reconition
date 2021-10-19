@@ -119,7 +119,8 @@ def main():
     def timkiem():
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
-        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),ndtimkiem.get())
+        gv= tkb.magv_ten(data_gv.get())
+        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv,ndtimkiem.get())
         update(tv,row)
 
     def kt_lich_gv(magv, ngay, ca,matkb):
