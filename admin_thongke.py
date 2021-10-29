@@ -40,16 +40,18 @@ def main():
 
 
     def dongluu(row,ma,ten,tt,TG,TGra,ghichu):
+
         for i in row:
             ma.append(i[1]) 
-            ten.append(i[2]) 
-            tt.append(i[2]) 
+            ten.append(tensv_ma(i[2]))
+            tt.append(i[3]) 
             TG.append(i[4]) 
             TGra.append(i[5]) 
             ghichu.append(i[6]) 
 
     def xuat_excel():
         row=tk.bangdd_ma(matkb.get())
+        print(row)
         ma=[]
         ten=[]
         tt=[]
@@ -58,42 +60,42 @@ def main():
         ghichu=[]
         dongluu(row,ma,ten,tt,TG,TGra,ghichu)
 
-        if len(ma) < 1:
-            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
-            return False
-        else:
-            try:
-                fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-            except: print("")
-            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
-            outsheet = out_workbook.add_worksheet()
-            tenlop=data_lop.get()
-            mh=tenmh.get()
-            outsheet.write("A1","Tên lớp: "+tenlop)
-            outsheet.write("B1","Môn học: "+mh)
-            outsheet.write("C1","Ngày: "+ngay.get())
+        # if len(ma) < 1:
+        #     messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+        #     return False
+        # else:
+        #     try:
+        #         fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+        #     except: print("")
+        #     out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+        #     outsheet = out_workbook.add_worksheet()
+        #     tenlop=data_lop.get()
+        #     mh=tenmh.get()
+        #     outsheet.write("A1","Tên lớp: "+tenlop)
+        #     outsheet.write("B1","Môn học: "+mh)
+        #     outsheet.write("C1","Ngày: "+ngay.get())
 
-            outsheet.write("A3","Mã sinh viên")
-            outsheet.write("B3","Tên sinh viên")
-            outsheet.write("C3","Thông tin")
-            outsheet.write("D3","Thời gian vào")
-            outsheet.write("E3","Thời gian ra")
-            outsheet.write("F3","Ghi chú")
-            def write_data_to_file(array,x):
-                for i in range(len(array)):
-                    outsheet.write(i+3,x,array[i])
-            write_data_to_file(ma,0)
-            write_data_to_file(ten,1)
-            write_data_to_file(tt,2)
-            write_data_to_file(TG,3)
-            write_data_to_file(TGra,4)
-            write_data_to_file(ghichu,5)
-            out_workbook.close()
+        #     outsheet.write("A3","Mã sinh viên")
+        #     outsheet.write("B3","Tên sinh viên")
+        #     outsheet.write("C3","Thông tin")
+        #     outsheet.write("D3","Thời gian vào")
+        #     outsheet.write("E3","Thời gian ra")
+        #     outsheet.write("F3","Ghi chú")
+        #     def write_data_to_file(array,x):
+        #         for i in range(len(array)):
+        #             outsheet.write(i+3,x,array[i])
+        #     write_data_to_file(ma,0)
+        #     write_data_to_file(ten,1)
+        #     write_data_to_file(tt,2)
+        #     write_data_to_file(TG,3)
+        #     write_data_to_file(TGra,4)
+        #     write_data_to_file(ghichu,5)
+        #     out_workbook.close()
 
     def timkiem():
         malop = malop_ten(data_lop.get())
-        # namhoc = tkb.manh_ten(data_namhoc.get())
-        # gv = magv_ten(data_gv.get())
+        namhoc = tkb.manh_ten(data_namhoc.get())
+        gv = magv_ten(data_gv.get())
         row=tkb.timkiem_dong_tkb(matkb.get(),malop, ndtimkiem.get())
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")

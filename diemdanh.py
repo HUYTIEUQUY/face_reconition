@@ -27,8 +27,8 @@ import threading
 # from speak import speak
 import thietlap
 from kt_nhap import khong_dau
-from uploadfile import download_filemahoa,load
-from styletable import style
+from uploadfile import download_filemahoa, load
+from styletable import style, update
 import eye
 import dlib
 from time import strftime
@@ -46,9 +46,10 @@ def main():
 
     def timkiem():
         row=diemdanh.timkiem_dd(matkb.get(),ndtimkiem.get())
-        update(row)
+        update(tv,row)
         loadding(1)
         btnkhoiphuc['state']='normal'
+
     def khoiphuc():
         loadding(1)
         ndtimkiem.set("")
@@ -56,10 +57,10 @@ def main():
             malop=malop_ten(data_lop.get())
             row=diemdanh.bangdiemdanh1(matkb.get(),malop)
         else:row=diemdanh.bangdiemdanh(matkb.get())
-        update(row)
+        capnhatbang(row)
         loadding(0)
     
-    def update(row):
+    def capnhatbang(row):
         tv.delete(*tv.get_children())
         global dem
         dem=0
@@ -217,6 +218,8 @@ def main():
             # diemdanh.xoasv_dd(ma,name)
             threading.Thread(target=diemdanh.capnhat_tgvao,args=(ma,name,now,"có")).start()
             sv_da_vao.append(name)
+            threading.Thread(target=gananh_khi_click,args=(name,now)).start()
+        else:
             threading.Thread(target=gananh_khi_click,args=(name,now)).start()
         
 

@@ -133,6 +133,7 @@ def main():
         macu.set("")
         ma.set("")
         ten.set("")
+        ndtimkiem.set("")
         malop=malop_ten(cb_lop.get())
         row=sv.bangsv(malop)
         update(row)
@@ -333,6 +334,7 @@ def main():
 
 
     def themdlkhuonmat():
+        soanh=5
         anh=""
         id=txt_masv.get()
         name=xoa_khoangcach(txt_hoten.get())
@@ -362,7 +364,7 @@ def main():
             f.close()
         except:
             embed_dictt={}
-        key = cv2. waitKey(1)
+    
         for i in range(5):
             key = cv2. waitKey(1)
             try:
@@ -400,12 +402,12 @@ def main():
                             cv2.destroyAllWindows()
                             break
                         else:
-                            webcam.release()
-                            cv2.destroyAllWindows()
+                            
+                            
                             break
                     except: print("lỗi")
                     
-            if key == ord('q'):
+            if cv2.waitKey(1) &0xFF == ord('q'):
                 webcam.release()
                 cv2.destroyAllWindows()
                 break

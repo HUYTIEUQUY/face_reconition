@@ -266,7 +266,7 @@ def main():
     lbtk=Label(bg,font=("Baloo Tamma 2 Medium",10),width=42,height=1,fg="black",bg="white",justify='center')
     lbtk.place(x=580,y=61)
     
-    entry_lop=Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,bd=0,highlightthickness=0)
+    entry_lop=Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,justify="center",bd=0,highlightthickness=0)
     entry_lop.place(x=585,y=98)
     
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
@@ -285,7 +285,7 @@ def main():
     tv.column('#0', width=0, stretch='no')
     tv.column(1, width=120,anchor=CENTER)
     tv.column(2, width=120,anchor=CENTER)
-    tv.column(3, width=300)
+    tv.column(3, width=320)
 
     tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="SỐ THỨ TỰ")

@@ -59,7 +59,7 @@ def themsv(masv,tensv,malop,anh):
 def bangsv(malop):
     a=[]
     stt=1
-    data=db.child("SinhVien").order_by_child("MaLop").equal_to(str(malop)).get()
+    data=db.child("SinhVien").order_by_child("MaSV").get()
     try:
         for i in data.each():
             if(i.val()["MaLop"]==str(malop)):
@@ -68,6 +68,7 @@ def bangsv(malop):
                 stt=stt+1
     except: a=[]
     return a
+    
 
 
 def ds_ma_sv(malop):
@@ -109,6 +110,7 @@ def suasv(masv,tensv):
                 return True
             except:
                 return False
+
 def suaanh(anh,id):
     data=db.child("SinhVien").get()
     dl={'Anh':str(anh)}

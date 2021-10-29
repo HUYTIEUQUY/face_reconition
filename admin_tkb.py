@@ -119,7 +119,7 @@ def main():
     def timkiem():
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
-        gv= tkb.magv_ten(data_gv.get())
+        gv= magv_ten(data_gv.get())
         row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv,ndtimkiem.get())
         update(tv,row)
 
@@ -392,7 +392,7 @@ def main():
     Frame(bg,width=3,height=30,bg="white").place(x=680,y=169)
     Frame(bg,width=255,height=2,bg="white").place(x=680,y=199)
 
-    cblop = Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=33)
+    cblop = Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=33)
     cblop.bind('<<ComboboxSelected>>', capnhatbang)
     cblop.place(x=847,y=45)
     Frame(bg,width=320,height=2,bg="white").place(x=847,y=45)

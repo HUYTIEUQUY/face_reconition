@@ -16,7 +16,7 @@ import backend.dl_giangvien as gv
 from backend.dl_giangvien import email_ma, tengv_email,makhoa_email
 import threading
 import kt_nhap as kt
-from styletable import style
+from styletable import style, update
 
 def main():
 
@@ -46,24 +46,7 @@ def main():
         makhoa.set(makhoa_email(d[0]))
         tengv.set(tengv_email(d[0]))
         lbgv.config(text=tengv.get())
-        khoiphuc()
-
-
-    def update(row):
-        tv.delete(*tv.get_children())
-        global dem
-        dem=0
-        for i in row:
-            if dem%2==0 and str(i[5])!=str("\n"):
-                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow_ghichu'))
-            elif dem%2!=0 and str(i[5])!=str("\n"):
-                tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow_ghichu'))
-            elif dem%2==0:
-                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
-            else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
-            dem += 1
-
-    
+        khoiphuc()    
 
     def khoiphuc():
         loadding(1)
@@ -75,7 +58,7 @@ def main():
         data_sdt.set("")
         data_ghichu.set("")
         row=gv.banggv(makhoa.get())
-        update(row)
+        update(tv,row)
         try:
             trolai()
         except:return
@@ -183,7 +166,7 @@ def main():
     def timkiem():
         loadding(1)
         row=gv.tim_gv(makhoa.get(),ndtimkiem.get())
-        update(row)
+        update(tv,row)
         loadding(0)
 
     def xem_ghichu():
@@ -345,10 +328,8 @@ def main():
     tv.pack()
     tree_scroll.config(command=tv.yview)
     tv.bind('<ButtonRelease-1>', getrow)
-    tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Regular",10))
-    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Regular",10))
-    tv.tag_configure("ollrow_ghichu" ,background="white", font=("Baloo Tamma 2 Medium",10))
-    tv.tag_configure("evenrow_ghichu" ,background="#ECECEC",foreground="red",font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("ollrow" ,background="#ECECEC",foreground="red",font=("Baloo Tamma 2 Medium",10))
     
     frame_ghichu=Frame(bg,background="#E8DFF1")
     frame_ghichu.place(x=357,y=5)
