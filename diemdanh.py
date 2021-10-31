@@ -21,7 +21,7 @@ from backend.dl_monhoc import mamh_ten
 from backend.dl_sinhvien import ds_ma_sv, lop_khoa, tensv_ma,malop_masv
 import numpy as np
 from tkinter import ttk
-from datetime import datetime 
+from datetime import datetime
 import re
 import threading
 # from speak import speak
@@ -221,8 +221,6 @@ def main():
             threading.Thread(target=gananh_khi_click,args=(name,now)).start()
         else:
             threading.Thread(target=gananh_khi_click,args=(name,now)).start()
-        
-
     def xulyra(ma,name):
         now = datetime.now()
         now=now.strftime("%X")
@@ -346,7 +344,6 @@ def main():
             except:return
             luong(batdaudiemdanh)
             messagebox.showinfo("thông báo","Hãy đợi camera trong vài giây ...")
-            
         try:
             lb1.pack()
             lb2.pack()
@@ -361,7 +358,11 @@ def main():
         elif diemdanh.khoang_tgra(catkb[vt])==False:
             messagebox.showwarning("thông báo","Chưa đến thời gian điểm danh ra")
         else:
-            
+            for i in range(0,len(a)):
+                if a[i] not in dd:
+                    malop=malop_masv(a[i])
+                    dd.append(a[i])
+                    threading.Thread(target = diemdanh.diem_danh_vao_csdl, args = (matkb.get(),a[i],"vắng",str(malop),mamh,magv,ngay,ca,"")).start()
             tudong.set(str(1))
             try:
                 luong(tudong_capnhat)
@@ -400,6 +401,7 @@ def main():
             btndiemdanh["state"] = "normal"
     
     def gananh_khi_click(masv,tgra):
+        f2.place(x=838,y=80)
         anh=str(masv)+"1.png"
         if(anh==""):
             img=Image.open("img_anhsv/aa.jpg")
@@ -601,7 +603,8 @@ def main():
     tg.place(x=365,y=2)
     lock()
     f2=Frame(bg,background="#FCE2E9")
-    f2.place(x=838,y=80)
+    
+
     lb1=Label(f2,background="#FCE2E9")
     lb1.pack()
     lb2=Label(f2,background="#FCE2E9")

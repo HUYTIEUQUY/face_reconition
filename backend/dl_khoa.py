@@ -4,6 +4,7 @@ import conect_firebase
 from firebase_admin import auth
 from firebase_admin import credentials
 import firebase_admin
+from send_message import gmail_login
 
 
 
@@ -67,9 +68,9 @@ def themkhoa(makhoa, tenkhoa,emailkhoa,quyen):
     except:
         return False
 
-def suakhoa(makhoa,tenkhoa):
+def suakhoa(makhoa,tenkhoa,quyen):
     data=db.child("Khoa").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
-    dl={'TenKhoa':tenkhoa}
+    dl={'TenKhoa':str(tenkhoa),'Quyen':str(quyen)}
     for i in data.each():
         try:
             db.child("Khoa").child(i.key()).update(dl)
@@ -112,12 +113,12 @@ def xoa_tk(i):
     auth.delete_user(a.uid)
 
 
-def kt_tenkhoa(tenkhoa):
-    data=db.child("Khoa").get()
+def kt_tenkhoa(makhoa,tenkhoa):
+    data=db.child("Khoa").order_by_child("TenKhoa").equal_to(str(tenkhoa)).get()
     a=[]
     try:
         for i in data.each():
-            if(i.val()["TenKhoa"]==str(tenkhoa)):
+            if(i.val()["TenKhoa"]==str(tenkhoa) and i.val()["MaKhoa"] != str(makhoa)):
                 a.append(i.val())
     except:a=[]
     return a
@@ -161,6 +162,7 @@ def tao_tk(email,matkhau):
 
 def them_tk_khoa(tengv,email,makhoa):
     if tao_tk(email,"123456"):
+        gmail_login(email,"123456",1)
         data={'MaGV':str(makhoa), 'TenGV':str(tengv),'Email':str(email),'LoaiTK':"1","MaKhoa":str(makhoa),'GhiChu':"",'SDT':""}
         try:
             db.child('GiangVien').push(data)

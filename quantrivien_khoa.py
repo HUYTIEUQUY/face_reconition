@@ -36,7 +36,7 @@ def main():
         loadding(0)
 
     def kt_email(email):
-        if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
+        if (email[len(email)-11:len(email)] =='@mku.edu.vn' or email[len(email)-10:len(email)] == '@gmail.com') and email[0] != '@':
             return True
         else:
             return False
@@ -56,7 +56,7 @@ def main():
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
         elif kt_email(email.get()) == False or kt.kt_dau_khoangcach(e)== False or kt.kt_dau_khoangcach_email(e) != -1 :
             messagebox.showwarning("thông báo","email không hợp lệ\n\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn'")
-        elif khoa.kt_tenkhoa(ten)!= []:
+        elif khoa.kt_tenkhoa(makhoa,ten)!= []:
             messagebox.showerror("thông báo",ten +" đã tồn tại")
         elif messagebox.askyesno("thông báo","Hãy kiểm tra kỹ email vì không thể sửa đổi khi đã tạo tài khoản."):
             e=e.strip()
@@ -128,6 +128,7 @@ def main():
         loadding(1)
         tenmoi=tenkhoa.get()
         makhoa1=makhoa.get()
+        q = option.get()
         if tenmoi=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
         elif makhoa.get() == "":
@@ -140,11 +141,11 @@ def main():
             messagebox.showwarning("thông báo","Email không hợp lệ\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn' ")
         elif kt.kt_dau_khoangcach(tenmoi)== False or kt.kt_kitudacbiet(tenmoi) != "":
             messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
-        elif khoa.kt_tenkhoa(tenmoi)!= []:
+        elif khoa.kt_tenkhoa(makhoa1,tenmoi)!= []:
             messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
         else:
-            khoa.suakhoa(makhoa1,tenmoi)
-            messagebox.showinfo("thông báo","Đã đổi tên khoa thành công")
+            khoa.suakhoa(makhoa1,tenmoi,q)
+            messagebox.showinfo("thông báo","Đã cập nhật thông tin khoa thành công")
             khoiphuc()
         loadding(0)
             
@@ -168,6 +169,8 @@ def main():
         email.set("")
         row=khoa.bangkhoa()
         update(tv,row)
+        option.set(0)
+
 
     def timkiem():
         row=khoa.timkhoa(ndtimkiem.get())
@@ -245,13 +248,13 @@ def main():
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=185)
-    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
+    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0, command=sua)
     btnsua.place(x=637,y=185)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=185)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground="white",command=timkiem)
     btntimkiem.place(x=881,y=245)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground="white",command=khoiphuc,bg="white")
     btnkhoiphuc.place(x=920,y=245)
     
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",13),fg="#A672BB",bg="white")
@@ -289,8 +292,8 @@ def main():
     tv.pack()
     tree_scroll.config(command=tv.yview)
     tv.bind('<ButtonRelease-1>', getrow)
-    tv.tag_configure("ollrow" ,background="white")
-    tv.tag_configure("evenrow" ,background="#ECECEC")
+    tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
+    tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#E7DFF1",fg="#AD7B98", width=12)
     loadding(1)
     threading.Thread(target=loaddl).start()

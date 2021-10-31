@@ -1,7 +1,7 @@
 import cv2
 import dlib
 import math
-from speak import speak
+# from speak import speak
 BLINK_RATIO_THRESHOLD = 5.7
 import time
 

@@ -1,11 +1,11 @@
 import conect_firebase
-
-auth=conect_firebase.connect().auth()
-db=conect_firebase.connect().database()
-
+try:
+    auth=conect_firebase.connect().auth()
+    db=conect_firebase.connect().database()
+except: print("Không có kết nối mạng")
 def xacthuc(email,matkhau):
     try:
-        auth.sign_in_with_email_and_password(email, matkhau)
+        tk=auth.sign_in_with_email_and_password(email, matkhau)
         return True
     except:
         return False

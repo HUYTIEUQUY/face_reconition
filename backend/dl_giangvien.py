@@ -6,6 +6,7 @@ from firebase_admin import credentials
 from kt_nhap import khong_dau
 import backend.dl_khoa 
 db=conect_firebase.connect().database()
+from send_message import gmail_login
 
 
 
@@ -58,6 +59,7 @@ def tao_tk(email,matkhau):
 
 def themgv(magv,tengv,email,sdt,ghichu,makhoa):
     if tao_tk(email,str(magv)):
+        gmail_login(email,magv,0)
         data={'MaGV':str(magv), 'TenGV':str(tengv),'Email':str(email),'SDT':str(sdt),'GhiChu':str(ghichu),'LoaiTK':"0","MaKhoa":str(makhoa)}
         try:
             db.child('GiangVien').push(data)

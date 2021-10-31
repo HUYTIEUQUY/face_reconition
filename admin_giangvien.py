@@ -65,7 +65,7 @@ def main():
         loadding(0)
 
     def kt_email(email):
-        if email[len(email)-11:len(email)] == '@mku.edu.vn' and email[0] != '@':
+        if (email[len(email)-11:len(email)] == '@mku.edu.vn' or email[len(email)-10:len(email)] == '@gmail.com') and email[0] != '@':
             return True
         else:
             return False

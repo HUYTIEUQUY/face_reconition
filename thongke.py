@@ -28,7 +28,7 @@ def main():
 
     def loadding(a):
         if a == 1:# đang load dữ liệu
-            lb_loadding.place(x=290,y=7)
+            lb_loadding.place(x=290,y=4)
             btndangxuat["state"] = "disabled"
             btnkhoiphuc["state"] = "disabled"
             btntimkiem["state"] = "disabled"

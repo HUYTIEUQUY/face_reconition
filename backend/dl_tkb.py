@@ -4,6 +4,8 @@ from backend.dl_monhoc import tenmh_ma
 import re
 from kt_nhap import khong_dau
 import datetime
+import threading
+import time
 db=conect_firebase.connect().database()
 
 def lop_khoa(ma):
@@ -55,17 +57,98 @@ def manh_ten(ten):
 
 def them_tkb(magv,mamh,loai,ngay,ca,malop,hki,nam):
     ma=matkb()
+    
     data={'MaTKB':str(ma),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
     try:
         db.child('ThoiKhoaBieu').push(data)
+        threading.Thread(target=cong_so_tiet,args=(malop,mamh,loai,ca,)).start()
         return True
     except:
         return False
+
+
+def sotiet_cahoc(ca):
+    sotiet=0
+    try:
+        for i in ca:
+            k=db.child('CaHoc').order_by_child("TenCa").equal_to(str(i)).get()
+            tgbd=k[0].val()['TGBD']
+            tgkt=k[0].val()['TGKT']
+            format = '%H:%M:%S'
+            stiet=datetime.datetime.strptime(tgkt, format) - datetime.datetime.strptime(tgbd, format)
+            stiet=str(stiet).split(':')
+            so = (int(stiet[0])*60+int(stiet[1])) / 50
+            sotiet +=int(so)
+        return sotiet
+    except:return 0
+
+def sotietdahoc(malop,mamh,loai):
+    if loai=="Lý thuyết":
+        l="LT"
+    else:
+        l="TH"
+    try:
+        data=db.child('SoTietDaHoc').order_by_child("Ma").equal_to(str(malop)+str(mamh)+str(l)).get()
+        return data[0].val()['SoTiet']
+    except:return 0
+        
+
+def cong_so_tiet(malop,mamh,loai,ca):
+    sotietdahoc=0
+    sotietthem=sotiet_cahoc(ca)
+    
+    if loai=="Lý thuyết":
+        l="LT"
+    else:
+        l="TH"
+
+    data=db.child('SoTietDaHoc').order_by_child("Ma").equal_to(str(malop)+str(mamh)+str(l)).get()
+    if data.val()!=[]:
+        sotietdahoc=int(data[0].val()['SoTiet'])+sotietthem
+        info={'MaLop':str(malop),'MaMH':str(mamh),'PP_Giang':str(loai),'SoTiet':str(sotietdahoc)}
+        db.child('SoTietDaHoc').child(data[0].key()).update(info)
+    else:
+        info={'Ma':str(malop)+str(mamh)+l,'MaMH':str(mamh),'MaLop':str(malop),'MaMH':str(mamh),'PP_Giang':str(loai),'SoTiet':str(sotietthem)}
+        db.child('SoTietDaHoc').push(info)
+
+def tru_so_tiet(malop,mamh,loai,ca):
+    sotietdahoc=0
+    sotiettru=sotiet_cahoc(ca)
+    
+    if loai=="Lý thuyết":
+        l="LT"
+    else:
+        l="TH"
+
+    data=db.child('SoTietDaHoc').order_by_child("Ma").equal_to(str(malop)+str(mamh)+str(l)).get()
+    if data.val()!=[]:
+        sotietdahoc=int(data[0].val()['SoTiet'])-sotiettru
+        if sotietdahoc != str("0"):
+            info={'MaLop':str(malop),'MaMH':str(mamh),'PP_Giang':str(loai),'SoTiet':str(sotietdahoc)}
+            db.child('SoTietDaHoc').child(data[0].key()).update(info)
+        else:
+            db.child('SoTietDaHoc').child(data[0].key()).remove()
+
+
+
+def SoTietCuaMH(mamh,loai):
+    data=db.child('MonHoc').order_by_child("MaMH").equal_to(str(mamh)).get()
+    for i in data.each():
+        if i.val()["MaMH"] == str(mamh) and loai=="Lý thuyết":
+            sotiet=int(i.val()['SoTietLyThuyet'])
+            return sotiet
+        else:
+            sotiet=int(i.val()['SoTietThucHanh'])
+            return sotiet
+
+
+
 def them_tkb1(ma,magv,mamh,loai,ngay,ca,malop,hki,nam):
     
     data={'MaTKB':str(ma),'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
     try:
         db.child('ThoiKhoaBieu').push(data)
+        threading.Thread(target=cong_so_tiet,args=(malop,mamh,loai,ca,)).start()
         return True
     except:
         return False
@@ -76,9 +159,15 @@ def sua_tkb(matkb,magv,mamh,loai,ngay,ca,malop,hki,nam):
         for i in root.each():
             if i.val()["MaTKB"] == str(matkb):
                 db.child('ThoiKhoaBieu').child(i.key()).update(data)
+                if i.val()["PP_Giang"] == "Lý thuyết":
+                    loai="LT"
+                else: loai="TH"
+                threading.Thread(target=capnhat_tietdahoc,args=(str(i.val()["MaLop"]),str(i.val()["MaMH"]),loai,str(i.val()["Ca"]),malop,mamh,loai,ca,)).start()
         return True
     except:
         return False
+
+
 def sua_tkb1(matkb,magv,mamh,loai,ngay,ca,malop,hki,nam):
     data={'MaGV':str(magv),'MaMH':str(mamh),'PP_Giang':str(loai),'Ngay':str(ngay),'Ca':str(ca),'MaLop':str(malop),'HocKy':str(hki),'NamHoc':str(nam),'TrangThaiDD':"0"}
     try:
@@ -86,9 +175,44 @@ def sua_tkb1(matkb,magv,mamh,loai,ngay,ca,malop,hki,nam):
         for i in root.each():
             if i.val()["MaTKB"] == str(matkb) and i.val()["MaLop"] == str(malop):
                 db.child('ThoiKhoaBieu').child(i.key()).update(data)
+                if i.val()["PP_Giang"] == "Lý thuyết":
+                    loai="LT"
+                else: loai="TH"
+                threading.Thread(target=capnhat_tietdahoc,args=(str(i.val()["MaLop"]),str(i.val()["MaMH"]),loai,str(i.val()["Ca"]),malop,mamh,loai,ca,)).start()
         return True
     except:
         return False
+
+def capnhat_tietdahoc(malop_c,mamh_c,loai_c,ca_c, malop_m,mamh_m,loai_m,ca_m):
+    mam = malop_m+mamh_m+loai_m
+    mac = malop_c+mamh_c+loai_c
+    
+
+    sotiet_camoi = sotiet_cahoc(ca_m)
+    sotiet_cacu = sotiet_cahoc(ca_c)
+    print("So tiet ca cu"+str(sotiet_cacu))
+    print("So tiet ca moi"+str(sotiet_camoi))
+    if mam == mac:
+        if int(sotiet_camoi) > int(sotiet_cacu):
+            sotiet=sotiet_camoi-sotiet_cacu
+            update_stdh(mam,sotiet,"cong")
+        elif  int(sotiet_camoi) < int(sotiet_cacu):
+            sotiet=sotiet_cacu-sotiet_camoi
+            update_stdh(mam,sotiet,"tru")
+    else :
+        cong_so_tiet(malop_m,mamh_m,loai_m,ca_m)
+        tru_so_tiet( malop_c,mamh_c,loai_c,ca_c)
+
+def update_stdh(ma,sotiet,pheptinh):
+    data = db.child('SoTietDaHoc').order_by_child("Ma").equal_to(ma).get()
+    if data.val()!=[]:
+        print(pheptinh=="cong")
+        if pheptinh=="cong":
+            sotietdahoc=int(data[0].val()['SoTiet'])+int(sotiet)
+        else:
+            sotietdahoc=int(data[0].val()['SoTiet'])-int(sotiet)
+        info = {'SoTiet':str(sotietdahoc)}
+        db.child('SoTietDaHoc').child(data[0].key()).update(info)
 
 
 
@@ -203,11 +327,12 @@ def xoa_dong_tkb(matkb):
     data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(matkb)).get()
     for i in data.each():
         if i.val()["MaTKB"] == str(matkb) and i.val()["TrangThaiDD"] == "0":
-            try:
-                db.child("ThoiKhoaBieu").child(i.key()).remove()
-                return True
-            except:
-                return False
+    
+            threading.Thread(target = tru_so_tiet,args=(str(i.val()["MaLop"]),str(i.val()["MaMH"]) ,str(i.val()["PP_Giang"]) ,str(i.val()["Ca"]) ,)).start()
+            db.child("ThoiKhoaBieu").child(i.key()).remove()
+            return True
+
+
 
 def tenlop_ma(ma):
     data=db.child("Lop").order_by_child("MaLop").equal_to(str(ma)).get()
@@ -258,6 +383,22 @@ def gv_dd(magv,ngay):
     except: a=[]
     return a
 
+
+# def kt_so_tiet_lt(malop,mamh,lt):
+#     a=0
+#     data=db.child("MonHoc").order_by_child("MaMH").equal_to(str(mamh)).get()
+#     try:
+#         for i in data.each():
+#             if(i.val()["MaMH"]==str(mamh)):
+#                 if lt== "lythuyet":
+#                     a=i.val()["SoTietLiThuyet"]
+#                 else:a=i.val()["SoTietThucHanh"]
+#     except: a=[]
+#     return a
+
+
+
+
 def namhoc():
     a=""
     try:
@@ -303,6 +444,4 @@ def lop_maTKB(ma):
             a.append(str(e))
     except:a=[]
     return a
-
-
 

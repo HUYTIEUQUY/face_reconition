@@ -23,8 +23,24 @@ from time import strftime,sleep
 
 
 def main():
+    def loadding(a):
+        if a == 1:# đang load dữ liệu
+            lb_loadding.place(x=1081,y=2)
+            menudangxuat["state"] = "disabled"
+            btnkhoiphuc["state"] = "disabled"
+            btntimkiem["state"] = "disabled"
+            btnthem["state"] = "disabled"
+            btnsua["state"] = "disabled"
+            btnxoa["state"] = "disabled"
+        else:
+            lb_loadding.place_forget()
+            menudangxuat["state"] = "normal"
+            btnkhoiphuc["state"] = "normal"
+            btntimkiem["state"] = "normal"
+            btnthem["state"] = "normal"
+            btnsua["state"] = "normal"
+            btnxoa["state"] = "normal"
     def load_bang_tkb(row):
-
         tv.delete(*tv.get_children())
         gan.set(1)
         global dem
@@ -37,7 +53,7 @@ def main():
             else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
             dem += 1
             if gan.get() == str(0):break
-    # loadding(0)
+        loadding(0)
     def luong(ham):
         threading.Thread(target=ham).start()
     def loaddl():
@@ -89,7 +105,6 @@ def main():
         return ngay
 
     def chonlop(event):
-
         if str(data_lop.get()) not in mylistlop:
             lbox.insert(0,data_lop.get())
             mylistlop.append(data_lop.get())
@@ -106,7 +121,6 @@ def main():
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         try:
-
             data_ngay.set(item['values'][5])
             data_mon.set(item['values'][3])
             data_ca.set(item['values'][6])
@@ -122,7 +136,6 @@ def main():
                     ca[i].set(1)
                 else:
                     ca[i].set(0)
-
 
             if str(item['values'][2]) not in mylistlop:
                 lbox.insert(0,item['values'][2])
@@ -145,6 +158,7 @@ def main():
             if t != []:
                 tam.append(t[0])
         return tam
+
     def kt_lich_lop(malop, ngay, ca,matkb):
         data_ca1= " "
         data_ca=data_ca1.join(ca).split()
@@ -153,6 +167,7 @@ def main():
             if tkb.kt_lich_tkb(malop,ngay,i,matkb) !=[]:
                 tam.append(i)
         return tam
+
     def lock():
         string=strftime("%H:%M:%S %p")
         dmy=strftime("%d/%m/%Y")
@@ -163,9 +178,9 @@ def main():
         except: print("kết thúc đông hồ")
 
     def khoiphuc():
-
+        loadding(1)
         lbox.delete(0,END)
-        mylistlop=[]
+        mylistlop.clear()
         ngaycu.set("")
         moncu.set("")
         gvcu.set("")
@@ -181,10 +196,21 @@ def main():
         magv= magv_ten(data_gv.get())
         row=tkb.bang_tkb1(namhoc,data_hocky.get(),magv)
         threading.Thread(target=load_bang_tkb,args=(row,)).start()
+        loadding(0)
 
-
+    def kt_sotiet(malop,mamh,pp,ca):
+        sotietmonhoc=tkb.SoTietCuaMH(mamh,pp)
+        stmh.set(sotietmonhoc)
+        sotietdahoc=tkb.sotietdahoc(malop,mamh,pp)
+        stdh.set(sotietdahoc)
+        sotietca=tkb.sotiet_cahoc(str(ca))
+        tong=int(sotietdahoc)+int(sotietca)
+        if int(tong) > int(sotietmonhoc):
+            return False
+        else:return True
 
     def them(a,ngay):
+        loadding(1)
         magv=magv_ten(data_gv.get())
         mamh =mamh_ten(data_mon.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
@@ -201,13 +227,14 @@ def main():
         elif kt_lich_gv(magv,ngay,data_ca,"") !=[]:
             messagebox.showerror("thông báo","Giảng viên đã có lịch dạy ngày"+ngay+" vào ca "+data_ca+"!")
 
-        
         else: 
             matkb = tkb.matkb()
             for i in mylistlop:
                 malop=malop_ten(i)
                 if kt_lich_lop(malop,ngay,data_ca,matkb) != []:
                     messagebox.showerror("thông báo","Lớp"+str(i)+ "đã có lịch học ngày"+ngay+" vào ca "+data_ca+"!")
+                elif kt_sotiet(malop,mamh,pp,data_ca)==False:
+                    messagebox.showerror("thông báo","Dư thừa tiết học\nHiện tại đã học "+stdh.get()+"/"+stmh.get()+" tiết.")
                 else:
                     threading.Thread(target=tkb.them_tkb1 , args=(matkb,magv,mamh,pp,ngay,data_ca,malop,hki,namhoc)).start()
             if a==1:
@@ -216,43 +243,47 @@ def main():
                 messagebox.showinfo("thông báo", "Đã thêm thành công" )
                 luong(khoiphuc)
             else: return
+        loadding(0)
 
             
     def sua():
-            magv=magv_ten(data_gv.get())
-            mamh = mamh_ten(data_mon.get())
-            ngay=data_ngay.get()
-            namhoc=tkb.manh_ten(data_namhoc.get())
-            hki=data_hocky.get()
-            pp=data_loai.get()
-            data_ca=""
-            for i in range(len(ca)):
-                if ca[i].get() >= 1:
-                    data_ca += str(i)
-            
-            if(data_matkb.get()== ""):
-                messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa ! Bạn hãy nhấn 2 lần vào dòng muốn sửa , rồi sửa dữ liệu và nhấn nút sửa")
-            elif tkb.kt_tkb_dd(data_matkb.get())!= []:
-                messagebox.showwarning("Thông báo","Đã điểm danh không thể sửa")
-            elif messagebox.askyesno("thông báo","Bạn có chắc sửa dòng thời khoá biểu với mã tkb là "+data_matkb.get()):
-                if data_ca=="" or magv=="" or mamh=="" or ngay =="":
-                    messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
-                elif tkb.ngaya_nhohon_ngayb(ngay,now) ==True:
-                    messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
-                elif kt_lich_gv(magv,ngay,data_ca,data_matkb.get()) !=[]:
-                    messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
-                else:
-                    for i in mylistlop:
-                        malop=malop_ten(i)
-                        if kt_lich_lop(malop,ngay,data_ca,data_matkb.get()) != []:
-                            messagebox.showerror("thông báo","Lớp đã có lịch học !")
-                        elif tkb.sua_tkb1(data_matkb.get(),magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
-                            messagebox.showinfo("thông báo", "Đã sửa thành công với tên lớp "+str(i))
-                    luong(khoiphuc)
+        loadding(1)
+        magv=magv_ten(data_gv.get())
+        mamh = mamh_ten(data_mon.get())
+        ngay=data_ngay.get()
+        namhoc=tkb.manh_ten(data_namhoc.get())
+        hki=data_hocky.get()
+        pp=data_loai.get()
+        data_ca=""
+        for i in range(len(ca)):
+            if ca[i].get() >= 1:
+                data_ca += str(i)
+        
+        if(data_matkb.get()== ""):
+            messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa ! Bạn hãy nhấn 2 lần vào dòng muốn sửa , rồi sửa dữ liệu và nhấn nút sửa")
+        elif tkb.kt_tkb_dd(data_matkb.get())!= []:
+            messagebox.showwarning("Thông báo","Đã điểm danh không thể sửa")
+        elif messagebox.askyesno("thông báo","Bạn có chắc sửa dòng thời khoá biểu với mã tkb là "+data_matkb.get()):
+            if data_ca=="" or magv=="" or mamh=="" or ngay =="":
+                messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
+            elif tkb.ngaya_nhohon_ngayb(ngay,now) ==True:
+                messagebox.showerror("thông báo","Ngày phải lớn hơn ngày hôm nay")
+            elif kt_lich_gv(magv,ngay,data_ca,data_matkb.get()) !=[]:
+                messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
+            else:
+                for i in mylistlop:
+                    malop=malop_ten(i)
+                    if kt_lich_lop(malop,ngay,data_ca,data_matkb.get()) != []:
+                        messagebox.showerror("thông báo","Lớp đã có lịch học !")
+                    elif tkb.sua_tkb1(data_matkb.get(),magv,mamh,pp,ngay,data_ca,malop,hki,namhoc):
+                        messagebox.showinfo("thông báo", "Đã sửa thành công với tên lớp "+str(i))
+                luong(khoiphuc)
+        loadding(0)
                 
         
         
     def xoa():
+        loadding(1)
         if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             x=tv.selection()
             listma = []
@@ -273,11 +304,11 @@ def main():
             else:
                 messagebox.showinfo("thông báo","Đã xoá thành công")
                 luong(khoiphuc)
-        else: return
+        loadding(0)
 
     def xoads(event):
         try:
-            mylistlop.remove(str(lbox.get(ANCHOR)))
+            mylistlop.remove(lbox.get(ANCHOR))
             lbox.delete(ANCHOR)
         except: print('xoá danh sách nhanh quá')
     def chonngay(cal,btn):
@@ -375,6 +406,8 @@ def main():
     gan=StringVar()
     global mylistlop
     mylistlop=[]
+    stdh=StringVar()
+    stmh=StringVar()
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1200,height=800,bg="green")
     bg.pack(side="left",padx=0)
@@ -515,6 +548,8 @@ def main():
     l.place(x=885,y=2)
     tg = Label(bg, font=("Digital-7",12),background="white",foreground="black")
     tg.place(x=980,y=2)
+
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#FCE2E9",fg="#AD7B98", width=14)
     
     lock()
     luong(loaddl)
