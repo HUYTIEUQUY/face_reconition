@@ -166,7 +166,11 @@ def main():
     def timkiem():
         loadding(1)
         row=gv.tim_gv(makhoa.get(),ndtimkiem.get())
-        update(tv,row)
+        if row == []:
+            messagebox.showinfo("thông báo","Không tìm thấy kết quả")
+            update(tv,row)
+        else:
+            update(tv,row)
         loadding(0)
 
     def xem_ghichu():

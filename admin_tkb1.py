@@ -142,12 +142,19 @@ def main():
                 mylistlop.append(str(item['values'][2]))
         except: print('click vùng trống')
 
-    def timkiem():
-        # malop=malop_ten(data_lop.get())
+    def bat_dau_tim():
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv= magv_ten(data_gv.get())
-        row=tkb.timkiem_dong_tkb1(namhoc,data_hocky.get(),gv,ndtimkiem.get())
+        row=tkb.timkiem_dong_tkb1(namhoc,data_hocky.get(),gv,ndtimkiem.get(),data_tim.get())
+        if row == []:
+            messagebox.showerror("thông báo","Không có dữ liệu")
         update(tv,row)
+        loadding(0)
+    def timkiem():
+        loadding(1)
+        # malop=malop_ten(data_lop.get())
+        threading.Thread(target=bat_dau_tim).start()
+        
 
     def kt_lich_gv(magv, ngay, ca,matkb):
         data_ca1= " "
@@ -408,6 +415,8 @@ def main():
     mylistlop=[]
     stdh=StringVar()
     stmh=StringVar()
+    data_tim=StringVar()
+    nd_tim=["Mã TKB","Lớp","Môn học","LT-TH","Ngày","Ca"]
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1200,height=800,bg="green")
     bg.pack(side="left",padx=0)
@@ -454,10 +463,10 @@ def main():
 
     cblop =Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=33)
     cblop.bind('<<ComboboxSelected>>', chonlop)
-    cblop.place(x=847,y=126)
-    Frame(bg,width=320,height=2,bg="white").place(x=847,y=126)
-    Frame(bg,width=3,height=30,bg="white").place(x=847,y=126)
-    Frame(bg,width=320,height=2,bg="white").place(x=847,y=156)
+    cblop.place(x=847,y=124)
+    Frame(bg,width=320,height=2,bg="white").place(x=847,y=124)
+    Frame(bg,width=3,height=30,bg="white").place(x=847,y=124)
+    Frame(bg,width=320,height=2,bg="white").place(x=847,y=154)
 
     Label(bg,font=("Baloo Tamma 2 Medium",11),bg="white",textvariable=data_ngay).place(x=515,y=212)
 
@@ -473,6 +482,14 @@ def main():
     Frame(bg,width=255,height=2,bg="white").place(x=462,y=125)
     Frame(bg,width=3,height=30,bg="white").place(x=462,y=125)
     Frame(bg,width=255,height=2,bg="white").place(x=462,y=155)
+
+    cbtim =Combobox(bg,textvariable=data_tim,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=13, value=nd_tim)
+    cbtim.place(x=698,y=415)
+    cbtim.current(0)
+    Frame(bg,width=135,height=2,bg="white").place(x=698,y=415)
+    Frame(bg,width=3,height=30,bg="white").place(x=698,y=415)
+    Frame(bg,width=135,height=2,bg="white").place(x=698,y=445)
+
     ca=[]
     for i in range(5):
         option=IntVar()

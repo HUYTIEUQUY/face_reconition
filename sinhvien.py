@@ -176,6 +176,7 @@ def main():
         row=sv.timsv(malop,ndtimkiem.get())
         if row ==[]:
             messagebox.showwarning("thông báo","Không tìm được kết quả")
+            update(row)
         else:
             update(row)
 

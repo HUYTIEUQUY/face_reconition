@@ -83,21 +83,33 @@ def main():
             write_data_to_file(ghichu,5)
             out_workbook.close()
 
-    def timkiem():
-        loadding(1)
+    def bat_dau_tim():
         malop = malop_ten(data_lop.get())
         namhoc = tkb.manh_ten(data_namhoc.get())
         gv=magv_ten(data_gv.get())
-        print(malop)
-        print(namhoc)
-        print(gv)
-        row = tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        loai=data_tim.get()
+        # nd_tim=["Mã TKB","Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
+        if loai=="Môn học":
+            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai=="LT-TH":
+            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Ngày":
+            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Ca":
+            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Trạng Thái":
+            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
             update(tv,row)
+            loadding(0)
         else:
             update(tv,row)
-        loadding(0)
+            loadding(0)
+
+    def timkiem():
+        loadding(1)
+        threading.Thread(target=bat_dau_tim).start()
 
     def khoiphuc_dd():
         row =tk.bangdd_ma(matkb.get())
@@ -326,6 +338,8 @@ def main():
     tenmh=StringVar()
     data_khoa=StringVar()
     matkb1 = StringVar()
+    nd_tim=["Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
+    data_tim=StringVar()
 
     # value cho combobox 
     hocky=[1,2]
@@ -364,10 +378,17 @@ def main():
 
     cbgv =Combobox(bg,textvariable=data_gv,font=("Baloo Tamma 2 Medium",11),state='readonly', width=26)
     cbgv.bind('<<ComboboxSelected>>', capnhatbang)
-    cbgv.place(x=554,y=60)
-    Frame(bg,width=250,height=2,bg="white").place(x=554,y=60)
-    Frame(bg,width=3,height=30,bg="white").place(x=554,y=60)
-    Frame(bg,width=250,height=2,bg="white").place(x=554,y=90)
+    cbgv.place(x=548,y=60)
+    Frame(bg,width=252,height=2,bg="white").place(x=548,y=60)
+    Frame(bg,width=3,height=30,bg="white").place(x=548,y=60)
+    Frame(bg,width=252,height=2,bg="white").place(x=548,y=90)
+
+    cbtim =Combobox(bg,textvariable=data_tim,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=13, value=nd_tim)
+    cbtim.place(x=739,y=106)
+    cbtim.current(0)
+    Frame(bg,width=135,height=2,bg="white").place(x=739,y=106)
+    Frame(bg,width=3,height=30,bg="white").place(x=739,y=106)
+    Frame(bg,width=135,height=2,bg="white").place(x=739,y=136)
 
     style()
 

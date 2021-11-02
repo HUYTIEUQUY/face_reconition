@@ -17,7 +17,7 @@ import os
 import xlsxwriter
 import threading 
 from tkinter import filedialog
-from styletable import style
+from styletable import style, update
 import backend.dl_tkb as tkb
 from backend.dl_adminlop import malop_ten
 import time
@@ -28,7 +28,7 @@ def main():
 
     def loadding(a):
         if a == 1:# đang load dữ liệu
-            lb_loadding.place(x=290,y=4)
+            lb_loadding.place(x=300,y=4)
             btndangxuat["state"] = "disabled"
             btnkhoiphuc["state"] = "disabled"
             btntimkiem["state"] = "disabled"
@@ -89,18 +89,35 @@ def main():
             write_data_to_file(ghichu,5)
             out_workbook.close()
 
-    def timkiem():
-        loadding(1)
+    def bat_dau_tim():
         malop = malop_ten(data_lop.get())
         namhoc = tkb.manh_ten(data_namhoc.get())
         gv=magv_email(d[0])
-        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        loai=data_tim.get()
+        # nd_tim=["Mã TKB","Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
+        if loai=="Môn học":
+            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai=="LT-TH":
+            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Ngày":
+            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Ca":
+            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Trạng Thái":
+            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
-            load_bang_tkb(row)
+            update(tv,row)
+            loadding(0)
         else:
-            load_bang_tkb(row)
-        loadding(0)
+            update(tv,row)
+            loadding(0)
+
+    def timkiem():
+        loadding(1)
+ 
+        threading.Thread(target=bat_dau_tim).start()
+        
 
     def khoiphuc_dd():
         loadding(1)
@@ -120,7 +137,7 @@ def main():
             rowid=tv.identify_row(event.y)
             item=tv.item(tv.focus())
             matkb.set(item['values'][1])
-            matkb1.set("Mã thời khoá biểu : "+str(item['values'][1]))
+            matkb1.set("Danh sách điểm danh với mã : "+str(item['values'][1]))
             ngay.set(item['values'][4])
             ca.set(item['values'][5])
             tenmh.set(item['values'][2])
@@ -184,6 +201,7 @@ def main():
         threading.Thread(target=loadbang).start()
         
     def capnhatbang(event):
+        f.place_forget()
         fr_dd.place_forget()
         event.widget.get()
         loadding(1)
@@ -198,16 +216,18 @@ def main():
             threading.Thread(target=load_bang_tkb,args=(row,)).start()
 
     def loadbang():
+        f.place_forget()
         loadding(1)
+        ndtimkiem.set("")
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv=magv_email(d[0])
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
-            load_bang_tkb(row)
+            threading.Thread(target=load_bang_tkb,args=(row,)).start()
         else:
-            load_bang_tkb(row)
+            threading.Thread(target=load_bang_tkb,args=(row,)).start()
 
     def chondong(event):
         rowid=tb.identify_row(event.y)
@@ -315,6 +335,7 @@ def main():
     data_namhoc=StringVar()
     data_hocky=StringVar()
     data_lop=StringVar()
+    data_tim=StringVar()
     matkb=StringVar()
     matkb1=StringVar()
     data_masv=StringVar()
@@ -322,6 +343,7 @@ def main():
     ca=StringVar()
     ndtimkiem=StringVar()
     tenmh=StringVar()
+    nd_tim=["Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
     global nen_dd
     # value cho combobox 
     hocky=[1,2]
@@ -330,20 +352,20 @@ def main():
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=38)
 
-    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Baloo Tamma 2 Medium",10),justify="center", width=13,state='readonly')
+    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Baloo Tamma 2 Medium",10),justify="center", width=12,state='readonly')
     cbnam.bind('<<ComboboxSelected>>', capnhatbang)
     cbnam.place(x=523,y=10)
-    Frame(bg,width=125,height=2,bg="white").place(x=523,y=10)
+    Frame(bg,width=115,height=2,bg="white").place(x=523,y=10)
     Frame(bg,width=3,height=30,bg="white").place(x=523,y=10)
-    Frame(bg,width=125,height=2,bg="white").place(x=523,y=37)
+    Frame(bg,width=115,height=2,bg="white").place(x=523,y=37)
 
-    cbhk =Combobox(bg,textvariable=data_hocky,font=("Baloo Tamma 2 Medium",10),justify="center", width=8, state='readonly', values=hocky)
+    cbhk =Combobox(bg,textvariable=data_hocky,font=("Baloo Tamma 2 Medium",10),justify="center", width=7, state='readonly', values=hocky)
     cbhk.current(0)
     cbhk.bind('<<ComboboxSelected>>', capnhatbang)
     cbhk.place(x=725,y=10)
-    Frame(bg,width=83,height=2,bg="white").place(x=725,y=10)
+    Frame(bg,width=75,height=2,bg="white").place(x=725,y=10)
     Frame(bg,width=3,height=30,bg="white").place(x=725,y=10)
-    Frame(bg,width=83,height=2,bg="white").place(x=725,y=37)
+    Frame(bg,width=75,height=2,bg="white").place(x=725,y=37)
 
     cblop =Combobox(bg,textvariable=data_lop,font=("Baloo Tamma 2 Medium",11),state='readonly', width=30)
     cblop.bind('<<ComboboxSelected>>', capnhatbang)
@@ -351,6 +373,14 @@ def main():
     Frame(bg,width=290,height=2,bg="white").place(x=902,y=10)
     Frame(bg,width=3,height=30,bg="white").place(x=902,y=10)
     Frame(bg,width=290,height=2,bg="white").place(x=902,y=40)
+
+
+    cbtim =Combobox(bg,textvariable=data_tim,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=13, value=nd_tim)
+    cbtim.place(x=739,y=62)
+    cbtim.current(0)
+    Frame(bg,width=135,height=2,bg="white").place(x=739,y=62)
+    Frame(bg,width=3,height=30,bg="white").place(x=739,y=62)
+    Frame(bg,width=135,height=2,bg="white").place(x=739,y=92)
 
 
 
@@ -382,7 +412,7 @@ def main():
     tv.heading(4,text="LT-TH")
     tv.heading(5,text="Ngày")
     tv.heading(6,text="ca")
-    tv.heading(7,text="Trang thái")
+    tv.heading(7,text="Trạng thái")
     
     tv.pack()
     tree_scroll.config(command=tv.yview)
@@ -393,7 +423,7 @@ def main():
     f=Frame(bg,background="white")
     f1=Frame(f,background="white")
     f1.pack(side="top")
-    Label(f1,textvariable = matkb1, font=("Baloo Tamma 2 Medium",14),bg="white",fg = "#837EBE" ).pack(side='left',anchor='w',padx=280)
+    Label(f1,textvariable = matkb1, font=("Baloo Tamma 2 Medium",14),bg="white",fg = "#837EBE" ).pack(side='left',anchor='w',padx=220)
     btnghichu=Button(f1,image=img_btnghichu,bd=0,highlightthickness=0,activebackground = 'white',command=xem_ghichu)
     btnghichu.pack(side="right", anchor='e',padx=5,pady=5)
     
@@ -414,7 +444,7 @@ def main():
     tb.column(2, width=100 ,anchor='center')
     tb.column(3, width=200)
     tb.column(4, width=150,anchor='center')
-    tb.column(5, width=100)
+    tb.column(5, width=100,anchor='center')
     tb.column(6, width=100,anchor='center')
     tb.column(7, width=150,anchor='center')
 
@@ -444,7 +474,7 @@ def main():
     txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
     txttim.place(x=888,y=64)
 
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#FFF4FF",fg="#AD7B98", width=14)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#E7DFF1",fg="#AD7B98", width=12)
 
     threading.Thread(target=loaddl).start()
     loadding(1)

@@ -246,11 +246,11 @@ def main():
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=37)
 
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,fg="black",bg="white",justify="center",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=17)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=data_tenmon,justify="center",bd=0,highlightthickness=0).place(x=590,y=53)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=data_sotietlt,justify="center",bd=0,highlightthickness=0).place(x=590,y=92)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=33,textvariable=data_sotietth,justify="center",bd=0,highlightthickness=0).place(x=590,y=131)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,justify="center",bd=0,highlightthickness=0).place(x=652,y=250)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=595,y=17)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=595,y=53)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=595,y=92)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=595,y=131)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=250)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=185)

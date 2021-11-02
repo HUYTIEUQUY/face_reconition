@@ -259,13 +259,117 @@ def timkiem_dong_tkb(malop,namhoc,hocky,magv,q):
                     tt="Chưa điểm danh"
                 else: tt="Đã điểm danh"
                 e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
-                if  khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
+                if  khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower() or khong_dau(str(q.lower())) in khong_dau(i.val()["TrangThaiDD"].lower())) :
                     a.append(e)
                     stt+=1
     except:a=[]
     return a
-def timkiem_dong_tkb1(namhoc,hocky,magv,q):
+def timkiem_dong_tkb_LTTH(malop,namhoc,hocky,magv,q):
     a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
+        for i in data.each():
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+                mh=tenmh_ma(i.val()["MaMH"])
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                if khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) :
+                    a.append(e)
+                    stt+=1
+    except:a=[]
+    return a
+def timkiem_dong_tkb_Ngay(malop,namhoc,hocky,magv,q):
+    a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
+        for i in data.each():
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+                mh=tenmh_ma(i.val()["MaMH"])
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                if khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) :
+                    a.append(e)
+                    stt+=1
+    except:a=[]
+    return a
+def timkiem_dong_tkb_Ca(malop,namhoc,hocky,magv,q):
+    a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
+        for i in data.each():
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+                mh=tenmh_ma(i.val()["MaMH"])
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                if khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
+                    a.append(e)
+                    stt+=1
+    except:a=[]
+    return a
+def timkiem_dong_tkb_TrangThai(malop,namhoc,hocky,magv,q):
+    a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
+        for i in data.each():
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+                mh=tenmh_ma(i.val()["MaMH"])
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                if khong_dau(str(q.lower())) in khong_dau(tt.lower()) :
+                    a.append(e)
+                    stt+=1
+    except:a=[]
+    return a
+def timkiem_dong_tkb_monhoc(malop,namhoc,hocky,magv,q):
+    a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaLop").equal_to(str(malop)).get()
+        for i in data.each():
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+                mh=tenmh_ma(i.val()["MaMH"])
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                if  khong_dau(str(q.lower())) in khong_dau(mh.lower()) :
+                    a.append(e)
+                    stt+=1
+    except:a=[]
+    return a
+def timkiem_dong_tkb_MaTKB(malop,namhoc,hocky,magv,q):
+    a=[]
+    stt=1
+    try:
+        data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str(q)).get()
+        for i in data.each():
+            if(i.val()["MaLop"] == str(malop) and i.val()["NamHoc"] == str(namhoc) and i.val()["HocKy"]==str(hocky) and i.val()["MaGV"]==str(magv)):
+                mh=tenmh_ma(i.val()["MaMH"])
+                if(i.val()["TrangThaiDD"]=="0"):
+                    tt="Chưa điểm danh"
+                else: tt="Đã điểm danh"
+                e=[stt,i.val()["MaTKB"],mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
+                a.append(e)
+                stt+=1
+    except:a=[]
+    return a
+
+def timkiem_dong_tkb1(namhoc,hocky,magv,q,loai):
+    global a
+    a=[]
+
     stt=1
     try:
         data=db.child("ThoiKhoaBieu").order_by_child("MaGV").equal_to(str(magv)).get()
@@ -277,7 +381,25 @@ def timkiem_dong_tkb1(namhoc,hocky,magv,q):
                     tt="Chưa điểm danh"
                 else: tt="Đã điểm danh"
                 e=[stt,i.val()["MaTKB"],lop,mh,i.val()["PP_Giang"],i.val()["Ngay"],i.val()["Ca"],tt]
-                if  khong_dau(str(q.lower())) in khong_dau(mh.lower()) or khong_dau(str(q.lower())) in khong_dau(lop.lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["PP_Giang"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()) or khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()) :
+                if loai =="Mã TKB" and khong_dau(str(q.lower())) in khong_dau(i.val()["MaTKB"].lower()):
+                    a.append(e)
+                    stt+=1
+                elif loai =="Môn học" and khong_dau(str(q.lower())) in khong_dau(mh.lower()):
+                    a.append(e)
+                    stt+=1
+                elif loai =="Lớp" and khong_dau(str(q.lower())) in khong_dau(lop.lower()):
+                    a.append(e)
+                    stt+=1
+                elif loai =="LT-TH" and khong_dau(str(q.lower())) in khong_dau(i.val()['TrangThaiDD'].lower()):
+                    a.append(e)
+                    stt+=1
+                elif loai =="Ngày" and khong_dau(str(q.lower())) in khong_dau(i.val()["Ngay"].lower()):
+                    a.append(e)
+                    stt+=1
+                elif loai =="Ca" and khong_dau(str(q.lower())) in khong_dau(i.val()["Ca"].lower()):
+                    a.append(e)
+                    stt+=1
+                elif loai =="Trạng Thái" and khong_dau(str(q.lower())) in khong_dau(tt.lower()):
                     a.append(e)
                     stt+=1
     except:a=[]

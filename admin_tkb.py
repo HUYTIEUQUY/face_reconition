@@ -102,13 +102,17 @@ def main():
         return ngay
 
     def capnhatbang(event):
+        loadding(1)
         gan.set(0)
         sleep(1)
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv=magv_ten(data_gv.get())
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
+        if row == []:
+            messagebox.showwarning("thông báo","Không có dữ liệu")
         threading.Thread(target=load_bang_tkb,args=(row,)).start()
+
 
     def getrow(event):
         rowid=tv.identify_row(event.y)
@@ -132,11 +136,29 @@ def main():
         except: print('click vùng trống')
 
     def timkiem():
+        loadding(1)
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv= magv_ten(data_gv.get())
-        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv,ndtimkiem.get())
+        loai=data_tim.get()
+        if loai=="Môn học":
+            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai=="LT-TH":
+            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Ngày":
+            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Ca":
+            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai == "Trạng Thái":
+            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        elif loai=="Mã TKB":
+            row=tkb.timkiem_dong_tkb_MaTKB(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+
+        if row ==[]:
+            messagebox.showwarning("thông báo","Không có dữ liệu")
         update(tv,row)
+        loadding(0)
+        
 
     def kt_lich_gv(magv, ngay, ca,matkb):
         data_ca1= " "
@@ -165,6 +187,7 @@ def main():
         except: print("kết thúc đông hồ")
 
     def khoiphuc():
+        loadding(1)
         ngaycu.set("")
         moncu.set("")
         gvcu.set("")
@@ -380,9 +403,11 @@ def main():
     lich= now.replace("/"," ").split()
     style()
     gan=StringVar()
-    mylistlop=[]
     stmh=StringVar()
     stdh=StringVar()
+    data_tim=StringVar()
+    nd_tim=["Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
+
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1200,height=800,bg="green")
     bg.pack(side="left",padx=0)
@@ -448,6 +473,14 @@ def main():
     Frame(bg,width=255,height=2,bg="white").place(x=680,y=125)
     Frame(bg,width=3,height=30,bg="white").place(x=680,y=125)
     Frame(bg,width=255,height=2,bg="white").place(x=680,y=155)
+
+    cbtim =Combobox(bg,textvariable=data_tim,font=("Baloo Tamma 2 Medium",11),justify="center",state='readonly', width=13, value=nd_tim)
+    cbtim.place(x=698,y=415)
+    cbtim.current(0)
+    Frame(bg,width=135,height=2,bg="white").place(x=698,y=415)
+    Frame(bg,width=3,height=30,bg="white").place(x=698,y=415)
+    Frame(bg,width=135,height=2,bg="white").place(x=698,y=445)
+
     ca=[]
     for i in range(5):
         option=IntVar()
@@ -507,7 +540,7 @@ def main():
     tv.heading(4,text="LT-TH")
     tv.heading(5,text="Ngày")
     tv.heading(6,text="ca")
-    tv.heading(7,text="Trang thái")
+    tv.heading(7,text="Trạng thái")
     
     tv.pack()
     tv.bind('<ButtonRelease-1>', getrow)

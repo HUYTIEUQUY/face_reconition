@@ -283,19 +283,5 @@ def main(masv):
     
     threading.Thread(target=loadanh,args=(anh,)).start()
     win.mainloop()
-
-
-def is_connected():
-    try:
-        # connect to the Host -- tells us if the Host is actually
-        # reachable
-        socket.create_connection(("www.google.com", 80))
-        return True
-    except OSError:
-        pass
-    return False
-
 if __name__ == '__main__':
-    if is_connected() == True:
-        main()
-    else: print("Không kết nối internet")
+    main()

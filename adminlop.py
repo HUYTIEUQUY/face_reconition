@@ -157,13 +157,17 @@ def main():
         loadding(0)
 
     def timkiem():
-
         loadding(1)
         if quyen == str(1):
             row=lop.tim_alllop(ndtimkiem.get())
         else:
             row=lop.timlop(makhoa.get(),ndtimkiem.get())
-        update(tv,row)
+
+        if row==[]:
+            messagebox.showinfo("thông báo","Không tìm thấy kết quả")
+            update(tv,row)
+        else:
+            update(tv,row)
         loadding(0)
 
     def menuthongke():

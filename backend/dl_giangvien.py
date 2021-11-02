@@ -23,7 +23,8 @@ def tengv_email(email):
     a=""
     data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
     for i in data.each():
-        a=i.val()["TenGV"]
+        if i.val()["Email"] == str(email):
+            a = i.val()["TenGV"]
     return a
 
 
@@ -87,7 +88,7 @@ def tim_gv(makhoa,q):
     for i in data.each():
         if(i.val()["MaKhoa"]==str(makhoa) and i.val()["LoaiTK"]==str(0)):
             e=[str(stt),i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
-            if str(q) in khong_dau(i.val()["MaGV"].lower()) or str(q) in khong_dau(i.val()["TenGV"].lower()) or str(q) in khong_dau(i.val()["Email"].lower()) or str(q) in khong_dau(i.val()["SDT"].lower()):
+            if khong_dau(str(q).lower()) in khong_dau(i.val()["MaGV"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["TenGV"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["Email"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["SDT"].lower()):
                 a.append(e)
             stt=stt+1
     return a

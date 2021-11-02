@@ -292,7 +292,7 @@ def timkiem_dd(ma,q):
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
                 e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
-                if khong_dau(str(q)) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"].lower())or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"].lower()):
+                if khong_dau(str(q)) in khong_dau(i.val()["MaSV"]) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"])) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"])or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"])or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"])or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"]):
                     a.append(e)
                     stt+=1
     except:

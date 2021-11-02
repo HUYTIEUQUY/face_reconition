@@ -131,7 +131,7 @@ def timsv(malop,q):
             if(i.val()["MaLop"]==str(malop)):
                 e=[str(stt),i.val()["MaSV"],i.val()["TenSV"]]
 
-                if khong_dau(str(q).lower()) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["TenSV"].lower()):
+                if khong_dau(str(q)) in khong_dau(i.val()["MaSV"]) or khong_dau(str(q)) in khong_dau(i.val()["TenSV"]):
                     a.append(e)
                 stt=stt+1
     except: a=[]

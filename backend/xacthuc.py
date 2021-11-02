@@ -16,7 +16,8 @@ def kt_loaitk(email):
     try:
         data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
         for i in data.each():
-            a=i.val()['LoaiTK']
+            if i.val()['Email'] == str(email):
+                a=i.val()['LoaiTK']
     except:a=3
     return a
 
