@@ -2,6 +2,7 @@ import pyrebase
 import urllib
 import os
 import pickle
+from time import sleep
 
 
 firebaseConfig = {
@@ -34,6 +35,7 @@ def upload_anh(masv):
         pathlound=str(masv)+str(i+1)+".png"
         path = "img_anhsv/"+str(masv)+str(i+1)+".png"
         storage.child(pathlound).put(path)
+        sleep(5)
         os.remove("img_anhsv/"+pathlound)
 
 def upload_filemahoa(path):

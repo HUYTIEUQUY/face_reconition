@@ -40,13 +40,11 @@ def tenkhoa(makhoa):
 
 def bangkhoa():
     a=[]
-    stt=1
     data=db.child("Khoa").get()
     try:
         for i in data.each():
-            e = [str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"], i.val()["EmailKhoa"],i.val()["Quyen"]]
+            e = [i.val()["MaKhoa"],i.val()["TenKhoa"], i.val()["EmailKhoa"],i.val()["Quyen"]]
             a.append(e)
-            stt=stt+1
     except:a=[]
     return a
 
@@ -141,14 +139,12 @@ def tenkhoa_ma(ma):
 
 def timkhoa(q):
     a=[]
-    stt=1
     data=db.child("Khoa").get()
     try:
         for i in data.each():
-            e=[str(stt),i.val()["MaKhoa"],i.val()["TenKhoa"],i.val()["EmailKhoa"]]
+            e=[i.val()["MaKhoa"],i.val()["TenKhoa"],i.val()["EmailKhoa"]]
             if str(q) in khong_dau(i.val()["MaKhoa"].lower()) or str(khong_dau(q)) in khong_dau(i.val()["TenKhoa"].lower()) or str(khong_dau(q)) in khong_dau(i.val()["EmailKhoa"].lower()):
                 a.append(e)
-            stt=stt+1
     except:a=[]
     return a
 

@@ -177,30 +177,26 @@ def kiemtrathongtin(ma):
 
 def bangdiemdanh(ma):
     a=[]
-    stt=1
     try:
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
-                e=[stt,i.val()["MaSV"],i.val()["MaSV"] ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[i.val()["MaSV"],i.val()["MaSV"] ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 a.append(e)
-                stt +=1
     except:
         a=[]
-    return a
+    sx_ma = sorted(a, key=lambda item: (item[0]))
+    return sx_ma
 def bangdiemdanh1(ma,malop):
     a=[]
-    stt=1
 
     data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
     for i in data.each():
         if(i.val()["Ma"]==str(ma) and i.val()["MaLop"] ==str(malop)):
-            e=[stt,i.val()["MaSV"],i.val()["MaSV"] ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+            e=[i.val()["MaSV"],i.val()["MaSV"] ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
             a.append(e)
-            stt +=1
-
-        
-    return a
+    sx_ma = sorted(a, key=lambda item: (item[0]))
+    return sx_ma
 
 def dd_sv_vao(ma):
     a=[]
@@ -286,17 +282,16 @@ def khong_dau(s):
 
 def timkiem_dd(ma,q):
     a=[]
-    stt=1
     try:
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if(i.val()["Ma"]==str(ma)):
-                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 if khong_dau(str(q)) in khong_dau(i.val()["MaSV"]) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"])) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"])or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"])or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"])or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"]):
                     a.append(e)
-                    stt+=1
     except:
         a=[]
+    sx_ma = sorted(a, key=lambda item: (item[0]))
     return a
 
 def capnhat_tgra(matkb,masv,tgra):

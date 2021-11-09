@@ -40,8 +40,10 @@ def style():
 def update(tv,row):
     tv.delete(*tv.get_children())
     global dem
+
     dem=0
     for i in row:
+        i.insert(0,dem+1)
         if dem%2==0:
             tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
         else:

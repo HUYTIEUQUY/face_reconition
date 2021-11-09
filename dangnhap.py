@@ -90,6 +90,7 @@ def main():
     win=Tk()
     win.geometry("600x600+400+100")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Phần mềm điểm danh sinh viên bằng phương pháp nhận diện khuôn mặt")
     img_bg=ImageTk.PhotoImage(file="img/bg_dagnhap.png")

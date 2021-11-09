@@ -49,6 +49,7 @@ def main():
             i[2]=tkb.tenlop_ma(i[2])
             i[3]=tenmh_ma(i[3])
             if dem%2==0:
+                i.insert(0,dem+1)
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
             else:tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
             dem += 1
@@ -358,6 +359,7 @@ def main():
     win=Tk()
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Thời khoá biểu")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_chitiettkb.png")

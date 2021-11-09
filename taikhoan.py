@@ -131,6 +131,7 @@ def main():
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Thông tin người dùng")
     img_bg=ImageTk.PhotoImage(file="img/bgtaikhoan.png")

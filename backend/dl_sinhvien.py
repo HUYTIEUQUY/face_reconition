@@ -58,14 +58,12 @@ def themsv(masv,tensv,malop,anh):
 
 def bangsv(malop):
     a=[]
-    stt=1
     data=db.child("SinhVien").order_by_child("MaSV").get()
     try:
         for i in data.each():
             if(i.val()["MaLop"]==str(malop)):
-                e=[str(stt),i.val()["MaSV"],i.val()["TenSV"]]
+                e=[i.val()["MaSV"],i.val()["TenSV"]]
                 a.append(e)
-                stt=stt+1
     except: a=[]
     return a
     
@@ -124,16 +122,14 @@ def suaanh(anh,id):
 
 def timsv(malop,q):
     a=[]
-    stt=1
     data=db.child("SinhVien").get()
     try:
         for i in data.each():
             if(i.val()["MaLop"]==str(malop)):
-                e=[str(stt),i.val()["MaSV"],i.val()["TenSV"]]
+                e=[i.val()["MaSV"],i.val()["TenSV"]]
 
                 if khong_dau(str(q)) in khong_dau(i.val()["MaSV"]) or khong_dau(str(q)) in khong_dau(i.val()["TenSV"]):
                     a.append(e)
-                stt=stt+1
     except: a=[]
     return a
 

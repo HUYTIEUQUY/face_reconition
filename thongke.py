@@ -95,27 +95,14 @@ def main():
         gv=magv_email(d[0])
         loai=data_tim.get()
         # nd_tim=["Mã TKB","Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
-        if loai=="Môn học":
-            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai=="LT-TH":
-            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ngày":
-            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ca":
-            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Trạng Thái":
-            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get(),loai)
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
-            update(tv,row)
-            loadding(0)
-        else:
-            update(tv,row)
-            loadding(0)
+        update(tv,row)
+        loadding(0)
 
     def timkiem():
         loadding(1)
- 
         threading.Thread(target=bat_dau_tim).start()
         
 
@@ -159,6 +146,7 @@ def main():
         global dem
         dem = 0
         for i in row:
+            i.insert(0,dem+1)
             i[2]=tenmh_ma(i[2])
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
@@ -172,6 +160,7 @@ def main():
         global dem
         dem = 0
         for i in row:
+            i.insert(0,dem+1)
             i[2]=tensv_ma(i[2])
             if dem%2==0:
                 tb.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
@@ -284,6 +273,7 @@ def main():
     win=Tk()
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img/bg_thongke.png")

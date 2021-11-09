@@ -44,6 +44,7 @@ def main():
         global dem
         dem = 0
         for i in row:
+            i.insert(0,dem+1)
             i[2]=tenmh_ma(i[2])
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
@@ -135,29 +136,19 @@ def main():
                     ca[i].set(0)
         except: print('click vùng trống')
 
-    def timkiem():
-        loadding(1)
+    def bat_dau_tim():
         malop=malop_ten(data_lop.get())
         namhoc=tkb.manh_ten(data_namhoc.get())
         gv= magv_ten(data_gv.get())
         loai=data_tim.get()
-        if loai=="Môn học":
-            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai=="LT-TH":
-            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ngày":
-            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ca":
-            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Trạng Thái":
-            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai=="Mã TKB":
-            row=tkb.timkiem_dong_tkb_MaTKB(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-
+        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get(),loai)
         if row ==[]:
             messagebox.showwarning("thông báo","Không có dữ liệu")
         update(tv,row)
         loadding(0)
+    def timkiem():
+        loadding(1)
+        threading.Thread(target=bat_dau_tim).start()
         
 
     def kt_lich_gv(magv, ngay, ca,matkb):
@@ -187,7 +178,6 @@ def main():
         except: print("kết thúc đông hồ")
 
     def khoiphuc():
-        loadding(1)
         ngaycu.set("")
         moncu.set("")
         gvcu.set("")
@@ -203,7 +193,7 @@ def main():
         namhoc=tkb.manh_ten(data_namhoc.get())
         magv= magv_ten(data_gv.get())
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),magv)
-        load_bang_tkb(row)
+        threading.Thread(target=load_bang_tkb,args=(row,)).start()
 
     def kt_sotiet(malop,mamh,pp,ca):
         sotietmonhoc=tkb.SoTietCuaMH(mamh,pp)
@@ -350,6 +340,7 @@ def main():
     win=Tk()
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Thời khoá biểu")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_tkb.png")

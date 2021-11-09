@@ -224,6 +224,7 @@ def main():
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Giảng viên")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_giangvien.png")
@@ -343,7 +344,7 @@ def main():
     btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
     btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
     
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FCE2E9",fg="#AD7B98", width=14)
     loadding(1)
     luong(loaddl)
     win.mainloop()

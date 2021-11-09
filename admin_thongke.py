@@ -28,7 +28,7 @@ from backend.dl_khoa import khoa_co_quyen_all
 def main():
     def loadding(a):
         if a == 1:# đang load dữ liệu
-            lb_loadding.place(x=290,y=7)
+            lb_loadding.place(x=1110,y=4)
             btndangxuat["state"] = "disabled"
             btnkhoiphuc["state"] = "disabled"
             btntimkiem["state"] = "disabled"
@@ -151,6 +151,7 @@ def main():
         dem = 0
         tam.set(1)
         for i in row:
+            i.insert(0,dem+1)
             i[2]=tenmh_ma(i[2])
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
@@ -167,6 +168,7 @@ def main():
         global dem
         dem = 0
         for i in row:
+            i.insert(0,dem+1)
             i[2]=tensv_ma(i[2])
             if dem%2==0:
                 tb.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
@@ -300,6 +302,7 @@ def main():
     win=Tk()
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_thongke_admin.png")
@@ -447,7 +450,7 @@ def main():
     f1.pack(side="top",anchor='e')
     Label(f1,textvariable = matkb1, font=("Baloo Tamma 2 Medium",14),bg="white",fg = "#837EBE" ).pack(side='left',anchor='w',padx=280)
     btnghichu=Button(f1,image=img_btnghichu,bd=0,highlightthickness=0,activebackground='white',command=xem_ghichu)
-    btnghichu.pack(side="right", anchor='e',padx=5)
+    btnghichu.pack(side="right", anchor='e',padx=5,pady=8)
     btnexcelxuat=Button(f1,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
     btnexcelxuat.pack(side="right", anchor='e')
     fr_dd=Frame(f)
@@ -492,7 +495,7 @@ def main():
     txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
     txttim.place(x=888, y=64)
 
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#E7DFF1",fg="#AD7B98", width=12)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FCE2E9",fg="#AD7B98", width=12)
 
     loadding(1)
     threading.Thread(target=loaddl).start()

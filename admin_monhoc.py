@@ -194,6 +194,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.config(bg="green")
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.title("Môn học")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_monhoc.png")
 
@@ -292,7 +293,7 @@ def main():
     tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FCE2E9",fg="#AD7B98", width=14)
     loadding(1)
     luong(loaddl)
 

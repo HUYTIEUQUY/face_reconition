@@ -65,6 +65,7 @@ def main():
         global dem
         dem=0
         for i in row:
+            i.insert(0,dem+1)
             i[2]= tensv_ma(i[2])
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
@@ -237,12 +238,12 @@ def main():
 
         camera=[]
         for i in range(0, 2):
-            cap = cv2.VideoCapture(i)
+            cap = cv2.VideoCapture(i+cv2.CAP_DSHOW)
             test, frame = cap.read()
             if test==True: 
                 camera.append(i)
         if camera != []:
-            webcam = cv2.VideoCapture(max(camera))
+            webcam = cv2.VideoCapture(max(camera)+cv2.CAP_DSHOW)
 
             face_locations = []
             face_encodings = []
@@ -278,6 +279,7 @@ def main():
                             #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
                             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
                             best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
+                            print(best_match_index)
                             if matches[best_match_index]:
                                 name = known_face_names[best_match_index]
                             face_names.append(name)
@@ -465,6 +467,7 @@ def main():
     win=Tk()
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Điểm danh sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_diemdanh.png")

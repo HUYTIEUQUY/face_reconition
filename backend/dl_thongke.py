@@ -88,55 +88,49 @@ def tensv_ma(ma):
         a=(i.val()["TenSV"])
     return a
 
-def thongke(magv,malop,mamh,ngay,ca):
-    a=[]
-    stt=1
-    try:
-        data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
-        for i in data.each():
-            if i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ca"]==str(ca):
-                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
-                a.append(e)
-                stt+=1
-    except:a=[]
-    return a
+# def thongke(magv,malop,mamh,ngay,ca):
+#     a=[]
+#     try:
+#         data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
+#         for i in data.each():
+#             if i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ca"]==str(ca):
+#                 e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]), i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
+#                 a.append(e)
+#     except:a=[]
+#     return a
 
 def bangdd_ma(ma):
     a=[]
-    stt=1
     try:
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if i.val()["Ma"] == str(ma):
-                e=[stt,i.val()["MaSV"],i.val()["MaSV"], i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
+                e=[i.val()["MaSV"],i.val()["MaSV"], i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
                 a.append(e)
-                stt+=1
     except:a=[]
-    return a
+    sx_ma = sorted(a, key=lambda item: (item[0]))
+    return sx_ma
+    
 def bangdd_ma_tkblop(ma,malop):
     a=[]
-    stt=1
     try:
         data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
             if i.val()["Ma"]== str(ma) and i.val()["MaLop"]== str(malop):
-                e=[stt,i.val()["MaSV"],i.val()["MaSV"], i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
+                e=[i.val()["MaSV"],i.val()["MaSV"], i.val()["ThongTin"], i.val()["TG_Vao"],i.val()["TG_Ra"], i.val()["GhiChu"]]
                 a.append(e)
-                stt+=1
     except:a=[]
     return a
 
 def tim_tk(magv,malop,mamh,ngay,ca,q):
     a=[]
-    stt=1
     try:
         data=db.child("DiemDanh").order_by_child("Ngay").equal_to(str(ngay)).get()
         for i in data.each():
             if(i.val()["MaGV"]== str(magv) and i.val()["MaLop"]== str(malop) and i.val()["MaMH"]==str(mamh) and i.val()["Ngay"]==str(ngay) and i.val()["Ca"]==str(ca)):
-                e=[stt,i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
+                e=[i.val()["MaSV"],tensv_ma(i.val()["MaSV"]) ,i.val()["ThongTin"],i.val()["TG_Vao"],i.val()["TG_Ra"],i.val()["GhiChu"]]
                 if khong_dau(str(q)) in khong_dau(i.val()["MaSV"].lower()) or khong_dau(str(q)) in khong_dau(tensv_ma(i.val()["MaSV"]).lower()) or khong_dau(str(q)) in khong_dau(i.val()["ThongTin"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Vao"].lower())or khong_dau(str(q)) in khong_dau(i.val()["TG_Ra"].lower())or khong_dau(str(q)) in khong_dau(i.val()["GhiChu"].lower()):
                     a.append(e)
-                    stt+=1
     except: a=[]
     return a
 

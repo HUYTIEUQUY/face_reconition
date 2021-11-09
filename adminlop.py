@@ -62,9 +62,6 @@ def main():
 
     def luong(ham):
         threading.Thread(target=ham).start()
-
-
-
     def them():
         loadding(1)
         ma=lop.malop()
@@ -200,6 +197,7 @@ def main():
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Lớp học")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_lop.png")
@@ -270,7 +268,7 @@ def main():
     lbtk=Label(bg,font=("Baloo Tamma 2 Medium",10),width=42,height=1,fg="black",bg="white",justify='center')
     lbtk.place(x=580,y=61)
     
-    entry_lop=Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,justify="center",bd=0,highlightthickness=0)
+    entry_lop=Entry(bg,font=("Baloo Tamma 2 Medium",10),width=37,textvariable=tenlop,bd=0,highlightthickness=0)
     entry_lop.place(x=585,y=98)
     
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
@@ -301,7 +299,7 @@ def main():
     tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
 
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FFF4FF",fg="#AD7B98", width=14)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FCE2E9",fg="#AD7B98", width=14)
 
     
     luong(loaddl)

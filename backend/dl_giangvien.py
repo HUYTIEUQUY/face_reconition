@@ -72,26 +72,26 @@ def themgv(magv,tengv,email,sdt,ghichu,makhoa):
 
 def banggv(makhoa):
     a=[]
-    stt=1
+
     data=db.child("GiangVien").order_by_child("MaKhoa").equal_to(str(makhoa)).get()
     for i in data.each():
         if(i.val()["MaKhoa"]==str(makhoa) and i.val()["LoaiTK"]==str(0)):
-            e=[str(stt),i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
+            e=[i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
             a.append(e)
-            stt=stt+1
-    return a
+
+    sx_ma = sorted(a, key=lambda item: (item[0]))
+    return sx_ma
 
 def tim_gv(makhoa,q):
     a=[]
-    stt=1
     data=db.child("GiangVien").get()
     for i in data.each():
         if(i.val()["MaKhoa"]==str(makhoa) and i.val()["LoaiTK"]==str(0)):
-            e=[str(stt),i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
+            e=[i.val()["MaGV"],i.val()["TenGV"],i.val()["Email"],i.val()["SDT"],i.val()["GhiChu"]]
             if khong_dau(str(q).lower()) in khong_dau(i.val()["MaGV"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["TenGV"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["Email"].lower()) or khong_dau(str(q).lower()) in khong_dau(i.val()["SDT"].lower()):
                 a.append(e)
-            stt=stt+1
-    return a
+    sx_ma = sorted(a, key=lambda item: (item[0]))
+    return sx_ma
 
 def suagv(magv,tengv,sdt,ghichu):
     data=db.child("GiangVien").get()

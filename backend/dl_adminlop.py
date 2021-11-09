@@ -23,25 +23,22 @@ def khong_dau(s):
 
 def banglop(makhoa):
     a=[]
-    stt=1
+
     data=db.child("Lop").get()
     try:
         for i in data.each():
             if(i.val()["MaKhoa"]==str(makhoa)):
-                e=[str(stt),i.val()["MaLop"],i.val()["TenLop"]]
+                e=[i.val()["MaLop"],i.val()["TenLop"]]
                 a.append(e)
-                stt=stt+1
     except:a=[]
     return a
 def alllop():
     a=[]
-    stt=1
     data=db.child("Lop").get()
     try:
         for i in data.each():
-            e=[str(stt),i.val()["MaLop"],i.val()["TenLop"]]
+            e=[i.val()["MaLop"],i.val()["TenLop"]]
             a.append(e)
-            stt=stt+1
     except:a=[]
     return a
 
@@ -111,27 +108,24 @@ def malop_masv(ma):
 
 def timlop(makhoa,q):
     a=[]
-    stt=1
+
     data=db.child("Lop").get()
     try:
         for i in data.each():
             if(i.val()["MaKhoa"]==str(makhoa)):
-                e=[str(stt),i.val()["MaLop"],i.val()["TenLop"]]
+                e=[i.val()["MaLop"],i.val()["TenLop"]]
                 if khong_dau(str(q)) in khong_dau(i.val()["MaLop"].lower()) or khong_dau(str(q)) in khong_dau(i.val()["TenLop"].lower()):
                     a.append(e)
-                stt=stt+1
     except:a=[]
     return a
 def tim_alllop(q):
     a=[]
-    stt=1
     data=db.child("Lop").get()
     try:
         for i in data.each():
-            e=[str(stt),i.val()["MaLop"],i.val()["TenLop"]]
+            e=[i.val()["MaLop"],i.val()["TenLop"]]
             if khong_dau(str(q)) in khong_dau(i.val()["MaLop"].lower()) or khong_dau(str(q)) in khong_dau(i.val()["TenLop"].lower()):
                 a.append(e)
-            stt=stt+1
     except:a=[]
     return a
 

@@ -151,6 +151,7 @@ def main():
         global dem
         dem=0
         for i in row:
+            i.insert(0,dem+1)
             if dem%2==0:
                 tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
             else:
@@ -369,13 +370,10 @@ def main():
         for i in range(5):
             key = cv2. waitKey(1)
             try:
-                webcam = cv2.VideoCapture(1)
-                check, frame = webcam.read()
-                cv2.imshow("Capturing", frame)
+                webcam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
             except:
-                webcam = cv2.VideoCapture(0)
-                check, frame = webcam.read()
-                cv2.imshow("Capturing", frame)
+                webcam = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+
             while True:
             
                 check, frame = webcam.read()
@@ -387,7 +385,6 @@ def main():
                 rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
                 key = cv2.waitKey(1)
                 if key == ord('s') : 
-                    try:
                         face_locations = face_recognition.face_locations(rgb_small_frame)[0]
                         if face_locations != []: #nếu có khuôn mặt
                             cv2.imwrite('img_anhsv/'+str(id)+str(i+1)+'.png',frame)
@@ -399,14 +396,10 @@ def main():
                                 embed_dictt[id]=[face_encoding]
                             if(i==4):
                                 messagebox.showinfo("thông báo", "Đã lưu")
-                            webcam.release()
-                            cv2.destroyAllWindows()
-                            break
-                        else:
-                            
-                            
-                            break
-                    except: print("lỗi")
+                                webcam.release()
+                                cv2.destroyAllWindows()
+                                break
+
                     
             if cv2.waitKey(1) &0xFF == ord('q'):
                 webcam.release()
@@ -414,18 +407,19 @@ def main():
                 break
             # thoát khỏi camera
             
-        upload_anh(id)
-        sv.themsv(id,name,malop,anh)
-        f=open("mahoa/"+lop+"mahoa.pkl","wb")
-        pickle.dump(embed_dictt,f)
-        f.close()
-        khoiphuc()
-        upload_filemahoa("mahoa/"+lop+"mahoa.pkl")
-        upload_filemahoa("mahoa/"+lop+".pkl")
+        # upload_anh(id)
+        # sv.themsv(id,name,malop,anh)
+        # f=open("mahoa/"+lop+"mahoa.pkl","wb")
+        # pickle.dump(embed_dictt,f)
+        # f.close()
+        # khoiphuc()
+        # upload_filemahoa("mahoa/"+lop+"mahoa.pkl")
+        # upload_filemahoa("mahoa/"+lop+".pkl")
 
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
+    win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
     win.title("Quản lý thông tin sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_themdl.png")

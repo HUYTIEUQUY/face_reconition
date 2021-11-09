@@ -53,14 +53,12 @@ def themmh(mamh,tenmh,lt,th,makhoa):
 
 def bangmh(makhoa):
     a=[]
-    stt=1
     try:
         data=db.child("MonHoc").get()
         for i in data.each():
             if(i.val()["MaKhoa"]==str(makhoa)):
-                e=[str(stt),i.val()["MaMH"],i.val()["TenMH"],i.val()["SoTietLyThuyet"],i.val()["SoTietThucHanh"]]
+                e=[i.val()["MaMH"],i.val()["TenMH"],i.val()["SoTietLyThuyet"],i.val()["SoTietThucHanh"]]
                 a.append(e)
-                stt=stt+1
     except:a=[]
     return a
 
@@ -104,14 +102,13 @@ def tenmh_ma(ma):
 
 def tim_mh(makhoa,q):
     a=[]
-    stt=1
+
     data=db.child("MonHoc").get()
     for i in data.each():
         if(i.val()["MaKhoa"]==str(makhoa)):
-            e=[str(stt),i.val()["MaMH"],i.val()["TenMH"],i.val()["SoTietLyThuyet"],i.val()["SoTietThucHanh"]]
-            if str(q) in khong_dau(i.val()["MaMH"].lower()) or str(q) in khong_dau(i.val()["TenMH"].lower()) or str(q) in khong_dau(i.val()["SoTietLyThuyet"].lower()) or str(q) in khong_dau(i.val()["SoTietThucHanh"].lower()):
+            e=[i.val()["MaMH"],i.val()["TenMH"],i.val()["SoTietLyThuyet"],i.val()["SoTietThucHanh"]]
+            if khong_dau(str(q)) in khong_dau(i.val()["MaMH"]) or khong_dau(str(q)) in khong_dau(i.val()["TenMH"]) or str(q) in khong_dau(i.val()["SoTietLyThuyet"]) or khong_dau(str(q)) in khong_dau(i.val()["SoTietThucHanh"]):
                 a.append(e)
-            stt=stt+1
     return a
 
 def kt_monhoc_tontai_diemdanh(ma):
