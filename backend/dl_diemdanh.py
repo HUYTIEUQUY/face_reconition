@@ -32,12 +32,12 @@ def catkb(matkb):
 
 def cong_them_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 + datetime.timedelta(hours=8)
+    d=d1 + datetime.timedelta(hours=1)
     d=str(d).split()
     return d[1]
 def tru_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 - datetime.timedelta(hours=3)
+    d=d1 - datetime.timedelta(hours=1)
     d=str(d).split()
     return d[1]
 
@@ -121,7 +121,6 @@ def xoa_dl_diemdanh(ma):
 def xoa_dl_tkb(ma):
     data=db.child('ThoiKhoaBieu').order_by_child('MaTKB').equal_to(str(ma)).get()
     for i in data.each():
-        print("xoá in tkb")
         if  i.val()["MaTKB"] == str(ma):
             db.child('ThoiKhoaBieu').child(i.key()).remove()
             return True
@@ -167,7 +166,7 @@ def update_TT_diemdanh(ma):
 #                 print('Lỗi update của hàm capnhatthongtin trong dl_diemdanh')
 
 def kiemtrathongtin(ma):
-    dl={'ThongTin':'vắng'}
+    dl={'ThongTin':'Vắng'}
     try:
         data = db.child("DiemDanh").order_by_child("Ma").equal_to(str(ma)).get()
         for i in data.each():
@@ -296,17 +295,17 @@ def timkiem_dd(ma,q):
 
 def capnhat_tgra(matkb,masv,tgra):
     data=db.child("DiemDanh").order_by_child("Ma").equal_to(str(matkb)).get()
-    dl={'TG_Ra':str(tgra)}
+    dl_ktt={'TG_Ra':str(tgra)}
     dl1={'TG_Ra':str(tgra),'ThongTin':str('Vắng')}
     for i in data.each():
-        if(i.val()["Ma"] == str(matkb) and i.val()["MaSV"] == str(masv) and i.val()["TG_Vao"] == str("")):
+        if(i.val()["Ma"] == str(matkb) and i.val()["MaSV"] == str(masv) and str(i.val()["TG_Vao"]) == str("")):
             try:
                 db.child("DiemDanh").child(i.key()).update(dl1)
             except:
                 print('Lỗi do capnhat_tgra trong dl_diemdanh')
         elif i.val()["Ma"] == str(matkb) and i.val()["MaSV"] == str(masv):
             try:
-                db.child("DiemDanh").child(i.key()).update(dl)
+                db.child("DiemDanh").child(i.key()).update(dl_ktt)
             except:
                 print('Lỗi do capnhat_tgra trong dl_diemdanh')
         

@@ -35,7 +35,7 @@ def upload_anh(masv):
         pathlound=str(masv)+str(i+1)+".png"
         path = "img_anhsv/"+str(masv)+str(i+1)+".png"
         storage.child(pathlound).put(path)
-        sleep(5)
+        sleep(3)
         os.remove("img_anhsv/"+pathlound)
 
 def upload_filemahoa(path):

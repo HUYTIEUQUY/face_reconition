@@ -11,9 +11,13 @@ db=conect_firebase.connect().database()
 def lop_khoa(ma):
     data=db.child("Lop").order_by_child("MaKhoa").equal_to(str(ma)).get()
     a=[]
+    lop=[]
     for i in data.each():
-            a.append(i.val()["TenLop"])
-    return a
+            a.append([i.val()["MaLop"],i.val()["TenLop"]])
+    sx_ma = sorted(a, key=lambda item: (item[0]),reverse=True)
+    for j in sx_ma:
+        lop.append(j[1])
+    return lop
 def all_lop():
     data=db.child("Lop").get()
     a=[]

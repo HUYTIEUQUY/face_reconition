@@ -53,8 +53,8 @@ def main():
         data_mamonsx.set("")
         data_tenmon.set("")
         data_ten.set("")
-        data_sotietlt.set("")
-        data_sotietth.set("")
+        data_sotietlt.set(0)
+        data_sotietth.set(0)
         row=mh.bangmh(makhoa.get())
         update(tv,row)
         loadding(0)
@@ -84,8 +84,8 @@ def main():
             return False
         elif lt.isnumeric()== False or th.isnumeric()== False:
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ ! Số tiết lý thuyết và số tiết thực hành phải là số\nVí dụ : 120,130,140,...")
-        elif int(lt) >= int(150) or int(th) >= int(150):
-            messagebox.showwarning("thông báo","Số tiết lý thuyết, số tiết thực hành tối đa là 150 tiết")
+        elif int(lt) >= int(700) or int(th) >= int(700):
+            messagebox.showwarning("thông báo","Số tiết lý thuyết, số tiết thực hành tối đa là 700 tiết")
         elif mh.kt_ma_tt(ma) !=[]:
             messagebox.showerror("thông báo","Mã môn học đã tồn tại")
             return False
@@ -158,7 +158,29 @@ def main():
             mh.suamh(ma,ten,lt,th)
             khoiphuc()
             messagebox.showinfo("thông báo","Sửa thành công")
-
+            
+    def tinh_sotiet(pheptinh,loai):
+        try:
+            if pheptinh == str("cong") and loai == str("TH") and data_sotietth.get() < 700 :
+                data_sotietth.set(data_sotietth.get()+1)
+            elif pheptinh == str("tru") and loai == str("TH") and data_sotietth.get() > 0 :
+                data_sotietth.set(data_sotietth.get()-1)
+            elif pheptinh == str("cong") and loai == str("LT") and data_sotietth.get() < 700 :
+                data_sotietlt.set(data_sotietlt.get()+1)
+            elif pheptinh == str("tru") and loai == str("LT") and data_sotietlt.get() > 0 :
+                data_sotietlt.set(data_sotietlt.get()-1)
+        except:pass
+        
+    def kt_sotiet(event):
+        try:
+            a=str(data_sotietlt.get())
+        except:
+            data_sotietlt.set(0)
+    def kt_sotietth(event):
+        try:
+            a=str(data_sotietth.get())
+        except:
+            data_sotietth.set(0)
     def timkiem():
         loadding(1)
         row=mh.tim_mh(makhoa.get(), ndtimkiem.get())
@@ -209,6 +231,8 @@ def main():
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc1.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
+    img_btncong=ImageTk.PhotoImage(file="img_admin/cong.png")
+    img_btntru=ImageTk.PhotoImage(file="img_admin/tru.png")
 
     
 #------------------------------------------------------------------------------
@@ -222,8 +246,10 @@ def main():
     data_ten=StringVar()
     data_tenmon=StringVar()
     data_mamon=StringVar()
-    data_sotietlt=StringVar()
-    data_sotietth=StringVar()
+    data_sotietlt=IntVar()
+    data_sotietlt.set(0)
+    data_sotietth=IntVar()
+    data_sotietth.set(0)
     data_mamonsx=StringVar()
     ndtimkiem=StringVar()
 #-------------------------------------------------------------------------------
@@ -243,14 +269,19 @@ def main():
     menumonhoc.place(x=30,y=380)
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthongke)
     menuthongke.place(x=30,y=461)
+    
 
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=37)
 
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=595,y=17)
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=595,y=53)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=595,y=92)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=32,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=595,y=131)
+    lb_lt=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=14,textvariable=data_sotietlt,bd=0,highlightthickness=0,justify="center")
+    lb_lt.bind('<Leave>',kt_sotiet)
+    lb_lt.place(x=681,y=92)
+    lb_th=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=14,textvariable=data_sotietth,bd=0,highlightthickness=0,justify="center")
+    lb_th.place(x=681,y=131)
+    lb_th.bind('<Leave>',kt_sotietth)
     Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=250)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
@@ -263,6 +294,15 @@ def main():
     btntimkiem.place(x=881,y=251)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc)
     btnkhoiphuc.place(x=920,y=251)
+    btncongth=Button(bg,image=img_btncong,bd=0,highlightthickness=0,activebackground='white', command=lambda: tinh_sotiet("cong","TH"))
+    btncongth.place(x=803,y=127)
+    btntruth=Button(bg,image=img_btntru,bd=0,highlightthickness=0,activebackground='white',  command=lambda: tinh_sotiet("tru","TH"))
+    btntruth.place(x=643,y=127)
+    btnconglt=Button(bg,image=img_btncong,bd=0,highlightthickness=0,activebackground='white',  command=lambda: tinh_sotiet("cong","LT"))
+    btnconglt.place(x=803,y=89)
+    btntrult=Button(bg,image=img_btntru,bd=0,highlightthickness=0,activebackground='white',  command=lambda: tinh_sotiet("tru","LT"))
+    btntrult.place(x=643,y=89)
+    
 
     # tạo stype cho bảng
     style()

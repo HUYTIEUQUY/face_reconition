@@ -84,10 +84,9 @@ def main(masv):
 
     def loadanh(anh):
         manganh=anh.split()
-        
         for i in range(5):
-            threading.Thread(target=gananh,args=(manganh,i)).start()
-         
+            threading.Thread(target=gananh,args=(manganh,i,)).start()
+
     def menusinhvien():
         win.destroy()
         sinhvien.main()
@@ -123,7 +122,7 @@ def main(masv):
         #thêm id , name vào co sở dữ liệu
         lop=tenlop.replace(" ","_")
         lop=khong_dau(lop)
-        
+
         try:
             f=open("mahoa/"+lop+"mahoa.pkl","rb")
             embed_dictt=pickle.load(f)
@@ -135,48 +134,58 @@ def main(masv):
             embed_dictt.pop(masv)
         except:print("không có mã trong facefrint")
 
-        for i in range(5):
-            key = cv2. waitKey(1)
-            try:
-                webcam = cv2.VideoCapture(1)
-                check, frame = webcam.read()
-                cv2.imshow("Capturing", frame)
-                
-            except:
-                webcam = cv2.VideoCapture(0)
-                check, frame = webcam.read()
-                cv2.imshow("Capturing", frame)
-                
-            while True:
-                check, frame = webcam.read()
-                cv2.imshow("Capturing", frame)
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
+        camera=[]
+        for i in range(0, 2):
+            cap = cv2.VideoCapture(i+cv2.CAP_DSHOW)
+            test, frame = cap.read()
+            if test==True: 
+                camera.append(i)
+        if camera != []:
+            webcam = cv2.VideoCapture(max(camera) + cv2.CAP_DSHOW)
+        # webcam = cv2.VideoCapture("kha.mp4")
 
-                key = cv2.waitKey(1)
-                if key == ord('s') : 
-                    face_locations = face_recognition.face_locations(rgb_small_frame)
-                    if face_locations != []: #nếu có khuôn mặt
-                        cv2.imwrite('img_anhsv/'+str(id)+str(i+1)+'.png',frame)
-                        try:
-                            face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                            anh=anh+' '+str(id)+str(i+1)+'.png'
-                            if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                                embed_dictt[id]+=[face_encoding]
-                            else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                                embed_dictt[id]=[face_encoding]
-                        except: return
-                        if(i==4):
-                            messagebox.showinfo("thông báo", "Đã lưu mã hoá khuôn mặt")
-                        webcam.release()
-                        
-                        cv2.destroyAllWindows()
-                        break
-                    
-                elif key == ord('q'):
-                    webcam.release()
-                    cv2.destroyAllWindows() # thoát khỏi camera
-                    break
+        dem=0
+        while True:
+            print(dem)
+            check, frame = webcam.read()
+            
+            # Thay đổi kích thước trong opencv
+            #frame: màn hình là hình ảnh đầu vào
+            #(0, 0), fx=0.25, fy=0.25 : kích thước mong muốn cho hình ảnh đầu
+            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+            rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
+            face_locations = face_recognition.face_locations(rgb_small_frame)
+            for (top_s, right, bottom, left) in face_locations:
+                top_s=top_s*4
+                right=right*4
+                bottom=bottom*4
+                left=left*4
+                cv2.rectangle(frame, (left, top_s), (right, bottom), (0,255,0), 2)
+                cv2.putText(frame,str(dem+1),(10,50),cv2.FONT_HERSHEY_SIMPLEX,2, (0, 255, 0), 2)
+                if cv2.waitKey(1) & 0xFF == ord('s') : 
+                    if face_locations != [] and dem <=4: #nếu có khuôn mặt
+                        cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
+                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+                        anh=anh+' '+str(id)+str(dem+1)+'.png'
+                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+                            embed_dictt[id]+=[face_encoding]
+                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+                            embed_dictt[id]=[face_encoding]
+                    dem +=1
+                elif dem>5 and face_locations and dem<20 and face_locations != [] and len(face_locations) == 1:
+                    face_encoding = face_recognition.face_encodings(frame)[0]
+                    if id in embed_dictt: 
+                        embed_dictt[id]+=[face_encoding]
+                    else:
+                        embed_dictt[id]=[face_encoding]
+                    dem +=1
+                
+            if dem==20:
+                messagebox.showinfo("thông báo", "Đã lưu")
+                webcam.release()
+                cv2.destroyAllWindows()
+                break
+            cv2.imshow("Capturing", frame)
 
         sv.suaanh(anh,id)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
@@ -188,8 +197,6 @@ def main(masv):
         threading.Thread(target=loadanh,args=(anh,)).start()
         threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+"mahoa.pkl",)).start()
         threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+".pkl",)).start()
-
-       
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -275,8 +282,7 @@ def main(masv):
    
     if anh=="":
         anh='aa.jpg aa.jpg aa.jpg aa.jpg aa.jpg'
-        
-    
+
     btn_capnhat=Button(bg,image=ing_btncapnhat,bd=0,highlightthickness=0,command=capnhat)
     btn_capnhat.place(x=618,y=518)
     btn_trolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trolai)

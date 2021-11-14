@@ -1,12 +1,10 @@
 from tkinter import *
 from tkinter import PhotoImage
 from PIL import ImageTk
-# import csdl
+
 from tkinter import messagebox
 import socket
-# import diemdanhsv
-# import admin_lop
-import hashlib
+
 from backend.dl_sinhvien import lop_khoa
 from uploadfile import download_filemahoa
 import backend.xacthuc as xacthuc
@@ -14,6 +12,7 @@ import adminlop
 import diemdanh
 import quantrivien_khoa
 import doimatkhau
+import quenmatkhau
 from kt_nhap import khong_dau
 from backend.dl_giangvien import makhoa_email
 from backend.dl_khoa import khoa_co_quyen_all
@@ -36,6 +35,9 @@ def main():
     def doimk():
         win.destroy()
         doimatkhau.main(0)
+    def quenmk():
+        win.destroy()
+        quenmatkhau.main()
     
     def hien():
         if txtPass["show"]=="*":
@@ -52,7 +54,7 @@ def main():
             messagebox.showwarning("thông báo","Vui lòng kiểm tra lại mật khẩu")
             return False
         elif xacthuc.xacthuc(email,passw)==False:
-             messagebox.showerror("Thông báo","Đăng nhập không thành công")
+             messagebox.showerror("Thông báo","Email hoặc mật khẩu không đúng")
              return False
         else:
             return True
@@ -76,11 +78,11 @@ def main():
                     makhoa = makhoa_email(email)
                     taifilemahoa(makhoa)
                     diemdanh.main()
-                elif xacthuc.kt_loaitk(email) == "3":
-                    messagebox.showinfo("thông báo","Tài khoản không tồn tại")
-                else:
+                elif xacthuc.kt_loaitk(email) == "2":
                     win.destroy()
                     quantrivien_khoa.main()
+                else:
+                    messagebox.showinfo("thông báo","Tài khoản không tồn tại")
             else:
                 messagebox.showinfo("thông báo","Đăng nhập thất bại")
         
@@ -99,6 +101,7 @@ def main():
 
     img_btnhien=ImageTk.PhotoImage(file="img/img_btnhienmk.png")
     img_lb_doimatkhau=ImageTk.PhotoImage(file="img/lb_doimatkhau.png")
+    img_lb_quenmatkhau=ImageTk.PhotoImage(file="img/lb_quenmatkhau.png")
 
     bg=Canvas(win,width=600,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -112,13 +115,16 @@ def main():
     data_p=StringVar()
     txtPass=Entry(bg,width=22,font=("Baloo Tamma 2 Medium",12), bd=0, show="*", textvariable=data_p)
     txtPass.place(x=240,y=289)
+    
 
     lb_doimatkhau=Button(bg,image=img_lb_doimatkhau,bd=0, highlightthickness=0,activebackground="#BCA8E6",relief=RIDGE,command=doimk)
-    lb_doimatkhau.place(x=231,y=440)
+    lb_doimatkhau.place(x=265,y=480)
+    lb_quenmatkhau=Button(bg,image=img_lb_quenmatkhau,bd=0, highlightthickness=0,activebackground="#BCA8E6",relief=RIDGE,command=quenmk)
+    lb_quenmatkhau.place(x=260,y=510)
 
 
     btn=Button(bg,image=img_btn,bd=0,borderwidth=0, highlightthickness=0,activebackground="#BFAAE5",command=dangnhap)
-    btn.place(x=231,y=494)
+    btn.place(x=231,y=400)
     btnhien=Button(bg,image=img_btnhien,bd=0,highlightthickness=0,command=hien)
     btnhien.place(x=428,y=290)
     win.mainloop()

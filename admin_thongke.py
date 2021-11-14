@@ -42,12 +42,12 @@ def main():
     def dongluu(row,ma,ten,tt,TG,TGra,ghichu):
 
         for i in row:
-            ma.append(i[1]) 
-            ten.append(tensv_ma(i[2]))
-            tt.append(i[3]) 
-            TG.append(i[4]) 
-            TGra.append(i[5]) 
-            ghichu.append(i[6]) 
+            ma.append(i[0]) 
+            ten.append(tensv_ma(i[1]))
+            tt.append(i[2]) 
+            TG.append(i[3]) 
+            TGra.append(i[4]) 
+            ghichu.append(i[5]) 
 
     def xuat_excel():
         row=tk.bangdd_ma(matkb.get())
@@ -59,37 +59,37 @@ def main():
         ghichu=[]
         dongluu(row,ma,ten,tt,TG,TGra,ghichu)
 
-        # if len(ma) < 1:
-        #     messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
-        #     return False
-        # else:
-        #     try:
-        #         fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-        #     except: print("")
-        #     out_workbook = xlsxwriter.Workbook(fln+".xlsx")
-        #     outsheet = out_workbook.add_worksheet()
-        #     tenlop=data_lop.get()
-        #     mh=tenmh.get()
-        #     outsheet.write("A1","Tên lớp: "+tenlop)
-        #     outsheet.write("B1","Môn học: "+mh)
-        #     outsheet.write("C1","Ngày: "+ngay.get())
+        if len(ma) < 1:
+            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+            return False
+        else:
+            try:
+                fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+            except: print("")
+            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+            outsheet = out_workbook.add_worksheet()
+            tenlop=data_lop.get()
+            mh=tenmh.get()
+            outsheet.write("A1","Tên lớp: "+tenlop)
+            outsheet.write("B1","Môn học: "+mh)
+            outsheet.write("C1","Ngày: "+ngay.get())
 
-        #     outsheet.write("A3","Mã sinh viên")
-        #     outsheet.write("B3","Tên sinh viên")
-        #     outsheet.write("C3","Thông tin")
-        #     outsheet.write("D3","Thời gian vào")
-        #     outsheet.write("E3","Thời gian ra")
-        #     outsheet.write("F3","Ghi chú")
-        #     def write_data_to_file(array,x):
-        #         for i in range(len(array)):
-        #             outsheet.write(i+3,x,array[i])
-        #     write_data_to_file(ma,0)
-        #     write_data_to_file(ten,1)
-        #     write_data_to_file(tt,2)
-        #     write_data_to_file(TG,3)
-        #     write_data_to_file(TGra,4)
-        #     write_data_to_file(ghichu,5)
-        #     out_workbook.close()
+            outsheet.write("A3","Mã sinh viên")
+            outsheet.write("B3","Tên sinh viên")
+            outsheet.write("C3","Thông tin")
+            outsheet.write("D3","Thời gian vào")
+            outsheet.write("E3","Thời gian ra")
+            outsheet.write("F3","Ghi chú")
+            def write_data_to_file(array,x):
+                for i in range(len(array)):
+                    outsheet.write(i+3,x,array[i])
+            write_data_to_file(ma,0)
+            write_data_to_file(ten,1)
+            write_data_to_file(tt,2)
+            write_data_to_file(TG,3)
+            write_data_to_file(TGra,4)
+            write_data_to_file(ghichu,5)
+            out_workbook.close()
     def bat_dau_tim():
 
         malop = malop_ten(data_lop.get())
@@ -97,16 +97,7 @@ def main():
         gv=magv_ten(data_gv.get())
         loai=data_tim.get()
         # nd_tim=["Mã TKB","Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
-        if loai=="Môn học":
-            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai=="LT-TH":
-            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ngày":
-            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ca":
-            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Trạng Thái":
-            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        row = tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv,ndtimkiem.get(),loai)
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
             update(tv,row)
@@ -251,20 +242,14 @@ def main():
             lb_ghichu.config(text="Ghi chú",background="white")
             txt_ghichu.pack(padx=20)
             btn_trolai.pack(side="right",padx=10,pady=10)
-            btn_luu.pack(side="right",padx=10,pady=10)
+
         
     def trolai():
         frame_ghichu.place_forget()
         fr_tb.place(x=330,y=110)
         txt_ghichu.delete(1.0,END)
 
-    def luu_ghichu():
-        if tk.luughichu(ngay.get(),ca.get(),data_masv.get(),txt_ghichu.get("1.0",END)) == True:
-            threading.Thread(target=khoiphuc_dd).start()
-            messagebox.showinfo("thông báo","Đã lưu ghi chú")
-            trolai()
-        else: 
-             messagebox.showerror("thông báo","Lưu không thành công")
+
     def menutkb():
         quyen = khoa_co_quyen_all(makhoa.get())
         win.destroy()
@@ -317,7 +302,6 @@ def main():
     ing_timkiem=ImageTk.PhotoImage(file="img/btn_timkiem.png")
     img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
     img_btnghichu = ImageTk.PhotoImage(file="img_admin/btn_ghichu.png")
-    img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
     img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
     img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
 
@@ -466,7 +450,7 @@ def main():
     tb.column(2, width=100 ,anchor='center')
     tb.column(3, width=150)
     tb.column(4, width=150,anchor='center')
-    tb.column(5, width=100)
+    tb.column(5, width=100,anchor='center')
     tb.column(6, width=100,anchor='center')
     tb.column(7, width=150,anchor='center')
 
@@ -490,7 +474,7 @@ def main():
 
     txt_ghichu=Text(frame_ghichu,width=60,height=6,bd=1,background="#F1F1F1",font=("Baloo Tamma 2 Medium",10))
     btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
-    btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
+
 
     txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
     txttim.place(x=888, y=64)

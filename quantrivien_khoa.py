@@ -48,16 +48,19 @@ def main():
         e=email.get()
         ten=kt.xoa_khoangcach(tenkhoa.get())
         em=e.strip()
-        tenemail= str(em)[0:em.index("@")]
-
+        try:
+            tenemail= str(em)[0:em.index("@")]
+        except:pass
         if ten=="" or e=="":
             messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
         elif kt.kt_dau_khoangcach(ten) == False or kt.kt_dau_khoangcach(e)== False or kt.kt_kitudacbiet(ten) !="" or kt.kt_kitudacbiet(tenemail) !="":
             messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
         elif kt_email(email.get()) == False or kt.kt_dau_khoangcach(e)== False or kt.kt_dau_khoangcach_email(e) != -1 :
             messagebox.showwarning("thông báo","email không hợp lệ\n\nVí dụ email hợp lệ 'khoacntt@mku.edu.vn'")
-        elif khoa.kt_tenkhoa(makhoa,ten)!= []:
+        elif khoa.kt_tenkhoa(makhoa,ten)!= [] :
             messagebox.showerror("thông báo",ten +" đã tồn tại")
+        elif khoa.kt_email_tt(e) != []:
+            messagebox.showerror("thông báo", e+" đã tồn tại")
         elif messagebox.askyesno("thông báo","Hãy kiểm tra kỹ email vì không thể sửa đổi khi đã tạo tài khoản."):
             e=e.strip()
             tenemail= str(e)[0:e.index("@")]
@@ -65,7 +68,6 @@ def main():
             khoa.them_tk_khoa("admin"+tenemail, email.get(), makhoa)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
-        else: loadding(0)
         loadding(0)
 
     # def xoa():
@@ -295,7 +297,7 @@ def main():
     tv.bind('<ButtonRelease-1>', getrow)
     tv.tag_configure("ollrow" ,background="white",font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#E7DFF1",fg="#AD7B98", width=12)
+    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",12),bg="#FCE2E9",fg="#AD7B98", width=12)
     loadding(1)
     threading.Thread(target=loaddl).start()
 

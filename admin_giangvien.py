@@ -22,23 +22,21 @@ def main():
 
     def loadding(a):
         if a == 1:# đang load dữ liệu
-            lb_loadding.place(x=904,y=4)
             menudangxuat["state"] = "disabled"
             btnkhoiphuc["state"] = "disabled"
             btntimkiem["state"] = "disabled"
             btnthem["state"] = "disabled"
             btnsua["state"] = "disabled"
             btnxoa["state"] = "disabled"
-            btnghichu["state"] = "disabled"
+
         else:
-            lb_loadding.place_forget()
             menudangxuat["state"] = "normal"
             btnkhoiphuc["state"] = "normal"
             btntimkiem["state"] = "normal"
             btnthem["state"] = "normal"
             btnsua["state"] = "normal"
             btnxoa["state"] = "normal"
-            btnghichu["state"] = "normal"
+
     def luong(ham):
         threading.Thread(target=ham).start()
 
@@ -57,11 +55,9 @@ def main():
         data_ten.set("")
         data_sdt.set("")
         data_ghichu.set("")
+        txt_ghichu.delete(1.0,END)
         row=gv.banggv(makhoa.get())
         update(tv,row)
-        try:
-            trolai()
-        except:return
         loadding(0)
 
     def kt_email(email):
@@ -76,7 +72,9 @@ def main():
         ten=data_ten.get()
         ten=kt.xoa_khoangcach(ten)
         sdt=data_sdt.get()
-        ghichu=data_ghichu.get()
+        ghichu=txt_ghichu.get("1.0",END)
+        if ghichu =="\n":
+            ghichu=""
         emailgv=data_email.get()
         if ma =="" or ten == "" or sdt=="" or emailgv=="":
             messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
@@ -88,6 +86,8 @@ def main():
             messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
         elif kt_email(emailgv) == False or kt.kt_dau_khoangcach(emailgv)== False or kt.kt_dau_khoangcach_email(emailgv) != -1 :
             messagebox.showwarning("thông báo","email không hợp lệ\n\nVí dụ email hợp lệ 'nguyenhuuthe@mku.edu.vn'")
+        elif gv.tengv_email(emailgv) != "":
+            messagebox.showerror("thông báo", emailgv+" đã tồn tại")
         elif messagebox.askyesno("thông báo","Hãy kiểm tra kỹ email vì không thể sửa đổi khi đã tạo tài khoản."):
             if gv.kt_ma(ma) == []:
                 gv.themgv(ma,ten,emailgv,sdt,ghichu,makhoa.get())
@@ -99,9 +99,11 @@ def main():
                 
     def sua():
         loadding(1)
-        
+        ghichu= txt_ghichu.get("1.0",END)
+        if(ghichu=="\n"):
+            ghichu=""
         if data_ma.get() != data_magv.get():
-            messagebox.showwarning("thông báo","khổng thể sửa mã")
+            messagebox.showwarning("thông báo","không thể sửa mã")
             data_ma.set(data_magv.get())
         elif data_magv.get()=="":
             messagebox.showwarning("thông báo","Chưa có dữ liệu sửa. Bạn hãy click vào dòng muốn sửa !")
@@ -113,7 +115,7 @@ def main():
             messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
         elif data_sdt.get().isnumeric()== False:
             messagebox.showwarning("thông báo","Số điện thoại không đúng")
-        elif gv.suagv(data_magv.get(),data_ten.get(),data_sdt.get(),data_ghichu.get()):
+        elif gv.suagv(data_magv.get(),data_ten.get(),data_sdt.get(),ghichu):
             messagebox.showinfo("thông báo","Đã sửa thành công")
             khoiphuc()
         else:
@@ -172,30 +174,8 @@ def main():
         else:
             update(tv,row)
         loadding(0)
-
-    def xem_ghichu():
-        if data_magv.get() != "":
-            frame_ghichu.config(bg="white")
-            lb_ghichu.config(text="Ghi chú",background="white")
-            txt_ghichu.pack(padx=20)
-            btn_trolai.pack(side="right",padx=10,pady=10)
-            btn_luu.pack(side="right",padx=10,pady=10)
-        else: messagebox.showwarning("thông báo","Giảng viên không có ghi chú")
     
-    def trolai():
-        frame_ghichu.config(bg="#E8DFF1")
-        lb_ghichu.config(text=".",fg="#A672BB",bg="#E8DFF1")
-        txt_ghichu.pack_forget()
-        btn_trolai.pack_forget()
-        btn_luu.pack_forget()
 
-    def luu_ghichu():
-        if gv.luughichu(data_magv.get(),txt_ghichu.get("1.0",END)):
-            luong(khoiphuc)
-            messagebox.showinfo("thông báo","Đã lưu ghi chú")
-
-        else: 
-             messagebox.showerror("thông báo","Lưu không thành công")
     def menuthongke():
         win.destroy()
         admin_thongke.main()
@@ -222,7 +202,7 @@ def main():
             dangnhap.main()
         else: return
     win=Tk()
-    win.geometry("1000x600+300+120")
+    win.geometry("1200x750+120+9")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
     win.config(bg="green")
@@ -240,9 +220,7 @@ def main():
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
-    img_btnghichu = ImageTk.PhotoImage(file="img_admin/btn_ghichu.png")
-    img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
-    img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
+
 
     
 #------------------------------------------------------------------------------
@@ -263,9 +241,9 @@ def main():
     data_sdt=StringVar()
     data_ghichu=StringVar()
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1200,height=750,bg="green")
     bg.pack(side="left",padx=0)
-    anhnen=bg.create_image(500,300,image=img_bg)
+    anhnen=bg.create_image(600,375,image=img_bg)
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
@@ -283,24 +261,23 @@ def main():
     lbgv=Label(bg,font=("Baloo Tamma 2 Medium",12),fg="#A672BB",bg="white")
     lbgv.place(x=45,y=40)
 
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_ma,bd=0,highlightthickness=0).place(x=575,y=17)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=51)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_sdt,bd=0,highlightthickness=0).place(x=575,y=84)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_email,bd=0,highlightthickness=0).place(x=575,y=119)
-    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=21,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=251)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_ma,bd=0,highlightthickness=0).place(x=500,y=17)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_ten,bd=0,highlightthickness=0).place(x=500,y=51)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_sdt,bd=0,highlightthickness=0).place(x=500,y=84)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=31,textvariable=data_email,bd=0,highlightthickness=0).place(x=500,y=119)
+    Entry(bg,font=("Baloo Tamma 2 Medium",11),width=21,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=819,y=290)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
-    btnthem.place(x=487,y=185)
+    btnthem.place(x=550,y=190)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0, command=sua)
-    btnsua.place(x=637,y=185)
+    btnsua.place(x=700,y=190)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
-    btnxoa.place(x=770,y=185)
+    btnxoa.place(x=850,y=190)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,activebackground='white',command=timkiem)
-    btntimkiem.place(x=881,y=250)
+    btntimkiem.place(x=1050,y=293)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='white',command=khoiphuc)
-    btnkhoiphuc.place(x=920,y=250)
-    btnghichu=Button(bg,image=img_btnghichu,bd=0,highlightthickness=0,activebackground='white',command=xem_ghichu)
-    btnghichu.place(x=948,y=4)
+    btnkhoiphuc.place(x=1087,y=293)
+
 
     f=Frame(bg)
     f.place(x=320,y=30)
@@ -309,7 +286,7 @@ def main():
     style()
     # tạo fram cho bảng
     fr_tb = Frame(bg)
-    fr_tb.place(x=328,y=300)
+    fr_tb.place(x=364,y=380)
 
     #tạo thanh cuộn 
     tree_scroll = Scrollbar(fr_tb)
@@ -321,7 +298,7 @@ def main():
     tv.column(3, width=140)
     tv.column(4, width=240)
     tv.column(5, width=110,anchor=CENTER)
-    tv.column(6, width=0,stretch='no')
+    tv.column(6, width=150,stretch='no')
 
     tv.heading('#0', text="", anchor='center')
     tv.heading(1,text="STT")
@@ -336,15 +313,11 @@ def main():
     tv.tag_configure("evenrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("ollrow" ,background="#ECECEC",foreground="red",font=("Baloo Tamma 2 Medium",10))
     
-    frame_ghichu=Frame(bg,background="#E8DFF1")
-    frame_ghichu.place(x=357,y=5)
-    lb_ghichu=Label(frame_ghichu,font=("Baloo Tamma 2 Medium",14),fg="#A672BB")
-    lb_ghichu.pack()
-    txt_ghichu=Text(frame_ghichu,width=60,height=6,bd=1,background="#F1F1F1",font=("Baloo Tamma 2 Medium",10))
-    btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
-    btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
+
+
+    txt_ghichu=Text(bg,width=34,height=5,bd=0,background="white",font=("Baloo Tamma 2 Medium",10))
+    txt_ghichu.place(x=890,y=22)
     
-    lb_loadding=Label(bg,text=" Đang tải . . . ", font=("Baloo Tamma 2 Medium",11),bg="#FCE2E9",fg="#AD7B98", width=14)
     loadding(1)
     luong(loaddl)
     win.mainloop()

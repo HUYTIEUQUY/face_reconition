@@ -120,6 +120,15 @@ def kt_tenkhoa(makhoa,tenkhoa):
                 a.append(i.val())
     except:a=[]
     return a
+def kt_email_tt(email):
+    data=db.child("GiangVien").order_by_child("Email").equal_to(str(email)).get()
+    a=[]
+    try:
+        for i in data.each():
+            if(i.val()["Email"]==str(email)):
+                a.append(i.val())
+    except:a=[]
+    return a
 
 def makhoa_ten(tenkhoa):
     data=db.child("Khoa").get()

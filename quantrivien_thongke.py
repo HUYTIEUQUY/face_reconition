@@ -35,12 +35,12 @@ def main():
             btntimkiem["state"] = "normal"
     def dongluu(row,ma,ten,tt,TG,TGra,ghichu):
         for i in row:
-            ma.append(i[1]) 
-            ten.append(i[2]) 
+            ma.append(i[0]) 
+            ten.append(tensv_ma(i[1])) 
             tt.append(i[2]) 
-            TG.append(i[4]) 
-            TGra.append(i[5]) 
-            ghichu.append(i[6])  
+            TG.append(i[3]) 
+            TGra.append(i[4]) 
+            ghichu.append(i[5])  
     def xuat_excel():
         row=tk.bangdd_ma(matkb.get())
         ma=[]
@@ -82,6 +82,7 @@ def main():
             write_data_to_file(TGra,4)
             write_data_to_file(ghichu,5)
             out_workbook.close()
+            messagebox.showinfo("thông báo","Đã xuất thành công")
 
     def bat_dau_tim():
         malop = malop_ten(data_lop.get())
@@ -159,6 +160,7 @@ def main():
         global dem
         dem = 0
         for i in row:
+            i.insert(0,dem+1)
             i[2]=tensv_ma(i[2])
             if dem%2==0:
                 tb.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
@@ -244,20 +246,11 @@ def main():
             lb_ghichu.config(text="Ghi chú",background="white")
             txt_ghichu.pack(padx=20)
             btn_trolai.pack(side="right",padx=10,pady=10)
-            btn_luu.pack(side="right",padx=10,pady=10)
         
     def trolai():
         frame_ghichu.place_forget()
         fr_tb.place(x=330,y=140)
         txt_ghichu.delete(1.0,END)
-
-    def luu_ghichu():
-        if tk.luughichu(ngay.get(),ca.get(),data_masv.get(),txt_ghichu.get("1.0",END)) == True:
-            threading.Thread(target=khoiphuc_dd).start()
-            messagebox.showinfo("thông báo","Đã lưu ghi chú")
-            trolai()
-        else: 
-             messagebox.showerror("thông báo","Lưu không thành công")
 
     def menuthietlap():
         win.destroy()
@@ -288,7 +281,6 @@ def main():
     win.config(bg="green")
     win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thongke.png")
-    img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
     
     img_menuthongke=ImageTk.PhotoImage(file="img_qtv/menu_thongke1.png")
     img_menuthietlap=ImageTk.PhotoImage(file="img_qtv/menu_thietlap.png")
@@ -300,7 +292,7 @@ def main():
     img_btnghichu = ImageTk.PhotoImage(file="img_admin/btn_ghichu.png")
     img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
     img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
-    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
+
 
     bg=Canvas(win,width=1200,height=800,bg="green")
     bg.pack(side="left",padx=0)
@@ -476,7 +468,6 @@ def main():
 
     txt_ghichu=Text(frame_ghichu,width=60,height=6,bd=1,background="#F1F1F1",font=("Baloo Tamma 2 Medium",10))
     btn_trolai= Button(frame_ghichu,image=img_btntrove,bd=0,highlightthickness=0,activebackground="white",command=trolai)
-    btn_luu= Button(frame_ghichu,image=img_btnluu,bd=0,highlightthickness=0,activebackground="white",command=luu_ghichu)
 
     txttim=Entry(bg,font=("Baloo Tamma 2 Medium",11),width=25,textvariable=ndtimkiem,bd=0,highlightthickness=0)
     txttim.place(x=888,y=110)

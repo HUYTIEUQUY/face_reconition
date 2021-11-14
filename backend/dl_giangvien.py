@@ -1,10 +1,6 @@
 import conect_firebase
-import re
-import firebase_admin
 from firebase_admin import auth
-from firebase_admin import credentials
 from kt_nhap import khong_dau
-import backend.dl_khoa 
 db=conect_firebase.connect().database()
 from send_message import gmail_login
 
@@ -94,7 +90,8 @@ def tim_gv(makhoa,q):
     return sx_ma
 
 def suagv(magv,tengv,sdt,ghichu):
-    data=db.child("GiangVien").get()
+    print(ghichu)
+    data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(magv)).get()
     dl={'MaGV':str(magv),'TenGV':str(tengv),'SDT':str(sdt),'GhiChu':str(ghichu)}
     for i in data.each():
         if(i.val()["MaGV"]==str(magv)):
@@ -151,7 +148,7 @@ def email_ma(ma):
     return a
 
 def sdt_ma(ma):
-    data=db.child("GiangVien").get()
+    data=db.child("GiangVien").order_by_child("MaGV").equal_to(str(ma)).get()
     a=""
     for i in data.each():
         if(i.val()["MaGV"]==str(ma)):

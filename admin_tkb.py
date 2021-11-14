@@ -58,12 +58,7 @@ def main():
         makhoa.set(makhoa_email(email))
         tengv.set(tengv_email(email))
         lbgv.config(text=tengv.get())
-        global Quyen
-        quyen=khoa_co_quyen_all(makhoa.get())
-        if quyen == str(1):
-            lop = tkb.all_lop()
-        else:lop=tkb.lop_khoa(makhoa.get())
-
+        lop=tkb.lop_khoa(makhoa.get())
         gv=tkb.gv_khoa(makhoa.get())
         mon=tkb.mh_khoa(makhoa.get())
         namhoc=tkb.namhoc()
