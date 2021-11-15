@@ -40,12 +40,12 @@ def main():
 
     def dongluu(row,ma,ten,tt,TG,TGra,ghichu):
         for i in row:
-            ma.append(i[1]) 
-            ten.append(tensv_ma(i[2]))
-            tt.append(i[3]) 
-            TG.append(i[4]) 
-            TGra.append(i[5]) 
-            ghichu.append(i[6]) 
+            ma.append(i[0]) 
+            ten.append(tensv_ma(i[1]))
+            tt.append(i[2]) 
+            TG.append(i[3]) 
+            TGra.append(i[4]) 
+            ghichu.append(i[5]) 
 
     def xuat_excel():
         row=tk.bangdd_ma(matkb.get())

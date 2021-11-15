@@ -288,22 +288,12 @@ def main():
             webcam = cv2.VideoCapture(max(camera) + cv2.CAP_DSHOW)
 
             face_locations = []
-
-            # ret = webcam.set(cv2.CAP_PROP_FRAME_WIDTH,600)
-            # ret = webcam.set(cv2.CAP_PROP_FRAME_HEIGHT,600)
-            # detector = dlib.get_frontal_face_detector()
-            # predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-            # #these landmarks are based on the image above 
-            # left_eye_landmarks  = [36, 37, 38, 39, 40, 41]
-            # right_eye_landmarks = [42, 43, 44, 45, 46, 47]
             dem=0
             try:
                 while True  :
                     ret, frame = webcam.read()
                     # print(frame)
                     rgb_small_frame = frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
-                    # gray=cv2.cvtColor(small_frame,cv2.COLOR_BGR2GRAY)
-                    # faces,_,_ = detector.run(image = gray, upsample_num_times = 0, adjust_threshold = 0.0)
 
                     face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
                     if face_locations != []:
@@ -316,7 +306,7 @@ def main():
                                 dem=0
                     cv2.imshow('Video', frame)
                     
-                    if cv2.waitKey(5) & 0xFF == ord('q'):
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
                         webcam.release()
                         if vao_ra==1:
                             threading.Thread(target=diemdanh.kiemtrathongtin,args=(ma,)).start()
