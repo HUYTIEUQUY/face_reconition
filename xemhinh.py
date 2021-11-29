@@ -162,23 +162,25 @@ def main(masv):
                 left=left*4
                 cv2.rectangle(frame, (left, top_s), (right, bottom), (0,255,0), 2)
                 cv2.putText(frame,str(dem+1),(10,50),cv2.FONT_HERSHEY_SIMPLEX,2, (0, 255, 0), 2)
-                if cv2.waitKey(1) & 0xFF == ord('s') : 
-                    if face_locations != [] and dem <=4: #nếu có khuôn mặt
-                        cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
-                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                        anh=anh+' '+str(id)+str(dem+1)+'.png'
-                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                            embed_dictt[id]+=[face_encoding]
-                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                            embed_dictt[id]=[face_encoding]
-                    dem +=1
-                elif dem>5 and face_locations and dem<20 and face_locations != [] and len(face_locations) == 1:
+            if cv2.waitKey(1) & 0xFF == ord('s')  : 
+                if face_locations != [] and dem <=4: #nếu có khuôn mặt
+                    cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
+                    face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+                    anh=anh+' '+str(id)+str(dem+1)+'.png'
+                    if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+                        embed_dictt[id]+=[face_encoding]
+                    else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+                        embed_dictt[id]=[face_encoding]
+                dem +=1
+            elif dem>5 and face_locations and dem<20 and face_locations != [] and len(face_locations) == 1:
+                try:
                     face_encoding = face_recognition.face_encodings(frame)[0]
                     if id in embed_dictt: 
                         embed_dictt[id]+=[face_encoding]
                     else:
                         embed_dictt[id]=[face_encoding]
                     dem +=1
+                except:continue
                 
             if dem==20:
                 messagebox.showinfo("thông báo", "Đã lưu")

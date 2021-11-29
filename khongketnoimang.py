@@ -1,13 +1,13 @@
 from tkinter import *
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
-import index
+import Face_AttendanceMKU
 
 
 def main():
     def thulai():
         win.destroy()
-        index.main()
+        Face_AttendanceMKU.main()
     def thoat():
         win.destroy()
 

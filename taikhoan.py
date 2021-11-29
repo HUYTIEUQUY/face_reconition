@@ -66,7 +66,7 @@ def main():
             data_dd.set("Đã điểm danh tất cả")
         else:
             data_dd.set("Chưa điểm danh")
-            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=lambda: thongbaodd(gvdd))
+            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command= thongbaodd())
             btnthongbaodd.place(x=920,y=425)
             lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
             lbstb1.place(x=952,y=420)
@@ -95,9 +95,9 @@ def main():
             messagebox.showinfo("thông báo","Đã cập nhật số điện thoại")
         else:
             messagebox.showwarning("Lỗi ","Cập nhật không thành công")
-    def thongbaodd(gvdd):
+    def thongbaodd():
         win.destroy()
-        diemdanh_bu.main(gvdd)
+        diemdanh_bu.main(1)
 
     def chuyentrang_lichgiang(lichgiang):
         win.destroy()

@@ -11,6 +11,7 @@ import cv2
 import face_recognition
 import sinhvien
 import thongke
+import diemdanh_bu
 import taikhoan
 import backend.dl_diemdanh as diemdanh
 from backend.dl_tkb import lop_matkb
@@ -249,8 +250,7 @@ def main():
             best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
-            # face_names.append(name)
-            print(face_names)
+
             now = datetime.now()
             now=now.strftime("%X")
             if vao_ra==0 and name!= "Unknow":
@@ -258,18 +258,6 @@ def main():
             elif name not in dd_ra and name != 'Unknow': 
                 threading.Thread(target=xulyra,args=(ma,name,now)).start()
                 dd_ra.append(name)
-            # else :
-            #     for (top_s, right, bottom, left), i in zip(face_locations, face_names):
-            #         if i == 'Unknow':
-            #             gbr = Image.fromarray(frame)                  # konversi dari OpenCV ke PIL
-            #             gbr_array = asarray(gbr)
-            #             # face = gbr_array[y1:y2, x1:x2]                        
-            #             face = gbr_array[top_s:bottom, left:right]
-            #             face = Image.fromarray(face)
-            #             face = face.resize((160,160))
-            #             face = asarray(face)
-            #             cv2.imwrite("a.png", face)
-            #             gananh_khi_click(name,now)
 
     def batdaudiemdanh():
         known_face_encodings = []
@@ -337,6 +325,7 @@ def main():
                     dd.append(a[i])
                     threading.Thread(target = diemdanh.diem_danh_vao_csdl, args = (matkb.get(),a[i],"vắng",str(malop),mamh,magv,ngay,ca,"")).start()
             hen_ngay_xoa()
+            khoiphuc()
             luong(batdaudiemdanh)
         try:
             lb1.pack()
@@ -439,6 +428,9 @@ def main():
     def thietlaptre():
         win.destroy()
         thietlap.main()
+    def dd_bu():
+        win.destroy()
+        diemdanh_bu.main(0)
             
     def menutaikhoan():
         win.destroy()
@@ -479,6 +471,7 @@ def main():
     ing_btntgra=ImageTk.PhotoImage(file="img/diemdanhra.png")
     ing_btntam=ImageTk.PhotoImage(file="img/anhtam.png")
     ing_btnthetlap=ImageTk.PhotoImage(file="img/thietlap.png")
+    ing_btndd_bu=ImageTk.PhotoImage(file="img/chuadd.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
     img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
@@ -558,7 +551,9 @@ def main():
     #bang diemdanh
 
     tl=Button(bg,image=ing_btnthetlap,bd=0,highlightthickness=0,command=thietlaptre)
-    tl.place(x=1149,y=5)
+    tl.place(x=1145,y=7)
+    dd_bu=Button(bg,image=ing_btndd_bu,bd=0,highlightthickness=0,command=dd_bu)
+    dd_bu.place(x=1090,y=7)
 
     # tạo stype cho bảng
     style()

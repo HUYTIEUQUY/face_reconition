@@ -388,20 +388,17 @@ def kt_lichgiang_gv(magv,ngay):
 
 
 def ngaya_nhohon_ngayb(a,b):
-    ngay_a=a.replace("/"," ").split()
-    ngay_b=b.replace("/"," ").split()
-    if ngay_a[2]>ngay_b[2]:
+    d1 = datetime.datetime.strptime(a, "%d/%m/%Y")
+    d2 = datetime.datetime.strptime(b, "%d/%m/%Y")
+    if d1 >= d2:
         return False
-    elif ngay_a[2]==ngay_b[2] and ngay_a[1]>ngay_b[1]:
-        return False
-    elif ngay_a[2]==ngay_b[2] and ngay_a[1]==ngay_b[1] and ngay_a[0]>=ngay_b[0]:
-        return False
-    else:
-        return True
+    else:return True
+    
 
 def gv_dd(magv,ngay):
     a=[]
     data=db.child("ThoiKhoaBieu").order_by_child("TrangThaiDD").equal_to("0").get()
+    
     try:
         for i in data.each():
             if(i.val()["MaGV"]==str(magv) and ngaya_nhohon_ngayb(i.val()["Ngay"] , str(ngay)) and i.val()["TrangThaiDD"] =='0' ):

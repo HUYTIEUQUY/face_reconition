@@ -32,7 +32,7 @@ def catkb(matkb):
 
 def cong_them_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 + datetime.timedelta(hours=1)
+    d=d1 + datetime.timedelta(hours=5)
     d=str(d).split()
     return d[1]
 def tru_gio(now):

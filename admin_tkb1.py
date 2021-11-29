@@ -319,17 +319,12 @@ def main():
             mylistlop.remove(lbox.get(ANCHOR))
             lbox.delete(ANCHOR)
         except: print('xoá danh sách nhanh quá')
-    def chonngay(cal,btn):
+    def chonngay():
         data_ngay.set(dinh_dang_ngay(cal.get_date()))
-        cal.destroy()
-        btn.destroy()
-        lb.config(text="|")
+        f.place_forget()
         btnchonlich.config(command=chonlich)
     def chonlich():
-        cal = Calendar(lb,selectmode="day",year=int(lich[2]),month=int(lich[1]),day=int(lich[0]),bg="white")
-        cal.pack()
-        btn=Button(f,image=img_btnchon,bg="white",command=lambda:chonngay(cal,btn),bd=0,highlightthickness=0)
-        btn.pack()
+        f.place(x=305,y=80)
         btnchonlich.config(command=tam)
 
     def tam():
@@ -517,12 +512,15 @@ def main():
     btnkhoiphuc.place(x=1111,y=419)
 
     f=Frame(bg)
-    f.place(x=305,y=80)
     lb=Label(f,bg="#E8DFF1",fg="#E8DFF1")
     lb.pack()
+    cal = Calendar(lb,selectmode="day",year=int(lich[2]),month=int(lich[1]),day=int(lich[0]),bg="white")
+    cal.pack()
+    btn=Button(f,image=img_btnchon,bg="white",command=chonngay,bd=0,highlightthickness=0)
+    btn.pack()
 
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
-    btnchonlich.place(x=684,y=219)
+    btnchonlich.place(x=910,y=219)
 
     #listbox
     lbox=Listbox(bg,width=60,height=7,highlightthickness=0,bd=0,justify="center",selectmode="MULTIPLE")

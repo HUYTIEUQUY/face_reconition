@@ -51,7 +51,12 @@ def main():
             btnxoa['state']='normal'
         
 
-        
+    def gan_anh(path):
+        img=Image.open(path)
+        img.thumbnail((180,180))
+        img=ImageTk.PhotoImage(img)
+        lb1.config(image=img)
+        lb1.image=img
 
     def luong(ham):
         threading.Thread(target=ham).start()
@@ -75,6 +80,7 @@ def main():
         fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
         ko_luu=[]
         malop=malop_ten(cb_lop.get())
+        lop=kt.khong_dau(cb_lop.get()).replace(" ","_")
         xl = pd.ExcelFile(fln)
         df = pd.read_excel(xl, 0) 
         for i in range(df.shape[0]):
@@ -84,7 +90,6 @@ def main():
                ko_luu.append(masv)
             else:
                 sv.themsv(masv,tensv,malop,"")
-                lop=kt.khong_dau(cb_lop.get()).replace(" ","_")
                 try:
                     f=open("mahoa/"+lop+".pkl","rb")
                     ref_dictt=pickle.load(f)
@@ -114,21 +119,24 @@ def main():
             messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
             return False
         else:
-            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-            a=sv.dong_ma_sv(malop)
-            b=sv.dong_ten_sv(malop)
-            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
-            outsheet = out_workbook.add_worksheet()
-            outsheet.write("A1","Mã sinh viên")
-            outsheet.write("B1","Tên sinh viên")
-            
-            def write_data_to_file(array,x):
-                for i in range(len(array)):
-                    outsheet.write(i+2,x,array[i])
-            write_data_to_file(a,0)
-            write_data_to_file(b,1)
-            out_workbook.close()
-            messagebox.showinfo("thông báo","Đã xuất thành công ")
+            try:
+                fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+                if fln != "":
+                    a=sv.dong_ma_sv(malop)
+                    b=sv.dong_ten_sv(malop)
+                    out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+                    outsheet = out_workbook.add_worksheet()
+                    outsheet.write("A1","Mã sinh viên")
+                    outsheet.write("B1","Tên sinh viên")
+                    
+                    def write_data_to_file(array,x):
+                        for i in range(len(array)):
+                            outsheet.write(i+2,x,array[i])
+                    write_data_to_file(a,0)
+                    write_data_to_file(b,1)
+                    out_workbook.close()
+                    messagebox.showinfo("thông báo","Đã xuất thành công ")
+            except:print("Error")
             loadding(0)
     
     def khoiphuc():
@@ -140,11 +148,7 @@ def main():
         malop=malop_ten(cb_lop.get())
         row=sv.bangsv(malop)
         update(row)
-        img=Image.open("img/bg_themdl2.png")
-        img.thumbnail((180,180))
-        img=ImageTk.PhotoImage(img)
-        lb1.config(image=img)
-        lb1.image=img
+        gan_anh("img/bg_themdl2.png")
         lb2.config(text="")
         btn_xemanh.config(image=img_btnxem2)
         loadding(0)
@@ -200,13 +204,10 @@ def main():
         
     def gananh_khi_click(anh):
         if(anh==[]):
-            img=Image.open("img_anhsv/aa.jpg")
+            gan_anh("img_anhsv/aa.jpg")
         else:
-            img=Image.open(load(anh[0]))
-        img.thumbnail((150,150))
-        img=ImageTk.PhotoImage(img)
-        lb1.config(image=img)
-        lb1.image=img
+            gan_anh("img_anhsv/aa.jpg")
+            gan_anh(load(anh[0]))
         btn_xemanh.config(image=img_btnxem)
 
     def sua():
@@ -405,15 +406,17 @@ def main():
                 cv2.rectangle(frame, (left, top_s), (right, bottom), (0,255,0), 2)
                 cv2.putText(frame,str(dem+1),(10,50),cv2.FONT_HERSHEY_SIMPLEX,2, (0, 255, 0), 2)
                 if cv2.waitKey(1) & 0xFF == ord('s') : 
-                    if face_locations != [] and dem <=4: #nếu có khuôn mặt
-                        cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
-                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                        anh=anh+' '+str(id)+str(dem+1)+'.png'
-                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                            embed_dictt[id]+=[face_encoding]
-                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                            embed_dictt[id]=[face_encoding]
-                    dem +=1
+                    try:
+                        if face_locations != [] and dem <=4: #nếu có khuôn mặt
+                            cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
+                            face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+                            anh=anh+' '+str(id)+str(dem+1)+'.png'
+                            if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+                                embed_dictt[id]+=[face_encoding]
+                            else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+                                embed_dictt[id]=[face_encoding]
+                        dem +=1
+                    except: continue
                 elif dem>5 and face_locations and dem<20 and face_locations != [] and len(face_locations) == 1:
                     face_encoding = face_recognition.face_encodings(frame)[0]
                     if id in embed_dictt: 
@@ -570,12 +573,8 @@ def main():
     lb2=Label(f1,bg="white",font=("Baloo Tamma 2 Medium",10))
     lb2.pack()
 
-    img=Image.open("img/bg_themdl2.png")
-    img.thumbnail((180,180))
-    img=ImageTk.PhotoImage(img)
-
-    lb1.config(image=img)
-    lb1.image=img
+    gan_anh("img/bg_themdl2.png")
+    
 
     btn_xemanh=Button(f1,image=img_btnxem2,bd=0,highlightthickness=0,command=xemanh)
     btn_xemanh.pack()
