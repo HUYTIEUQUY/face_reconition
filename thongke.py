@@ -274,7 +274,6 @@ def main():
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
     win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img/bg_thongke.png")
     img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
@@ -291,7 +290,7 @@ def main():
     img_btnluu = ImageTk.PhotoImage(file="img_admin/btnluu.png")
     img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
 
-    bg=Canvas(win,width=1200,height=800,bg="green")
+    bg=Canvas(win,width=1200,height=800,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(600,400,image=img_bg)
 

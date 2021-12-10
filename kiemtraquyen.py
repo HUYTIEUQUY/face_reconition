@@ -22,9 +22,10 @@ def main():
             lop=all_lop()
         else:
             lop=lop_khoa(makhoa)
-        for i in lop:
+            for i in lop:
                 tenlop=khong_dau(i)
-                threading.Thread(target=download_filemahoa,args=(tenlop,)).start()
+                download_filemahoa(tenlop)
+                # threading.Thread(target=download_filemahoa,args=(tenlop,)).start()
     #Ngày hiện tại
     day = str(datetime.date.today()).split("-")
     ngayhientai = str(day[2])+"/"+str(day[1])+"/"+str(day[0])
@@ -41,15 +42,12 @@ def main():
             adminlop.main()
         elif xacthuc.kt_loaitk(data[0]) == "0":
             makhoa=makhoa_email(data[0])
-            taifilemahoa(makhoa)
+            threading.Thread(target = taifilemahoa,args=(makhoa,)).start()
             diemdanh.main()
         else:
             quantrivien_khoa.main()
     else:
         dangnhap.main()
-
-
-
 
 if __name__ == '__main__':
     main()

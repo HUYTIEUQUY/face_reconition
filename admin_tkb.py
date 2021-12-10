@@ -300,11 +300,13 @@ def main():
         f.place_forget()
         btnchonlich.config(command=chonlich)
     def chonlich():
-        f.place(x=305,y=80)
-        btnchonlich.config(command=tam)
-
-    def tam():
-        return
+        print(on_off.get())
+        if on_off.get() == str(0):
+            f.place(x=305,y=80)
+            on_off.set("1")
+        else:
+            f.place_forget()
+            on_off.set("0")
     
     def menuthongke():
         win.destroy()
@@ -331,7 +333,7 @@ def main():
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Thời khoá biểu")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_tkb.png")
 
@@ -369,6 +371,8 @@ def main():
     data_ngay.set("")
     data_ca=StringVar()
     data_matkb=StringVar()
+    on_off=StringVar()
+    on_off.set("0")
     
     ndtimkiem=StringVar()
     ngaycu=StringVar()
@@ -390,7 +394,7 @@ def main():
     nd_tim=["Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
 
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1200,height=800,bg="green")
+    bg=Canvas(win,width=1200,height=800,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(600,400,image=img_bg)
 

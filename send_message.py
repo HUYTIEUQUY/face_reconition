@@ -17,13 +17,13 @@ def gmail_login(diachiemail,matkhau,quyen):
     
     # sent the mail
     body1 = """
-    Xin chào,<br><br> Bạn đã là thành viên của ứng dụng điểm danh với quyền là người quản trị của khoa <br> Tải ứng dụng https://stackoverflow.com/questions/60950088/typeerror-sequence-item-0-expected-str-instance-tuple-found .
+    Xin chào,<br><br> Bạn đã là thành viên của ứng dụng điểm danh với quyền là người quản trị của khoa <br> Tải ứng dụng https://drive.google.com/drive/u/0/folders/1mbsgnZibzLQ1sk12lAT8jOJnRgrfi5J2
     <br> Đăng nhập với email: 
     """+diachiemail+"""
     <br> Mật khẩu:"""+matkhau+""" <br>Có thể đổi mật khẩu khi mở ứng dụng.
     """
     body = """
-    Xin chào,<br><br> Bạn đã là thành viên của ứng dụng điểm danh với quyền là người dùng <br> Tải ứng dụng https://stackoverflow.com/questions/60950088/typeerror-sequence-item-0-expected-str-instance-tuple-found .
+    Xin chào,<br><br> Bạn đã là thành viên của ứng dụng điểm danh với quyền là người dùng <br> Tải ứng dụng https://drive.google.com/drive/u/0/folders/1mbsgnZibzLQ1sk12lAT8jOJnRgrfi5J2
     <br> Đăng nhập với email: 
     """+diachiemail+"""
     <br> Mật khẩu:"""+matkhau+""" <br> Có thể đổi mật khẩu khi mở ứng dụng.

@@ -162,16 +162,18 @@ def main(masv):
                 left=left*4
                 cv2.rectangle(frame, (left, top_s), (right, bottom), (0,255,0), 2)
                 cv2.putText(frame,str(dem+1),(10,50),cv2.FONT_HERSHEY_SIMPLEX,2, (0, 255, 0), 2)
-            if cv2.waitKey(1) & 0xFF == ord('s')  : 
-                if face_locations != [] and dem <=4: #nếu có khuôn mặt
-                    cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
-                    face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                    anh=anh+' '+str(id)+str(dem+1)+'.png'
-                    if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                        embed_dictt[id]+=[face_encoding]
-                    else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                        embed_dictt[id]=[face_encoding]
-                dem +=1
+            if cv2.waitKey(1) & 0xFF == ord('s')  :
+                try: 
+                    if face_locations != [] and dem <=4: #nếu có khuôn mặt
+                        cv2.imwrite('img_anhsv/'+str(id)+str(dem+1)+'.png',frame)
+                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+                        anh=anh+' '+str(id)+str(dem+1)+'.png'
+                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+                            embed_dictt[id]+=[face_encoding]
+                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+                            embed_dictt[id]=[face_encoding]
+                    dem +=1
+                except: continue
             elif dem>5 and face_locations and dem<20 and face_locations != [] and len(face_locations) == 1:
                 try:
                     face_encoding = face_recognition.face_encodings(frame)[0]
@@ -198,14 +200,12 @@ def main(masv):
         upload_anh(masv)
         threading.Thread(target=loadanh,args=(anh,)).start()
         threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+"mahoa.pkl",)).start()
-        threading.Thread(target=upload_filemahoa,args=("mahoa/"+lop+".pkl",)).start()
 
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
-    win.title("Menu tkinter")
+    win.title("Ảnh sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_xemhinh.png")
  
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl.png")
@@ -217,7 +217,7 @@ def main(masv):
     ing_btntrolai=ImageTk.PhotoImage(file="img/btn_trolai.png")
 
 
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
@@ -235,7 +235,7 @@ def main(masv):
     menutaikhoan.place(x=46,y=484)
 
     btndangxuat=Button(bg,image=ing_btndangxuat,bd=0,highlightthickness=0,command=dangxuat)
-    btndangxuat.place(x=248,y=44)
+    btndangxuat.place(x=248,y=40)
 
     ten_thiet_bi = socket.gethostname()
     d=[]
@@ -243,7 +243,9 @@ def main(masv):
         d=file.read().split()
 
     tengv=tengv_email(d[0])
-    Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+    tensv=StringVar()
+    tensv.set(sv.tensv_ma(masv))
+    Label(bg,text=tengv,font=("Baloo Tamma 2 Medium",13),fg="#A672BB",bg="white").place(x=45,y=35)
 
     f1=Frame(bg,bg="white",width=100,height=120)
     f1.place(x=310,y=120)
@@ -289,6 +291,9 @@ def main(masv):
     btn_capnhat.place(x=618,y=518)
     btn_trolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trolai)
     btn_trolai.place(x=948,y=2)
+
+    Label(bg,text = masv,font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#EEE0EE").place(x=450,y=59)
+    Label(bg,textvariable = tensv,font=("Baloo Tamma 2 Medium",14),fg="#5F1965",bg="#F5E1EC").place(x=730,y=59)
     
     threading.Thread(target=loadanh,args=(anh,)).start()
     win.mainloop()

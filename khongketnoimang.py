@@ -1,13 +1,13 @@
 from tkinter import *
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
-import Face_AttendanceMKU
+import index
 
 
 def main():
     def thulai():
         win.destroy()
-        Face_AttendanceMKU.main()
+        index.main()
     def thoat():
         win.destroy()
 
@@ -15,13 +15,13 @@ def main():
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Không kết nối internet")
     img_bg=ImageTk.PhotoImage(file="img/khongketnoiinternet.png")
     img_thulai=ImageTk.PhotoImage(file="img/thulai.png")
     img_thoat=ImageTk.PhotoImage(file="img/thoat.png")
 
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 

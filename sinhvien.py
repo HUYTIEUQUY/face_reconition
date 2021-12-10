@@ -77,32 +77,35 @@ def main():
         khoiphuc()
 
     def nhap_excel():
-        fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
-        ko_luu=[]
-        malop=malop_ten(cb_lop.get())
-        lop=kt.khong_dau(cb_lop.get()).replace(" ","_")
-        xl = pd.ExcelFile(fln)
-        df = pd.read_excel(xl, 0) 
-        for i in range(df.shape[0]):
-            masv=df['Mã sinh viên'][i]
-            tensv=df['Tên sinh viên'][i]
-            if sv.kt_masv_tontai(masv) !=[]:
-               ko_luu.append(masv)
-            else:
-                sv.themsv(masv,tensv,malop,"")
-                try:
-                    f=open("mahoa/"+lop+".pkl","rb")
-                    ref_dictt=pickle.load(f)
-                    f.close()
-                except:
-                    ref_dictt={}
-                ref_dictt[masv]=tensv
-                try:
-                    f=open("mahoa/"+lop+".pkl","wb")
-                    pickle.dump(ref_dictt,f)
-                    f.close()
-                except:
-                    return
+        loadding(1)
+        try:
+            fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
+            ko_luu=[]
+            malop=malop_ten(cb_lop.get())
+            lop=kt.khong_dau(cb_lop.get()).replace(" ","_")
+            xl = pd.ExcelFile(fln)
+            df = pd.read_excel(xl, 0) 
+            for i in range(df.shape[0]):
+                masv=df['Mã sinh viên'][i]
+                tensv=df['Tên sinh viên'][i]
+                if sv.kt_masv_tontai(masv) !=[]:
+                    ko_luu.append(masv)
+                else:
+                    sv.themsv(masv,tensv,malop,"")
+                    try:
+                        f=open("mahoa/"+lop+".pkl","rb")
+                        ref_dictt=pickle.load(f)
+                        f.close()
+                    except:
+                        ref_dictt={}
+                    ref_dictt[masv]=tensv
+                    try:
+                        f=open("mahoa/"+lop+".pkl","wb")
+                        pickle.dump(ref_dictt,f)
+                        f.close()
+                    except:
+                        return
+        except:loadding(0)
                 
 
         if ko_luu !=[]:
@@ -113,31 +116,32 @@ def main():
 
     def xuat_excel():
         loadding(1)
-        malop=malop_ten(cb_lop.get())
-        row =sv.bangsv(malop)
-        if len(row)<1:
-            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
-            return False
-        else:
-            try:
-                fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
-                if fln != "":
-                    a=sv.dong_ma_sv(malop)
-                    b=sv.dong_ten_sv(malop)
-                    out_workbook = xlsxwriter.Workbook(fln+".xlsx")
-                    outsheet = out_workbook.add_worksheet()
-                    outsheet.write("A1","Mã sinh viên")
-                    outsheet.write("B1","Tên sinh viên")
-                    
-                    def write_data_to_file(array,x):
-                        for i in range(len(array)):
-                            outsheet.write(i+2,x,array[i])
-                    write_data_to_file(a,0)
-                    write_data_to_file(b,1)
-                    out_workbook.close()
-                    messagebox.showinfo("thông báo","Đã xuất thành công ")
-            except:print("Error")
+        try:
+            malop=malop_ten(cb_lop.get())
+            row =sv.bangsv(malop)
+            if len(row)<1:
+                messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+            else:
+                try:
+                    fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+                    if fln != "":
+                        a=sv.dong_ma_sv(malop)
+                        b=sv.dong_ten_sv(malop)
+                        out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+                        outsheet = out_workbook.add_worksheet()
+                        outsheet.write("A1","Mã sinh viên")
+                        outsheet.write("B1","Tên sinh viên")
+                        
+                        def write_data_to_file(array,x):
+                            for i in range(len(array)):
+                                outsheet.write(i+2,x,array[i])
+                        write_data_to_file(a,0)
+                        write_data_to_file(b,1)
+                        out_workbook.close()
+                        messagebox.showinfo("thông báo","Đã xuất thành công ")
+                except:print("Error")
             loadding(0)
+        except:loadding(0)
     
     def khoiphuc():
         loadding(1)
@@ -259,11 +263,12 @@ def main():
             for i in x:
                 listma.append(tv.item(i,'values')[1])
             for i in listma:
+                print(i)
                 if sv.kt_sv_diemdanh(i)== False:
                     sv.xoasv(i)
                     luong(khoiphuc)
                     try:
-                        xoa_sv_matran(i)#xoá mahoa anh 
+                        xoa_sv_matran(str(i))#xoá mahoa anh 
                     except:print("xoá sv ma trận thất bại")
                 else:
                     ko_xoa.append(i)
@@ -279,6 +284,13 @@ def main():
     def xoa_sv_matran(masv):
         tenlop=lop.get().replace(" ","_")
         lopmahoa=kt.khong_dau(tenlop)
+        with open("mahoa/"+str(lopmahoa)+".pkl","rb") as f:
+            ref_dictt=pickle.load(f)
+            ref_dictt.pop(masv)
+        file= open("mahoa/"+str(lopmahoa)+".pkl","wb") 
+        pickle.dump(ref_dictt,file)
+        file.close()
+
         with open("mahoa/"+str(lopmahoa)+"mahoa.pkl","rb") as f:
             ref_dictt=pickle.load(f)
             ref_dictt.pop(masv)
@@ -286,12 +298,7 @@ def main():
         pickle.dump(ref_dictt,file)
         file.close()
        
-        with open("mahoa/"+str(lopmahoa)+".pkl","rb") as f:
-            ref_dictt=pickle.load(f)
-            ref_dictt.pop(masv)
-        file= open("mahoa/"+str(lopmahoa)+".pkl","wb") 
-        pickle.dump(ref_dictt,file)
-        file.close()
+       
 
     # def xoaanh(masv):
     #     for i in range(5):
@@ -341,10 +348,41 @@ def main():
             messagebox.showwarning("thông báo","Kiểm tra lại mã sinh viên")
         elif sv.kt_masv_tontai(ma.get()) !=[]:
             messagebox.showerror("thông báo","Mã sinh viên đã tồn tại")
-        else:
+        elif messagebox.askyesno("thông báo","Bạn có muốn đăng ký khuôn mặt sinh viên ?"):
             luong(themdlkhuonmat)
+        else:
+            luong(themsv)
+
+    def themsv():
+        id=txt_masv.get()
+        name=xoa_khoangcach(txt_hoten.get())
+        name_mahoa=kt.khong_dau(name)
+        malop=malop_ten(cb_lop.get())
+        #thêm id , name vào co sở dữ liệu
+        lop=cb_lop.get().replace(" ","_")
+        lop=kt.khong_dau(lop)
+        try:
+            f=open("mahoa/"+lop+".pkl","rb")
+            ref_dictt=pickle.load(f)
+            f.close()
+        except:
+            ref_dictt={}
+        ref_dictt[id]=name_mahoa
+
+        try:
+            f=open("mahoa/"+lop+".pkl","wb")
+            pickle.dump(ref_dictt,f)
+            f.close()
+        except:
+            return
+
+        if sv.themsv(id,name,malop,""):
+            messagebox.showinfo("thông báo", "Thêm thành công")
+            khoiphuc()
+        else: messagebox.showinfo("Thông báo","Thêm thất bại")
 
 
+        
     def themdlkhuonmat():
         soanh=5
         anh=""
@@ -438,16 +476,17 @@ def main():
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()
-        threading.Thread(target=upload_filemahoa, args=("mahoa/"+lop+"mahoa.pkl",)).start()
-        threading.Thread(target=upload_filemahoa, args=("mahoa/"+lop+".pkl",)).start()
         khoiphuc()
+        threading.Thread(target=upload_filemahoa, args=("mahoa/"+lop+".pkl",)).start()
+        threading.Thread(target=upload_filemahoa, args=("mahoa/"+lop+"mahoa.pkl",)).start()
+        
 
 
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Quản lý thông tin sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_themdl.png")
  
@@ -466,7 +505,7 @@ def main():
     img_btnexcel_nhap=ImageTk.PhotoImage(file="img_admin/nhap_excel.png")
     img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
 
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
@@ -515,9 +554,9 @@ def main():
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,activebackground='#ffffff',command=khoiphuc)
     btnkhoiphuc.place(x=925,y=241)
     btnexcelnhap=Button(bg,image=img_btnexcel_nhap,bd=0,highlightthickness=0,command=nhap_excel)
-    btnexcelnhap.place(x=948,y=2)
+    btnexcelnhap.place(x=890,y=7)
     btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
-    btnexcelxuat.place(x=898,y=2)
+    btnexcelxuat.place(x=945,y=7)
 
     menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD')
     menuthem.place(x=46,y=129)

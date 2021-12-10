@@ -205,7 +205,7 @@ def main():
     win.geometry("1200x750+120+9")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Giảng viên")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_giangvien.png")
 
@@ -241,7 +241,7 @@ def main():
     data_sdt=StringVar()
     data_ghichu=StringVar()
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1200,height=750,bg="green")
+    bg=Canvas(win,width=1200,height=750,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(600,375,image=img_bg)
 

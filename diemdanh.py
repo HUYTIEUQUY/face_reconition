@@ -88,61 +88,62 @@ def main():
         threading.Thread(target=ham).start()
 
     def loadl_dd():
-        loadding(1)
-        global malop
-        global mamh
-        global magv
-        global a
-        global ref_dictt
-        global embed_dictt
-        global dd
-        global dd_ra
-        global tg_tre
-        global tgbd
-        global ma
-        global sv_da_vao
-    
-        ma=matkb.get()
-        magv=ma_gv.get()
-        mamh=mamh_ten(data_mon.get())
+        try:
+            loadding(1)
+            global malop
+            global mamh
+            global magv
+            global a
+            global ref_dictt
+            global embed_dictt
+            global dd
+            global dd_ra
+            global tg_tre
+            global tgbd
+            global ma
+            global sv_da_vao
         
-        ref_dictt = {}
-        embed_dictt = {}
-        sv_da_vao=[]
-        a=[]
-        
-        if quyen == str(1):
-            val_lop = lop_matkb(matkb.get())
-            for i in val_lop:
-                lopp=khong_dau(i).replace(" ","_")
+            ma=matkb.get()
+            magv=ma_gv.get()
+            mamh=mamh_ten(data_mon.get())
+            
+            ref_dictt = {}
+            embed_dictt = {}
+            sv_da_vao=[]
+            a=[]
+            
+            if quyen == str(1):
+                val_lop = lop_matkb(matkb.get())
+                for i in val_lop:
+                    lopp=khong_dau(i).replace(" ","_")
+                    f=open("mahoa/"+lopp+".pkl","rb")
+                    tensv=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
+                    f.close()
+                    g=open("mahoa/"+lopp+"mahoa.pkl","rb")
+                    mahoasv=pickle.load(g) #đọc file và luu hình ảnh đã biết được mã hoá  theo id vào biến embed_dictt
+                    g.close()
+                    malop=malop_ten(i)
+                    sv_da_vao += diemdanh.sv_da_dd_vao1(ma,malop)
+                    a=a+ds_ma_sv(malop)
+                    ref_dictt={**ref_dictt,**tensv}
+                    embed_dictt={**embed_dictt,**mahoasv}
+            else:
+                malop=malop_ten(data_lop.get())
+                a=ds_ma_sv(malop)
+                lopp=khong_dau(data_lop.get().replace(" ","_"))
                 f=open("mahoa/"+lopp+".pkl","rb")
-                tensv=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
+                ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
                 f.close()
                 g=open("mahoa/"+lopp+"mahoa.pkl","rb")
-                mahoasv=pickle.load(g) #đọc file và luu hình ảnh đã biết được mã hoá  theo id vào biến embed_dictt
+                embed_dictt=pickle.load(g) #đọc file và luu hình ảnh đã biết được mã hoá  theo id vào biến embed_dictt
                 g.close()
-                malop=malop_ten(i)
-                
-                sv_da_vao += diemdanh.sv_da_dd_vao1(ma,malop)
-                a=a+ds_ma_sv(malop)
-                ref_dictt={**ref_dictt,**tensv}
-                embed_dictt={**embed_dictt,**mahoasv}
-        else:
-            malop=malop_ten(data_lop.get())
-            a=ds_ma_sv(malop)
-            lopp=khong_dau(data_lop.get().replace(" ","_"))
-            f=open("mahoa/"+lopp+".pkl","rb")
-            ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
-            f.close()
-            g=open("mahoa/"+lopp+"mahoa.pkl","rb")
-            embed_dictt=pickle.load(g) #đọc file và luu hình ảnh đã biết được mã hoá  theo id vào biến embed_dictt
-            g.close()
-            sv_da_vao=diemdanh.sv_da_dd_vao(ma)
-        dd=diemdanh.dd_sv_vao(ma)
-        dd_ra=diemdanh.dd_sv_ra(ma)
-        tgbd= diemdanh.tgbd_dd(ma)
-        tg_tre = doigiaytre(diemdanh.tg_tre(magv))
-        loadding(0)
+                sv_da_vao=diemdanh.sv_da_dd_vao(ma)
+            dd=diemdanh.dd_sv_vao(ma)
+            dd_ra=diemdanh.dd_sv_ra(ma)
+            tgbd= diemdanh.tgbd_dd(ma)
+            tg_tre = doigiaytre(diemdanh.tg_tre(magv))
+            loadding(0)
+        except: loadl_dd()
 
     def load_gd():
         global val_lop
@@ -209,55 +210,58 @@ def main():
         giay=int(h)*60*60+int(p)*60+int(s)
         return giay
 
-    def xulyvao(ma,name,now):
+    def xulyvao(ma,name):
         # if name not in dd and s >= tg_tre and name != "Khongbiet" and int(tg_tre) != 0 and '1' in real[name] and '2' in real[name]:
         now = datetime.now()
         now=now.strftime("%X")
         format = '%H:%M:%S'
         kq=datetime.strptime(now, format) - datetime.strptime(tgbd, format) #tính thời gian Trể
         s=doigiay(kq)
-        if s >= tg_tre and name != "Unknown" and int(tg_tre) != 0 and name not in sv_da_vao:
+        if s >= tg_tre  and int(tg_tre) != 0 and name not in sv_da_vao:
             tre="Trể "+str(kq)[0:7]
             sv_da_vao.append(name)
             threading.Thread(target=diemdanh.capnhat_tgvao,args=(ma,name,now,tre)).start()
             threading.Thread(target=gananh_khi_click,args=(name,now)).start()
             diemdanhvaobang(name,tre,now, vao_ra)
-        elif name != "Unknow" and name not in sv_da_vao:
+        elif name not in sv_da_vao:
             # elif name not in dd and name != "Khongbiet"and '1' in real[name] and '2' in real[name]:
             # diemdanh.xoasv_dd(ma,name)
-            threading.Thread(target=diemdanh.capnhat_tgvao,args=(ma,name,now,"có")).start()
+            threading.Thread(target=diemdanh.capnhat_tgvao,args=(ma,name,now,"có mặt")).start()
             sv_da_vao.append(name)
             threading.Thread(target=gananh_khi_click,args=(name,now)).start()
-            diemdanhvaobang(name, "có",now, vao_ra)
+            diemdanhvaobang(name, "có mặt",now, vao_ra)
 
-    def xulyra(ma,name,now):
-        diemdanhvaobang(name, "có",now, vao_ra)
+    def xulyra(ma,name):
+        dd_ra.append(name)
+        now = datetime.now()
+        now=now.strftime("%X")
+        diemdanhvaobang(name, "có mặt",now, vao_ra)
         threading.Thread(target=diemdanh.capnhat_tgra,args=(ma,name,now)).start()
         threading.Thread(target=gananh_khi_click,args=(name,now)).start()
 
     
-    def mahoa(rgb_small_frame,face_locations,known_face_encodings,known_face_names,frame):
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
-        for face_encoding in face_encodings:
-            # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
-            try:
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
-            except:print("lỗi")
-            name = "Unknow"
-            #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
-            face_names=[]
-            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-            best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
-            if matches[best_match_index]:
-                name = known_face_names[best_match_index]
+    # def mahoa(rgb_small_frame,face_locations,known_face_encodings,known_face_names,frame):
+    #     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
+    #     for face_encoding in face_encodings:
+    #         # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
+    #         try:
+    #             matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
+    #         except:print("lỗi")
+    #         name = "Unknow"
+    #         #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
+    #         face_names=[]
+    #         face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+    #         best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
+    #         if matches[best_match_index]:
+    #             name = known_face_names[best_match_index]
 
-            now = datetime.now()
-            now=now.strftime("%X")
-            if vao_ra==0 and name!= "Unknow":
-                threading.Thread(target=xulyvao,args=(ma,name,now)).start()
-            elif name not in dd_ra and name != 'Unknow': 
-                threading.Thread(target=xulyra,args=(ma,name,now)).start()
-                dd_ra.append(name)
+    #         now = datetime.now()
+    #         now=now.strftime("%X")
+    #         if vao_ra==0 and name!= "Unknow":
+    #             threading.Thread(target=xulyvao,args=(ma,name,now)).start()
+    #         elif name not in dd_ra and name != 'Unknow': 
+    #             threading.Thread(target=xulyra,args=(ma,name,now)).start()
+    #             dd_ra.append(name)
 
     def batdaudiemdanh():
         known_face_encodings = []
@@ -276,6 +280,8 @@ def main():
             webcam = cv2.VideoCapture(max(camera) + cv2.CAP_DSHOW)
 
             face_locations = []
+            face_encodings = []
+            process_this_frame = True
             dem=0
             try:
                 while True  :
@@ -283,22 +289,51 @@ def main():
                     # print(frame)
                     rgb_small_frame = frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
 
-                    face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
-                    if face_locations != []:
-                        # for i in face_locations:
-                        for (top_s, right, bottom, left) in face_locations:
-                            cv2.rectangle(frame, (left, top_s), (right, bottom), (randrange(256),randrange(256),randrange(256)) , 2)
-                            dem+=1
-                            if dem ==5:
-                                threading.Thread(target=mahoa, args=(rgb_small_frame,face_locations,known_face_encodings,known_face_names,frame)).start()
-                                dem=0
+                    if process_this_frame:
+                        face_names = []
+                        face_locations = face_recognition.face_locations(rgb_small_frame)# tìm tất cả khuôn mặt trong khung hình hiện tại vủa video
+                        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) #mã hoá khuôn mặt hiện tại trong khung hình của video
+                        for face_encoding in face_encodings:
+                            # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
+                            try:
+                                matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
+                            except:print("lỗi")
+                            name = "Unknow"
+                            #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
+                            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                            best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
+                            if matches[best_match_index]:
+                                name = known_face_names[best_match_index]
+                            face_names.append(name)
+
+                            if vao_ra==0 and name != "Unknow":
+                                xulyvao(ma,name)
+                            elif name != "Unknow" and name not in dd_ra :
+                                xulyra(ma,name)
+                            
+                                    
+                    process_this_frame = not process_this_frame
+                    #Hiển thị kết quả
+                    try:
+                        for (top_s, right, bottom, left), name in zip(face_locations, face_names):
+                            font = cv2.FONT_HERSHEY_SIMPLEX
+                            if name == "Unknow":
+
+                                cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 0,255), 2)
+                                cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+                            else:
+                                cv2.rectangle(frame, (left, top_s), (right, bottom), (0, 255,0), 2)
+                                cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+                                
+                                
+                    except:print("no name")
                     cv2.imshow('Video', frame)
                     
                     if cv2.waitKey(1) & 0xFF == ord('q'):
+
                         webcam.release()
                         if vao_ra==1:
                             threading.Thread(target=diemdanh.kiemtrathongtin,args=(ma,)).start()
-
                         loadding(0)
                         f2.place_forget()
                         cv2.destroyAllWindows()
@@ -324,8 +359,8 @@ def main():
                     malop=malop_masv(a[i])
                     dd.append(a[i])
                     threading.Thread(target = diemdanh.diem_danh_vao_csdl, args = (matkb.get(),a[i],"vắng",str(malop),mamh,magv,ngay,ca,"")).start()
-            hen_ngay_xoa()
-            khoiphuc()
+            luong(hen_ngay_xoa)
+            luong(khoiphuc)
             luong(batdaudiemdanh)
         try:
             lb1.pack()
@@ -388,7 +423,6 @@ def main():
         f2.place(x=838,y=80)
         if masv != "Unknow" :
             anh=str(masv)+"1.png"
-
             if(anh==""):
                 gan_anh("img_anhsv/aa.jpg")
             else:
@@ -458,7 +492,7 @@ def main():
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Điểm danh sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_diemdanh.png")
     
@@ -478,7 +512,7 @@ def main():
     img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
     img_btnghichu = ImageTk.PhotoImage(file="img_admin/btn_ghichu.png")
     
-    bg=Canvas(win,width=1200,height=800,bg="green")
+    bg=Canvas(win,width=1200,height=800,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(600,400,image=img_bg)
 

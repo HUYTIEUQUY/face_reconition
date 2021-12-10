@@ -25,7 +25,7 @@ storage = firebase.storage()
 
 
 
-# storage.child("img/anhhuy").download("","img_anhsv/19110200303.jpg")
+# storage.child("mahoa/Cong_nghe_thong_tin_K19_.pkl").download("mahoa/Cong_nghe_thong_tin_K19_.pkl","mahoa/Cong_nghe_thong_tin_K19_.pkl")
 
 
 
@@ -35,22 +35,24 @@ def upload_anh(masv):
         pathlound=str(masv)+str(i+1)+".png"
         path = "img_anhsv/"+str(masv)+str(i+1)+".png"
         storage.child(pathlound).put(path)
-        sleep(3)
-        os.remove("img_anhsv/"+pathlound)
+    sleep(2)
+    for i in range(5):
+        pat=str(masv)+str(i+1)+".png"
+        os.remove("img_anhsv/"+pat)
 
 def upload_filemahoa(path):
     try:
         storage.child(path).put(path)
-    except: print("Lỗi upload file mahoa")
+    except: print("Lỗi upload file mahoa" + path)
 
 def download_filemahoa(tenlop):
     tenlop=tenlop.replace(" ","_")
     pathten="mahoa/"+tenlop+".pkl"
     path="mahoa/"+tenlop+"mahoa.pkl"
-    try:
-        storage.child(pathten).download(pathten,pathten)
-        storage.child(path).download(path,path)
-    except: return
+    
+    storage.child(pathten).download(pathten,pathten)
+    storage.child(path).download(path,path)
+    
 
 
 # def capnhatanh(makhoa):

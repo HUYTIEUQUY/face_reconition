@@ -204,7 +204,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Quản lý khoa")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_khoa.png")
 
@@ -235,7 +235,7 @@ def main():
     option.set(0)
 
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 

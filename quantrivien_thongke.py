@@ -90,16 +90,7 @@ def main():
         gv=magv_ten(data_gv.get())
         loai=data_tim.get()
         # nd_tim=["Mã TKB","Môn học","LT-TH","Ngày","Ca","Trạng Thái"]
-        if loai=="Môn học":
-            row=tkb.timkiem_dong_tkb_monhoc(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai=="LT-TH":
-            row=tkb.timkiem_dong_tkb_LTTH(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ngày":
-            row=tkb.timkiem_dong_tkb_Ngay(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Ca":
-            row=tkb.timkiem_dong_tkb_Ca(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
-        elif loai == "Trạng Thái":
-            row=tkb.timkiem_dong_tkb_TrangThai(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get())
+        row=tkb.timkiem_dong_tkb(malop,namhoc,data_hocky.get(),gv, ndtimkiem.get(),loai)
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
             update(tv,row)
@@ -194,12 +185,11 @@ def main():
         row=tkb.bang_tkb(malop,namhoc,data_hocky.get(),gv)
         if row == []:
             messagebox.showwarning("thông báo","Không có dữ liệu")
-            threading
         else:
             threading.Thread(target=load_bang_tkb,args=(row,)).start()
-        try:
-            threading.Thread(target=load_bang_tkb,args=(row,)).start()
-        except:return
+        # try:
+        #     threading.Thread(target=load_bang_tkb,args=(row,)).start()
+        # except:return
 
     def capnhatbangkhoa(event):
         makhoa=tk.makhoa_ten(data_khoa.get())
@@ -278,7 +268,7 @@ def main():
     win.geometry("1200x800+120+10")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Thống kê")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thongke.png")
     
@@ -294,7 +284,7 @@ def main():
     img_btntrove = ImageTk.PhotoImage(file="img_admin/btn_trolai1.png")
 
 
-    bg=Canvas(win,width=1200,height=800,bg="green")
+    bg=Canvas(win,width=1200,height=800,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(600,400,image=img_bg)
 

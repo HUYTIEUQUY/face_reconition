@@ -85,13 +85,13 @@ def main(trang):
     win.geometry("600x600+400+100")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Đổi mật khẩu")
     img_bg=ImageTk.PhotoImage(file="img/bg_doimatkhau.png")
     img_btn=ImageTk.PhotoImage(file=f"img/btn_doimatkhau.png")
     ing_btntrolai=ImageTk.PhotoImage(file="img/trove_bgdoimatkhau.png")
 
-    bg=Canvas(win,width=600,height=600,bg="green")
+    bg=Canvas(win,width=600,height=600,bg="white")
     bg.pack(side="left",padx=0)
 
 

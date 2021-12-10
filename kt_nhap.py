@@ -39,5 +39,20 @@ def khong_dau(s):
         return s
 
 
+def dinh_dang_ngay(ngay):
+        ngay=str(ngay).replace("/"," ")
+        ngay=str(ngay).replace("-"," ")
+        d=ngay.split()
+        if len(d[0])==1:
+            d[0]="0"+d[0]
+        if len(d[1])==1:
+            d[1]="0"+d[1]
+        if len(d[2]) ==4 :
+            ngay=d[0]+"/"+d[1]+"/"+d[2]
+        else:
+            ngay=d[1]+"/"+d[0]+"/20"+d[2]
+        return ngay
+
+
 
 

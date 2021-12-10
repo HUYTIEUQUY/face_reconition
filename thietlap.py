@@ -78,7 +78,6 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
     win.title("Điểm danh sinh viên")
     img_bg=ImageTk.PhotoImage(file="img/bg_thietlaptre.png")
     
@@ -90,7 +89,7 @@ def main():
     ing_btntrolai=ImageTk.PhotoImage(file="img/btn_trolai.png")
     img_btnluu=ImageTk.PhotoImage(file="img_qtv/btn_luuthietdat.png")
     
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 

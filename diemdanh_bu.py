@@ -12,12 +12,13 @@ import threading
 import os
 import pandas as pd
 from backend.dl_giangvien import tengv_email, magv_email
-from backend.dl_adminlop import malop_ten
-from backend.dl_monhoc import mamh_ten
+from backend.dl_adminlop import malop_ten,tenlop_ma
+from backend.dl_monhoc import mamh_ten, tenmh_ma
 from backend.dl_sinhvien import ds_masv_lop
 import backend.dl_diemdanh as dd
 from backend.dl_tkb import gv_dd
-from styletable import style,update
+from styletable import style
+from kt_nhap import dinh_dang_ngay
 import datetime
 import sinhvien
 import diemdanh
@@ -27,11 +28,41 @@ import thongke
 
 
 def main(trang):
+    def loadding(a):
+        if a==1:# đang load dữ liệu
+            btn_diemdanh["state"] = "disabled"
+            btntrolai["state"] = "disabled"
+        else:
+            btn_diemdanh["state"] = "normal"
+            btntrolai["state"] = "normal"
     def luong(ham):
         threading.Thread(target=ham).start()
 
     def loaddl():
-        tengv.set(tengv_email(email))
+        loadding(1)
+        try:
+            tengv.set(tengv_email(email))
+            gvdd=gv_dd(magv,ngay)
+            if gvdd==[]:
+                messagebox.showinfo("Thông báo","Đã điểm danh đầy đủ")
+            else:
+                update(gvdd)
+            loadding(0)
+        except:loadding(0)
+
+    def update(row):
+        tv.delete(*tv.get_children())
+        global dem
+        dem=0
+        for i in row:
+            i.insert(0,dem+1)
+            i[2]= tenlop_ma(i[2])
+            i[3]= tenmh_ma(i[3])
+            if dem%2==0:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('evenrow'))
+            else:
+                tv.insert("",index="end",iid=dem,values=i,text='',tags=('ollrow'))
+            dem += 1
 
     def trolai():
         win.destroy()
@@ -43,62 +74,67 @@ def main(trang):
         data_ca=data_ca1.join(ca).split()
 
         for i in data_ca:
-            dd.tgca(i,e)
-        if min(e) <= str(tgvao) and max(e) >=str(tgra):
+            a=dd.tgca(i)
+            e.append(a[0])
+            e.append(a[1])
+        if str(tgvao) == "" or str(tgvao) == "nan" or str(tgra) == "" or str(tgra) == "nan":
             return True
-        else: return False
+        else:
+            if min(e) <= str(tgvao) and max(e) >=str(tgra):
+                return True
+            else: return False
+        
 
 
 
     def diemdanhexcel():
-     
-        if matkb.get()=="":
-            messagebox.showerror("Thông báo","Hãy chọn thông tin để điểm danh ...")
-        else:
-            fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
-            ko_luu=0
-            malop=malop_ten(datalop.get())
-            mamon= mamh_ten(datamon.get())
-            magv= magv_email(email)
-            xl = pd.ExcelFile(fln)
-            df = pd.read_excel(xl, 0) 
-            dssv=ds_masv_lop(malop)
+        loadding(1)
+        try:
+            if matkb.get()=="":
+                messagebox.showerror("Thông báo","Hãy chọn thông tin để điểm danh ...")
+            else:
+                fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
+                ko_luu=0
+                malop=malop_ten(datalop.get())
+                mamon= mamh_ten(datamon.get())
+                magv= magv_email(email)
+                xl = pd.ExcelFile(fln)
+                df = pd.read_excel(xl, 0) 
+                dssv=ds_masv_lop(malop)
 
-            for i in range(df.shape[0]):
-                masv=df['Mã sinh viên'][i]
-                thongtin=df['Thông tin'][i]
-                tgvao=df['Thời gian vào'][i]
-                tgra=df['Thời gian ra'][i]
+                for i in range(df.shape[0]):
+                    masv=df['Mã sinh viên'][i]
+                    thongtin=df['Thông tin'][i]
+                    tgvao=df['Thời gian vào'][i]
+                    tgra=df['Thời gian ra'][i]
 
-                if str(masv) not in dssv:
-                    messagebox.showerror("Thông báo","Điểm danh không thành công.\nSinh viên có mã "+str(masv)+" không thuộc lớp.")
-                    threading.Thread(target=dd.xoadd,args=(matkb.get(),)).start()
-                    ko_luu=1
-                    break
-                elif kttg(tgvao,tgra,dataca.get()) == False and str(tgvao) != "nan" and str(tgra) != "nan":
-                    messagebox.showerror("Thông báo","Điểm danh không thành công.\nThời gian không hợp lý.")
-                    threading.Thread(target=dd.xoadd,args=(matkb.get(),)).start()
-                    ko_luu=1
-                    break
-                else:
-                    if str(tgvao) == "nan" :
-                        tgvao=""
-                    if str(tgra) == "nan":
-                        tgra=""
-                    threading.Thread(target=dd.diemdanhbangexcel,args=(matkb.get(),masv,thongtin,malop,mamon,magv,datangay.get(),dataca.get(),tgvao,tgra,)).start()
-            if ko_luu != 1:
-                threading.Thread(target=dd.update_TT_diemdanh,args=(matkb.get(),)).start()
-                messagebox.showinfo("thông báo","Đã điểm danh")
-                row=gv_dd(magv,ngay)
-                if row !=[]:
-                    update(tv,row)
-                elif trang == 1:
-                    win.destroy()
-                    taikhoan.main()
-                elif trang ==0:
-                    win.destroy()
-                    diemdanh.main()
-            
+                    if str(masv) not in dssv:
+                        messagebox.showerror("Thông báo","Điểm danh không thành công.\nSinh viên có mã "+str(masv)+" không thuộc lớp.")
+                        threading.Thread(target=dd.xoadd,args=(matkb.get(),)).start()
+                        ko_luu=1
+                        break
+                    else:
+                        if str(tgvao) == "nan" :
+                            tgvao=""
+                        if str(tgra) == "nan":
+                            tgra=""
+                        threading.Thread(target=dd.diemdanhbangexcel,args=(matkb.get(),masv,thongtin,malop,mamon,magv,datangay.get(),dataca.get(),tgvao,tgra,)).start()
+                if ko_luu != 1:
+                    dd.update_TT_diemdanh(matkb.get())
+                    row=gv_dd(magv,ngay)
+                    messagebox.showinfo("thông báo","Đã điểm danh")
+                    loadding(0)
+                    if row !=[]:
+                        update(row)
+                    elif trang == 1:
+                        win.destroy()
+                        taikhoan.main()
+                    elif trang ==0:
+                        win.destroy()
+                        diemdanh.main()
+            loadding(0)
+        except:loadding(0)
+                
     
 
 #___________________________________________________________________________________________
@@ -140,7 +176,7 @@ def main(trang):
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Điểm danh")
     img_bg=ImageTk.PhotoImage(file="img/bg_diemdanhbu.png")
     img_bg1=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
@@ -167,20 +203,21 @@ def main(trang):
     dataca=StringVar()
     tengv=StringVar()
     matkb=StringVar()
-    now=datetime.datetime.now()
-    ngay=now.strftime("%x")
+    time = datetime.datetime.now()
+    now = time.strftime("%x")
+    ngay=dinh_dang_ngay(now)
     magv=magv_email(email)
-    gvdd=gv_dd(magv,ngay)
+    
+
 
     
     #----------------------------------------------------------------------------
 
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
-    if gvdd==[]:
-        messagebox.showinfo("Thông báo","Đã điểm danh đầy đủ")
+    
 
     menuthem=Button(bg,image=ing_menuthem,bd=0,highlightthickness=0,activebackground='#857EBD',command=menuthemsv)
     menuthem.place(x=46,y=129)
@@ -229,7 +266,7 @@ def main(trang):
     tv.tag_configure("ollrow" ,background="white", font=("Baloo Tamma 2 Medium",10))
     tv.tag_configure("evenrow" ,background="#ECECEC",font=("Baloo Tamma 2 Medium",10))
     tv.bind('<ButtonRelease-1>', getrow)
-    update(tv,gvdd)
+    
     
 
 

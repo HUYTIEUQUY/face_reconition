@@ -32,12 +32,12 @@ def catkb(matkb):
 
 def cong_them_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 + datetime.timedelta(hours=5)
+    d=d1 + datetime.timedelta(hours=8)
     d=str(d).split()
     return d[1]
 def tru_gio(now):
     d1 = datetime.datetime.strptime(now, "%H:%M:%S")
-    d=d1 - datetime.timedelta(hours=1)
+    d=d1 - datetime.timedelta(hours=5)
     d=str(d).split()
     return d[1]
 
@@ -353,12 +353,14 @@ def xoadd(matkb):
 #         if i.val()["TenCa"]==str(ca) and i.val()["TGBD"] <= str(tgvao) and i.val()["TGKT"] >= str(tgra):
 #             return True
 #     return False
-def tgca(ca,e):
-    data=db.child("CaHoc").get()
+def tgca(ca):
+    e=[]
+    data=db.child("CaHoc").order_by_child("TenCa").equal_to(str(ca)).get()
     for i in data.each():
         if i.val()["TenCa"] == str(ca) :
             e.append(i.val()['TGBD'])
             e.append(i.val()['TGKT'])
+    return e
 
 def tgbd_dd(matkb):
     try:
@@ -372,4 +374,23 @@ def tgbd_dd(matkb):
         return tgbd
     except:
         print("Error")
+
+def test():
+    # data=db.child("DiemDanh").order_by_child("TG_Ra").equal_to(str("11:19:08")).get()
+    # dl={'TG_Ra':'17:20:11'}
+    # for i in data.each():
+    #     if(i.val()["TG_Ra"]==str("11:19:08")):
+    #         try:
+    #             db.child("DiemDanh").child(i.key()).update(dl)
+    #             print("0k")
+    #         except:print("k xoá")
+    data=db.child("ThoiKhoaBieu").order_by_child("MaTKB").equal_to(str("37")).get()
+    dl={'Ngay':'09/11/2021'}
+    for i in data.each():
+        if(i.val()["MaTKB"]==str("37")):
+            try:
+                db.child("ThoiKhoaBieu").child(i.key()).remove()
+                print("đã update")
+            except:print("k update")
+
 

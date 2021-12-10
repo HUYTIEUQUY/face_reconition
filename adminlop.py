@@ -198,7 +198,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Lớp học")
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_lop.png")
 
@@ -232,7 +232,7 @@ def main():
 
         
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 

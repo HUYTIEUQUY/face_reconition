@@ -93,7 +93,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Thiết lập")
     img_bg=ImageTk.PhotoImage(file="img_qtv/bg_thietdat.png")
 
@@ -125,7 +125,7 @@ def main():
     gio=["07",'08','09','10','11','12','13','14','15','16','17']
     phut_giay=mang(60)
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 

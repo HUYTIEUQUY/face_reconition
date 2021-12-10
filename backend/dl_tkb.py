@@ -402,12 +402,12 @@ def gv_dd(magv,ngay):
     try:
         for i in data.each():
             if(i.val()["MaGV"]==str(magv) and ngaya_nhohon_ngayb(i.val()["Ngay"] , str(ngay)) and i.val()["TrangThaiDD"] =='0' ):
-                tenl=tenlop_ma(i.val()['MaLop'])
-                tenm=tenmh_ma(i.val()['MaMH'])
-                e = [i.val()['MaTKB'],tenl,tenm,i.val()['Ngay'],i.val()['Ca']]
+                e = [i.val()['MaTKB'],i.val()['MaLop'],i.val()['MaMH'],i.val()['Ngay'],i.val()['Ca']]
                 a.append(e)
     except: a=[]
-    return a
+    format = '%d/%m/%Y'
+    sx_ngay = sorted(a, key=lambda item: (datetime.datetime.strptime(item[3], format), item[0]), reverse=True)
+    return sx_ngay
 
 
 # def kt_so_tiet_lt(malop,mamh,lt):

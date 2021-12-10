@@ -21,7 +21,6 @@ def main():
     def loadding(a):
         if a == 1:# đang load dữ liệu
             lb_loadding.place(x=904,y=1)
-            print(a)
             btn_capnhatsdt["state"] = "disabled"
             btndangxuat["state"] = "disabled"
             btndangxuat1["state"] = "disabled"
@@ -66,10 +65,11 @@ def main():
             data_dd.set("Đã điểm danh tất cả")
         else:
             data_dd.set("Chưa điểm danh")
-            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command= thongbaodd())
+            btnthongbaodd=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command= thongbaodd)
             btnthongbaodd.place(x=920,y=425)
             lbstb1=Label(bg,text=len(gvdd),fg="red",font=("Arial",10),bg="white")
             lbstb1.place(x=952,y=420)
+        print(len(gvdd))
         loadding(0)
 
 
@@ -132,7 +132,7 @@ def main():
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
     win.iconbitmap(r"img/iconphanmem.ico")
-    win.config(bg="green")
+    win.config(bg="white")
     win.title("Thông tin người dùng")
     img_bg=ImageTk.PhotoImage(file="img/bgtaikhoan.png")
     img_bg1=ImageTk.PhotoImage(file="img/bgtaikhoan1.png")
@@ -167,7 +167,7 @@ def main():
     ngay=dinh_dang_ngay(now)
     
 #-------------------------------------------------------------------------------
-    bg=Canvas(win,width=1000,height=600,bg="green")
+    bg=Canvas(win,width=1000,height=600,bg="white")
     bg.pack(side="left",padx=0)
     anhnen=bg.create_image(500,300,image=img_bg)
 
